@@ -47,6 +47,44 @@ The workflow deliberately passes no `--set-env-vars`. That flag replaces the
 service's entire environment, which would drop the SMTP settings the form
 needs; leaving it off keeps the existing configuration across deploys.
 
+## Domains
+
+`yantrailabs.com` is canonical; `www.yantrailabs.com` 301s to it. The redirect
+lives in `main.py`, so it holds however the domain reaches the service. Only
+navigations redirect — a form POST bounced across hostnames would be a
+cross-origin request the browser blocks, so the API answers on either host.
+
+Both hostnames still have to be pointed at the service. Which way depends on
+what fronts the domain:
+
+*If Cloud Run serves the domain directly*, map both and add the records it
+returns at the registrar:
+
+```bash
+for HOST in yantrailabs.com www.yantrailabs.com; do
+  gcloud beta run domain-mappings create --service=yantrai-website \
+    --domain=$HOST --region=asia-south1 --project=gen-lang-client-0024674990
+done
+gcloud beta run domain-mappings describe --domain=www.yantrailabs.com \
+  --region=asia-south1 --project=gen-lang-client-0024674990
+```
+
+At GoDaddy the apex needs the `A`/`AAAA` records the mapping reports (an apex
+cannot be a CNAME), and `www` a `CNAME` to `ghs.googlehosted.com`. Certificates
+are issued once DNS resolves, which takes up to ~24h.
+
+*If Firebase Hosting fronts it* — a rewrite to the Cloud Run service — then add
+`www.yantrailabs.com` as a second custom domain in the Firebase console and let
+it publish the GoDaddy records. Don't also create a Cloud Run mapping for it;
+one owner per hostname.
+
+Check both resolve to the same revision once DNS settles:
+
+```bash
+curl -sI https://www.yantrailabs.com/ | head -2   # expect 301 → apex
+curl -s  https://yantrailabs.com/_status          # expect {"ok":true,...}
+```
+
 ### One-time setup for the workflow
 
 The workflow needs credentials for a service account that can deploy. Create
