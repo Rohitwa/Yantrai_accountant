@@ -207,6 +207,39 @@ _start = body.rfind('<a ', 0, _i)
 body = body[:_start] + body[_i + len('>Customers</a>'):]
 assert '>Customers</a>' not in body
 
+# ------------------------------------------------------------ brand lockup
+# AiFA leads; YantrAI becomes the endorsement line. The mark is d4-seal from
+# the brand kit (~/Desktop/memory/aifa_brand), not a redraw.
+_nav_logo = re.search(
+    r'<img[^>]*src="assets/yantrai_logo\.png"[^>]*height: 22px[^>]*>', body)
+assert _nav_logo, 'nav logo'
+body = body.replace(_nav_logo.group(0), (
+    '<a href="/" data-brand="1" style="display: flex; align-items: center; gap: 11px; '
+    'text-decoration: none;">'
+    '<img src="assets/aifa-mark.svg" alt="" width="30" height="30" '
+    'style="height: 30px; width: 30px; display: block;">'
+    '<span style="display: flex; flex-direction: column; line-height: 1;">'
+    '<span style="font-size: 19px; font-weight: 700; letter-spacing: -0.022em; '
+    'color: #151414;">AiFA</span>'
+    '<span data-brand-by="1" style="margin-top: 3px; font-size: 10.5px; font-weight: 500; '
+    'letter-spacing: 0.02em; color: #9A9A9A;">by YantrAI</span>'
+    '</span></a>'))
+
+# the tagline block carried a duplicate "AiFA"; the lockup owns the name now
+_old_tag = re.search(
+    r'<span[^>]*font-size: 15px; font-weight: 700; letter-spacing: -0\.35px[^>]*>AiFA</span>',
+    body)
+assert _old_tag, 'nav tagline AiFA'
+body = body.replace(_old_tag.group(0), '')
+
+# the dark tile at the centre of the integrations grid led with YantrAI
+_tile_logo = re.search(
+    r'<img[^>]*src="assets/yantrai_logo\.png"[^>]*brightness\(0\) invert\(1\)[^>]*>', body)
+assert _tile_logo, 'tile logo'
+body = body.replace(_tile_logo.group(0),
+                    '<img src="assets/aifa-mark-onDark.svg" alt="" width="30" height="30" '
+                    'style="height: 30px; width: 30px; display: block;">')
+
 # --------------------------------------------------------------- cleanup --
 body = re.sub(r' data-dc-tpl="\d+"', '', body)          # runtime bookkeeping
 body = re.sub(r'<template[^>]*id="__bundler_thumbnail"[^>]*>.*?</template>', '', body, flags=re.S)
