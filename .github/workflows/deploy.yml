@@ -1,0 +1,66 @@
+name: Deploy to Cloud Run
+
+# Pushes to main go straight to the service that serves yantrailabs.com.
+# Use the "Run workflow" button to deploy any other branch by hand.
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+env:
+  PROJECT_ID: gen-lang-client-0024674990
+  SERVICE: yantrai-website
+  REGION: asia-south1
+
+# One deploy at a time; a newer push supersedes one that is still queued.
+concurrency:
+  group: cloud-run-deploy
+  cancel-in-progress: false
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      id-token: write        # needed for Workload Identity Federation
+
+    steps:
+      - uses: actions/checkout@v4
+
+      # Two ways in. Set the GCP_WORKLOAD_IDENTITY_PROVIDER repo variable to use
+      # keyless auth; leave it unset and the GCP_SA_KEY secret is used instead.
+      - name: Authenticate (Workload Identity Federation)
+        if: vars.GCP_WORKLOAD_IDENTITY_PROVIDER != ''
+        uses: google-github-actions/auth@v2
+        with:
+          project_id: ${{ env.PROJECT_ID }}
+          workload_identity_provider: ${{ vars.GCP_WORKLOAD_IDENTITY_PROVIDER }}
+          service_account: ${{ vars.GCP_DEPLOY_SERVICE_ACCOUNT }}
+
+      - name: Authenticate (service-account key)
+        if: vars.GCP_WORKLOAD_IDENTITY_PROVIDER == ''
+        uses: google-github-actions/auth@v2
+        with:
+          project_id: ${{ env.PROJECT_ID }}
+          credentials_json: ${{ secrets.GCP_SA_KEY }}
+
+      - uses: google-github-actions/setup-gcloud@v2
+
+      # No --set-env-vars here on purpose: that flag replaces the service's
+      # whole environment, which would drop the SMTP settings the form needs.
+      # Deploying without it leaves the existing config untouched.
+      - name: Deploy
+        run: |
+          gcloud run deploy "$SERVICE" \
+            --source . \
+            --region "$REGION" \
+            --project "$PROJECT_ID" \
+            --platform managed \
+            --allow-unauthenticated \
+            --quiet
+
+      - name: Show the serving URL
+        run: |
+          gcloud run services describe "$SERVICE" \
+            --region "$REGION" --project "$PROJECT_ID" \
+            --format='value(status.url)'
