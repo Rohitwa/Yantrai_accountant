@@ -21,7 +21,8 @@ python3 -m venv .venv && ./.venv/bin/pip install -r requirements.txt
 ./.venv/bin/python main.py          # http://localhost:8080
 ```
 
-`GET /healthz` reports whether mail is configured.
+`GET /_status` reports whether mail is configured. (Not `/healthz` — Cloud Run
+intercepts that path.)
 
 ## Deploying
 

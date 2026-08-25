@@ -105,8 +105,10 @@ def savings_check():
     return jsonify({"ok": True})
 
 
-@app.get("/healthz")
-def healthz():
+# not /healthz — Cloud Run reserves that path and answers it before the
+# request reaches the container
+@app.get("/_status")
+def status():
     return jsonify({"ok": True, "mail": bool(os.getenv("SMTP_PASS"))})
 
 
