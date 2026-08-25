@@ -79,6 +79,11 @@ def home():
 
 @app.get("/<path:path>")
 def static_files(path):
+    # content pages are directories holding index.html — /security and
+    # /security/ both have to resolve to public/security/index.html
+    clean = path.rstrip("/")
+    if os.path.isdir(os.path.join(PUBLIC, clean)):
+        return send_from_directory(os.path.join(PUBLIC, clean), "index.html")
     return send_from_directory(PUBLIC, path)
 
 

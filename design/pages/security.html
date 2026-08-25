@@ -1,0 +1,133 @@
+<div class="wrap">
+  <div class="crumb"><a href="/">AiFA</a> · Security</div>
+  <div class="masthead">
+    <span class="eyebrow"><i></i>Security</span>
+    <h1 class="display">You're handing us vendor invoices.<br>Here is the whole stack,<br><em class="mark">bottom to top</em>.</h1>
+    <p class="lede">AiFA is built on PRISM-ES — seven layers, each with one job. It is worth reading from the bottom, because the bottom is the part most people actually want to know about.</p>
+  </div>
+</div>
+
+<section class="band">
+  <div class="wrap">
+    <p class="statement">An agent can only see and do what the signed-in user could see and do themselves.<span class="after">Access is scoped before the intelligence layer acts. The AI does not have its own permissions, its own login, or its own reach into your data. It inherits yours, and nothing more.</span></p>
+  </div>
+</section>
+
+<section class="band wash">
+  <div class="wrap wrap-wide">
+    <h2 class="sec">The seven layers</h2>
+    <p>Read bottom-up. Master data is the foundation; Engineering and Scalability span every layer above it.</p>
+
+    <div class="stack">
+      <div class="layer accent-p">
+        <div class="glyph">P</div>
+        <div>
+          <h3>Platform — the access layer</h3>
+          <p>One system reachable from every device the team uses, with the same data, approvals and permissions on every channel.</p>
+          <div class="chips"><span class="chip">iOS</span><span class="chip">Android</span><span class="chip">Windows</span><span class="chip">ChromeOS</span></div>
+        </div>
+      </div>
+
+      <div class="layer accent-r">
+        <div class="glyph">R</div>
+        <div>
+          <h3>Roles &amp; permissions</h3>
+          <p>Every user, approval and view is scoped by role before anything deeper is reached. Maker-checker is enforced here — entered, checked, approved, posted — with named-user override logging against limits and tolerances you define.</p>
+          <div class="chips"><span class="chip">OIDC / JWT</span><span class="chip">RBAC</span><span class="chip">MFA</span><span class="chip">Named-user sessions — no shared logins</span></div>
+        </div>
+      </div>
+
+      <div class="layer accent-i">
+        <div class="glyph">I</div>
+        <div>
+          <h3>Intelligence — AI in tandem with the stack</h3>
+          <p>Agents reason and act <strong>through</strong> defined tools and guardrails, never around them. Every model touchpoint is defined, guarded and reviewable: PII redaction and prompt-injection screening before anything reaches a model, retrieval scoped to your namespace, grounded answers with citations, and output filtered, validated and redacted on the way back.</p>
+          <div class="chips"><span class="chip">Input security</span><span class="chip">Per-customer vector namespace</span><span class="chip">Output guardrails</span><span class="chip">Citations</span></div>
+        </div>
+      </div>
+
+      <div class="layer accent-s">
+        <div class="glyph">S</div>
+        <div>
+          <h3>Shield — the privacy layer</h3>
+          <p>Row-level security isolates each customer's books, giving you a private cloud within the platform. Enforced in the database, not just in application code, so an application-layer mistake fails closed. What the system learns from your data stays in your deployment — it is never used to train shared models.</p>
+          <div class="chips"><span class="chip">Row-level security</span><span class="chip">Encrypted in transit &amp; at rest</span><span class="chip">Never trains shared models</span></div>
+        </div>
+      </div>
+
+      <div class="layer accent-m">
+        <div class="glyph">M</div>
+        <div>
+          <h3>Master data — the system of record</h3>
+          <p>SQL, object storage and the vector database sit at the bottom. <strong>Your ERP holds the authoritative books.</strong> AiFA reads from it and posts back to it; it does not become the place your accounts live.</p>
+          <div class="chips"><span class="chip">SQL</span><span class="chip">Object storage</span><span class="chip">Vector DB</span><span class="chip">Your ERP stays authoritative</span></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="cards">
+      <div>
+        <h3>E · Engineering</h3>
+        <p>A modern, proven stack end to end — HTML on the front end, Node.js and C# across back-end services, .NET and Python behind the frameworks and algorithms, and Windows agent apps running beside on-premise systems.</p>
+      </div>
+      <div>
+        <h3>S · Scalability</h3>
+        <p>Multi-entity and multi-site from day one, integrating with the ERPs and CRMs already in place rather than requiring a move onto one platform.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="band">
+  <div class="wrap">
+    <h2 class="sec">The four questions we actually get asked</h2>
+
+    <div class="flow">
+      <div class="step">
+        <div class="n">01</div>
+        <div>
+          <h3>Where does the data sit?</h3>
+          <p>In your deployment, isolated at the row level in the database. Encrypted in transit over TLS and encrypted at rest. Your ERP remains the authoritative record throughout.</p>
+        </div>
+      </div>
+      <div class="step">
+        <div class="n">02</div>
+        <div>
+          <h3>Who can see it?</h3>
+          <p>Only your authenticated users, each in a named session scoped by role. No shared logins. Agents inherit the signed-in user's scope and cannot exceed it.</p>
+        </div>
+      </div>
+      <div class="step">
+        <div class="n">03</div>
+        <div>
+          <h3>What is retained?</h3>
+          <p>What you post and what the agents write, with an immutable audit trail against it — what was checked, what was found, who released it. Exportable or deletable on request.</p>
+        </div>
+      </div>
+      <div class="step">
+        <div class="n">04</div>
+        <div>
+          <h3>Does any of it train a model?</h3>
+          <p>No. Nothing from your deployment is used to train shared models. Names, account numbers and identifiers are redacted before any model call, and nothing is retained by the model once the answer returns.</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="callout">
+      <span class="label">Why the ordering matters</span>
+      <p>Most questions about AI and finance data are really questions about reach — what can this thing get to, and who decided that. Putting roles and permissions <strong>above</strong> intelligence in the stack is the answer: the scope is resolved before an agent runs, by the same access control that governs a person.</p>
+    </div>
+  </div>
+</section>
+
+<section class="next">
+  <div class="wrap">
+    <h2>Start with an export. No connector, no access to your systems.</h2>
+    <p>The savings check runs on a file your team already produces. Nothing needs to be connected to find out whether this is worth a longer conversation.</p>
+    <a class="btn" href="/#book"><span class="rupee">₹</span>Check your savings<span>→</span></a>
+    <div class="inline-links">
+      <a href="/what-it-found">What the checks find →</a>
+      <a href="/agents">The AI team →</a>
+    </div>
+  </div>
+</section>

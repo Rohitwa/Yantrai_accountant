@@ -1,0 +1,242 @@
+/* ------------------------------------------------------------------------
+   Content pages. The homepage is a design-canvas artboard with everything
+   inline; these are hand-written, so they need the type system stated once.
+   Same palette, same fonts, same rhythm.
+   ---------------------------------------------------------------------- */
+
+:root {
+  --ink: #151414;
+  --body: #5A5A5A;
+  --mute: #767676;
+  --line: #E6EAE4;
+  --line-2: #DCE0DA;
+  --wash: #F5F7F3;
+  --wash-2: #F7F8F6;
+  --mint: #B2EEDC;
+  --mint-edge: #5ADEB7;
+  --sand: #F9EBA6;
+  --sand-edge: #EADC8F;
+  --rose: #F2A9A9;
+  --rose-edge: #E69393;
+  --iris: #B5C4F5;
+  --iris-edge: #98A5EF;
+  --serif: Newsreader, Georgia, 'Times New Roman', serif;
+  --sans: Archivo, system-ui, -apple-system, 'Segoe UI', sans-serif;
+  --mono: ui-monospace, 'SF Mono', Menlo, Consolas, monospace;
+}
+
+body.page {
+  margin: 0;
+  background: #FFFFFF;
+  color: var(--ink);
+  font-family: var(--sans);
+  letter-spacing: -0.03em;
+}
+
+.wrap { width: 100%; max-width: 1000px; margin: 0 auto; padding: 0 56px; box-sizing: border-box; }
+.wrap-wide { max-width: 1240px; }
+
+/* --- masthead --- */
+
+.masthead { padding: 96px 0 0; }
+.eyebrow {
+  display: inline-flex; align-items: center; gap: 10px;
+  font-size: 12.5px; font-weight: 600; letter-spacing: 0.12em;
+  text-transform: uppercase; color: var(--body);
+}
+.eyebrow i { width: 7px; height: 7px; display: block; font-style: normal; background: var(--mint-edge); }
+.eyebrow.rose i { background: var(--rose-edge); }
+.eyebrow.iris i { background: var(--iris-edge); }
+.eyebrow.sand i { background: var(--sand-edge); }
+
+h1.display {
+  margin: 30px 0 0;
+  font-family: var(--serif); font-weight: 300;
+  font-size: 54px; line-height: 1.06; letter-spacing: -0.03em;
+  text-wrap: balance;
+}
+.lede {
+  margin: 28px 0 0; max-width: 660px;
+  font-size: 18px; font-weight: 500; line-height: 1.6;
+  letter-spacing: -0.54px; color: var(--body); text-wrap: pretty;
+}
+em.mark {
+  font-style: italic;
+  background: linear-gradient(180deg, transparent 82%, var(--mint) 82%, var(--mint) 96%, transparent 96%);
+}
+em.mark.rose { background: linear-gradient(180deg, transparent 82%, var(--rose) 82%, var(--rose) 96%, transparent 96%); }
+
+/* --- sections --- */
+
+section.band { padding: 88px 0; border-top: 1px solid var(--line); }
+section.band.wash { background: var(--wash-2); }
+section.band:first-of-type { border-top: 0; }
+
+h2.sec {
+  margin: 0 0 8px;
+  font-family: var(--serif); font-weight: 300;
+  font-size: 36px; line-height: 1.1; letter-spacing: -0.03em; text-wrap: balance;
+}
+h3.sub {
+  margin: 0 0 6px;
+  font-size: 17px; font-weight: 600; letter-spacing: -0.51px;
+}
+p { margin: 18px 0 0; font-size: 16.5px; font-weight: 500; line-height: 1.62; letter-spacing: -0.5px; color: var(--body); text-wrap: pretty; max-width: 680px; }
+p.tight { margin-top: 10px; }
+p strong { color: var(--ink); font-weight: 600; }
+
+/* --- the statement: one absolute claim, set large --- */
+
+.statement {
+  margin: 0; padding: 40px 44px;
+  border-left: 3px solid var(--ink); background: var(--wash);
+  font-family: var(--serif); font-weight: 300;
+  font-size: 34px; line-height: 1.2; letter-spacing: -0.03em; color: var(--ink);
+  max-width: none; text-wrap: balance;
+}
+.statement .after {
+  display: block; margin-top: 18px;
+  font-family: var(--sans); font-size: 16px; font-weight: 500;
+  line-height: 1.6; letter-spacing: -0.48px; color: var(--body);
+}
+
+/* --- tables --- */
+
+.tablewrap { overflow-x: auto; margin-top: 34px; }
+table.grid { width: 100%; border-collapse: collapse; font-size: 15px; min-width: 620px; }
+table.grid th {
+  text-align: left; padding: 14px 16px;
+  border-bottom: 1px solid var(--line-2);
+  font-size: 11.5px; font-weight: 600; letter-spacing: 0.14em;
+  text-transform: uppercase; color: var(--mute); white-space: nowrap;
+}
+table.grid td {
+  padding: 16px; border-bottom: 1px solid var(--line);
+  font-weight: 500; letter-spacing: -0.3px; color: var(--body); vertical-align: top;
+}
+table.grid td:first-child { color: var(--ink); font-weight: 600; }
+table.grid td.num, table.grid th.num { text-align: right; font-variant-numeric: tabular-nums; white-space: nowrap; }
+table.grid tr.total td { border-bottom: 0; border-top: 1.5px solid var(--ink); color: var(--ink); font-weight: 600; padding-top: 18px; }
+table.grid a { color: var(--ink); text-decoration: underline; text-underline-offset: 3px; text-decoration-color: var(--line-2); }
+table.grid a:hover { text-decoration-color: var(--ink); }
+
+/* --- checklists --- */
+
+ul.checks { margin: 26px 0 0; padding: 0; list-style: none; display: flex; flex-direction: column; gap: 13px; max-width: 680px; }
+ul.checks li { position: relative; padding-left: 26px; font-size: 15.5px; font-weight: 500; line-height: 1.5; letter-spacing: -0.31px; color: var(--body); text-wrap: pretty; }
+ul.checks li::before { content: ''; position: absolute; left: 0; top: 6px; width: 12px; height: 12px; border-radius: 9999px; background: var(--mint); }
+ul.checks.sand li::before { background: var(--sand); }
+ul.checks li strong { color: var(--ink); font-weight: 600; }
+
+ul.mono { margin: 22px 0 0; padding: 0; list-style: none; display: flex; flex-direction: column; gap: 11px; max-width: 680px; }
+ul.mono li { position: relative; padding-left: 24px; font-family: var(--mono); font-size: 12.5px; line-height: 1.5; letter-spacing: -0.2px; color: var(--body); text-wrap: pretty; }
+ul.mono li::before { content: ''; position: absolute; left: 0; top: 5px; width: 11px; height: 11px; border-radius: 9999px; background: var(--mint); }
+
+/* --- cards --- */
+
+.cards { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 1px; margin-top: 34px; background: var(--line); border: 1px solid var(--line); }
+.cards > div { background: #FFFFFF; padding: 26px 24px; }
+.cards h3 { margin: 0; font-size: 15.5px; font-weight: 600; letter-spacing: -0.47px; color: var(--ink); }
+.cards p { margin: 9px 0 0; font-size: 14.5px; line-height: 1.5; letter-spacing: -0.29px; }
+
+/* --- callout --- */
+
+.callout { margin-top: 34px; border: 1px solid var(--line); border-left: 3px solid var(--mint-edge); border-radius: 0 12px 12px 0; padding: 26px 28px; background: #FFFFFF; }
+.callout p { margin: 0; max-width: none; }
+.callout p + p { margin-top: 12px; }
+.callout .label { display: block; font-size: 11.5px; font-weight: 600; letter-spacing: 0.14em; text-transform: uppercase; color: var(--mute); margin-bottom: 10px; }
+
+/* --- stack diagram (PRISM-ES) --- */
+
+.stack { display: flex; flex-direction: column; gap: 10px; margin-top: 34px; }
+.layer { display: grid; grid-template-columns: 56px 1fr; gap: 20px; align-items: start; border: 1px solid var(--line); border-radius: 12px; padding: 22px 24px; background: #FFFFFF; }
+.layer .glyph { font-family: var(--serif); font-size: 30px; line-height: 1; font-weight: 300; color: var(--ink); }
+.layer h3 { margin: 0 0 4px; font-size: 16px; font-weight: 600; letter-spacing: -0.48px; }
+.layer p { margin: 0; font-size: 14.5px; line-height: 1.55; letter-spacing: -0.29px; }
+.layer .chips { display: flex; flex-wrap: wrap; gap: 7px; margin-top: 12px; }
+.chip { display: inline-flex; align-items: center; background: var(--wash); border: 1px solid var(--line); border-radius: 9999px; padding: 5px 12px; font-size: 12px; font-weight: 600; letter-spacing: -0.24px; color: var(--body); }
+.layer.accent-m { border-left: 3px solid var(--iris-edge); }
+.layer.accent-s { border-left: 3px solid var(--mint-edge); }
+.layer.accent-i { border-left: 3px solid var(--sand-edge); }
+.layer.accent-r { border-left: 3px solid var(--rose-edge); }
+.layer.accent-p { border-left: 3px solid var(--ink); }
+
+/* --- flow --- */
+
+.flow { display: flex; flex-direction: column; gap: 0; margin-top: 30px; max-width: 720px; }
+.flow .step { display: grid; grid-template-columns: 34px 1fr; gap: 18px; padding: 18px 0; border-bottom: 1px solid var(--line); }
+.flow .step:last-child { border-bottom: 0; }
+.flow .n { font-family: var(--mono); font-size: 12px; color: var(--mute); padding-top: 3px; }
+.flow h3 { margin: 0 0 4px; font-size: 15.5px; font-weight: 600; letter-spacing: -0.47px; }
+.flow p { margin: 0; font-size: 14.5px; line-height: 1.55; letter-spacing: -0.29px; }
+
+/* --- calculator --- */
+
+.calc { margin-top: 34px; border: 1px solid var(--line); border-radius: 16px; padding: 28px; background: #FFFFFF; box-shadow: 0 18px 46px rgba(21,20,20,0.06); max-width: 620px; }
+.calc label { display: block; font-size: 13px; font-weight: 600; letter-spacing: -0.26px; margin-bottom: 8px; }
+.calc .row { display: flex; align-items: center; gap: 12px; flex-wrap: wrap; }
+.calc input { font-family: inherit; font-size: 17px; font-weight: 600; letter-spacing: -0.34px; color: var(--ink); border: 1px solid var(--line-2); border-radius: 10px; padding: 12px 14px; width: 200px; }
+.calc input:focus { outline: none; border-color: var(--ink); box-shadow: 0 0 0 3px rgba(178,238,220,0.55); }
+.calc .out { font-family: var(--serif); font-weight: 300; font-size: 42px; line-height: 1; letter-spacing: -1.26px; font-variant-numeric: tabular-nums; }
+.calc .note { margin: 14px 0 0; font-size: 13px; letter-spacing: -0.26px; color: var(--mute); }
+
+/* --- next / CTA --- */
+
+.next { border-top: 1px solid var(--line); padding: 72px 0 96px; }
+.next h2 { margin: 0; font-family: var(--serif); font-weight: 300; font-size: 34px; line-height: 1.1; letter-spacing: -0.03em; text-wrap: balance; }
+.btn { display: inline-flex; align-items: center; gap: 11px; margin-top: 26px; background: var(--ink); color: #FFFFFF; border-radius: 10px; padding: 17px 24px; font-size: 15px; font-weight: 600; letter-spacing: -0.45px; text-decoration: none; }
+.btn:hover { background: #272C2B; color: #FFFFFF; }
+.btn .rupee { display: inline-flex; align-items: center; justify-content: center; width: 22px; height: 22px; border-radius: 9999px; background: var(--sand); color: var(--ink); font-size: 13px; font-weight: 700; line-height: 1; }
+
+.crumb { padding: 26px 0 0; font-size: 13.5px; font-weight: 500; letter-spacing: -0.27px; color: var(--mute); }
+.crumb a { color: var(--mute); text-decoration: none; }
+.crumb a:hover { color: var(--ink); }
+
+.inline-links { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 28px; }
+.inline-links a { display: inline-flex; align-items: center; gap: 8px; border: 1px solid var(--line-2); border-radius: 9999px; padding: 9px 16px; font-size: 13.5px; font-weight: 600; letter-spacing: -0.27px; color: var(--ink); text-decoration: none; }
+.inline-links a:hover { background: var(--wash); color: var(--ink); }
+
+@media (max-width: 1020px) {
+  h1.display { font-size: 42px; }
+  h2.sec { font-size: 30px; }
+  .statement { font-size: 28px; padding: 32px 32px; }
+}
+@media (max-width: 760px) {
+  .wrap { padding: 0 20px; }
+  .masthead { padding: 56px 0 0; }
+  h1.display { font-size: 32px; }
+  .lede { font-size: 16.5px; }
+  h2.sec { font-size: 26px; }
+  section.band { padding: 60px 0; }
+  .statement { font-size: 23px; padding: 24px 22px; }
+  .statement .after { font-size: 15px; }
+  .layer { grid-template-columns: 40px 1fr; gap: 14px; padding: 18px; }
+  .layer .glyph { font-size: 24px; }
+  .calc input { width: 100%; }
+  .next { padding: 52px 0 72px; }
+  .btn { width: 100%; justify-content: center; box-sizing: border-box; }
+}
+
+/* The ₹30 Cr table: on a phone the numbers matter more than the prose, so the
+   "why" column collapses under the leak name rather than scrolling out of view. */
+.why-m { display: none; }
+@media (max-width: 760px) {
+  table.grid { min-width: 0; font-size: 14px; }
+  table.grid .col-why { display: none; }
+  table.grid td, table.grid th { padding: 12px 10px; }
+  table.grid td:first-child { padding-left: 0; }
+  .why-m {
+    display: block; margin-top: 7px;
+    font-size: 13px; font-weight: 500; line-height: 1.45;
+    letter-spacing: -0.26px; color: var(--body);
+  }
+}
+.agent-m { display: none; }
+@media (max-width: 760px) {
+  table.grid .col-agent { display: none; }
+  .agent-m {
+    display: inline-block; margin-top: 9px;
+    font-size: 12.5px; font-weight: 600; letter-spacing: -0.25px;
+  }
+  .agent-m a { color: var(--ink); text-decoration: underline; text-underline-offset: 3px; }
+}

@@ -1,0 +1,94 @@
+[
+  {
+    "slug": "invoice-entry",
+    "name": "Invoice entry",
+    "accent": "rose",
+    "task": "Vendor invoice",
+    "stamp": "Entered clean",
+    "headline": "Every control, at the moment the invoice arrives.",
+    "lede": "Eight agents open the same invoice at once. Money-out, tax, receipt and authority checks all run before the entry stands — not in a batch at the close, when the money has already moved.",
+    "today": [
+      "The invoice lands in a shared mailbox, a portal, or someone's hand.",
+      "Someone keys it. Someone else approves a total they cannot check against a contract they have not read.",
+      "A sample gets audited weeks later. The rest was approved on trust.",
+      "What leaked surfaces at the close, on a spreadsheet, after payment."
+    ],
+    "withteam": [
+      "The document is read on arrival, whichever channel it came through.",
+      "Eight checks run in parallel on the same invoice, each against its own source of truth.",
+      "Anything clean posts. Anything that fails stops with a named reason and the evidence attached.",
+      "Nothing waits for the close, because nothing was deferred to it."
+    ],
+    "agents": [
+      ["duplicate-agent", "No earlier copy of this invoice"],
+      ["pricing-agent", "Price matches the contract and the PO"],
+      ["3-way-match-agent", "PO, GRN and invoice agree"],
+      ["gst-agent", "Vendor has filed before credit is claimed"],
+      ["tds-agent", "Right section, right rate"],
+      ["pan-agent", "Vendor PAN active and linked"],
+      ["msme-agent", "Small-vendor clock started"],
+      ["doa-agent", "Inside the approval limit"]
+    ],
+    "lands": "A vendor invoice entered against its PO and GRN, taxed correctly, authorised inside the delegation, with every check that ran recorded against it."
+  },
+  {
+    "slug": "sync-to-erp",
+    "name": "Sync to ERP",
+    "accent": "iris",
+    "task": "Journal entry",
+    "stamp": "Book clean",
+    "headline": "Posted compliant, so the book never needs a cleanup pass.",
+    "lede": "Entries reach your ERP already balanced, already supported, already in the right period. The ERP stays the system of record — AiFA posts into it rather than beside it.",
+    "today": [
+      "Entries are keyed, then corrected, then re-corrected during the close.",
+      "The sub-ledger and the control account disagree, and someone reconciles them by hand.",
+      "Intercompany entries are posted by one side and chased with the other.",
+      "The period closes late because the cleanup is the close."
+    ],
+    "withteam": [
+      "Every entry is balanced and carries its support before it is written.",
+      "The sub-ledger agrees to the control account daily, not monthly.",
+      "Both sides of an intercompany entry are agreed before either posts.",
+      "The books are reportable on the day the period ends."
+    ],
+    "agents": [
+      ["journal-agent", "Entry balanced, support attached"],
+      ["reconciliation-agent", "Sub-ledger agrees to the control account"],
+      ["intercompany-agent", "Counterparty entity agreed"],
+      ["period-agent", "Posted in the open period"],
+      ["audit-agent", "Immutable trail written"],
+      ["report-agent", "Books ready to report, no cleanup pass"]
+    ],
+    "lands": "A balanced journal in the open period, in your ERP, with its support attached and an audit trail that can be re-read months later."
+  },
+  {
+    "slug": "payment-processing",
+    "name": "Payment processing",
+    "accent": "mint",
+    "task": "Payment run",
+    "stamp": "Released",
+    "headline": "The run is built from approved entries only — and checked again before it leaves.",
+    "lede": "The last checkpoint before money is irreversible. Everything in the run passed entry, and the things that can change between approval and payment are tested one more time.",
+    "today": [
+      "The run is assembled from a list, under time pressure, on payment day.",
+      "A beneficiary account changed since approval and nobody re-checked it.",
+      "A discount that was available expired while the file was being prepared.",
+      "An MSME vendor crosses day 45 and the interest is discovered later."
+    ],
+    "withteam": [
+      "Only entries that passed every check are eligible for the run.",
+      "Bank details are re-verified against what was approved, not what is current in the master.",
+      "Discounts still open are captured; ones being let go are recorded as a decision.",
+      "Statutory clocks are respected as scheduling constraints, not reported as breaches."
+    ],
+    "agents": [
+      ["payments-agent", "Run built from approved entries only"],
+      ["bank-agent", "Beneficiary account unchanged"],
+      ["duplicate-agent", "No second payment against the same invoice"],
+      ["doa-agent", "Released by two signatories"],
+      ["discount-agent", "Early-payment discount captured"],
+      ["msme-agent", "Paid inside the statutory window"]
+    ],
+    "lands": "A payment file containing only entries that cleared every check, released under the delegation, with each payment traceable to the invoice and the checks behind it."
+  }
+]

@@ -459,21 +459,29 @@
 
   // Everything the artboard left as href="#" that has an obvious on-page home.
   var ROUTES = {
-    'how aifa works': '#how', 'what it found': '#proof', 'implementation': '#integration',
-    'support': '#book', 'contact': '#book',
-    'security': '#integration',
-    'view all agents': '#agents', 'anything with an export': '#integration',
-    'invoice entry': '#agents', 'sync to erp': '#agents', 'payment processing': '#agents',
-    'daily close': '#agents', 'multi-entity groups': '#agents', 'multi-currency': '#agents',
-    'duplicate': '#agents', 'pricing': '#agents', '3-way match': '#agents',
-    'payments': '#agents', 'discount': '#agents', 'gst': '#agents', 'tds': '#agents',
-    'msme': '#agents',
-    'sap': '#integration', 'oracle': '#integration', 'oracle netsuite': '#integration',
-    'tally': '#integration', 'zoho books': '#integration', 'quickbooks': '#integration',
-    'sage': '#integration', 'odoo': '#integration',
-    'cfo': '#book', 'controller': '#book', 'head of finance': '#book',
-    'ap lead': '#book', 'group treasurer': '#book', 'internal audit': '#book'
+    // real pages
+    'duplicate': '/agents/duplicate-agent', 'pricing': '/agents/pricing-agent',
+    '3-way match': '/agents/3-way-match-agent', 'gst': '/agents/gst-agent',
+    'tds': '/agents/tds-agent', 'discount': '/agents/discount-agent',
+    'view all agents': '/agents',
+    'invoice entry': '/workflows/invoice-entry', 'sync to erp': '/workflows/sync-to-erp',
+    'payment processing': '/workflows/payment-processing',
+    'what it found': '/what-it-found', 'security': '/security',
+    // still on-page anchors
+    'how aifa works': '/#how', 'implementation': '/#integration',
+    'support': '/#book', 'contact': '/#book',
+    'anything with an export': '/#integration',
+    'payments': '/agents', 'msme': '/agents',
+    'daily close': '/workflows/sync-to-erp',
+    'multi-entity groups': '/workflows/sync-to-erp',
+    'multi-currency': '/workflows/sync-to-erp',
+    'sap': '/#integration', 'oracle': '/#integration', 'oracle netsuite': '/#integration',
+    'tally': '/#integration', 'zoho books': '/#integration', 'quickbooks': '/#integration',
+    'sage': '/#integration', 'odoo': '/#integration',
+    'cfo': '/#book', 'controller': '/#book', 'head of finance': '/#book',
+    'ap lead': '/#book', 'group treasurer': '/#book', 'internal audit': '/#book'
   };
+
 
   $$('a[data-placeholder-link]').forEach(function (a) {
     var key = a.textContent.trim().toLowerCase()
