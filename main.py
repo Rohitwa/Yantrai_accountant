@@ -52,6 +52,13 @@ def _send_mail(subject, body, reply_to=""):
     sender = os.getenv("DEMO_FROM_EMAIL") or user
 
     if not host or not user or not password or not sender:
+        missing = [
+            n for n, v in (
+                ("SMTP_HOST", host), ("SMTP_USER", user),
+                ("SMTP_PASS", password), ("DEMO_FROM_EMAIL/SMTP_USER", sender),
+            ) if not v
+        ]
+        app.logger.error("Mail not configured; unset: %s", ", ".join(missing))
         return False, "Email service not configured", 500
 
     msg = EmailMessage()
@@ -67,6 +74,13 @@ def _send_mail(subject, body, reply_to=""):
             smtp.login(user, password)
             smtp.send_message(msg)
     except Exception:
+        # The visitor only ever sees "that did not go through", which is right —
+        # but without this the reason (rejected app password, blocked port, TLS
+        # failure) is discarded too, and the failure cannot be diagnosed from
+        # the logs at all. Never log `password`.
+        app.logger.exception(
+            "SMTP send failed: host=%s port=%s user=%s to=%s", host, port, user, recipient
+        )
         return False, "Failed to send email", 502
 
     return True, "", 200
