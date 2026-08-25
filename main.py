@@ -7,13 +7,35 @@ import os
 import smtplib
 from email.message import EmailMessage
 
-from flask import Flask, jsonify, request, send_from_directory
+from flask import Flask, jsonify, redirect, request, send_from_directory
 
 # static_folder is off on purpose — Flask's built-in static route would be
 # registered ahead of ours and serve the repo root, source files included.
 app = Flask(__name__, static_folder=None)
 
 PUBLIC = os.path.join(os.path.dirname(os.path.abspath(__file__)), "public")
+
+# The page declares yantrailabs.com canonical — <link rel="canonical">, og:url,
+# the sitemap and robots.txt all name it. Both hostnames are mapped to this
+# service, so without this the same site answers on two of them and they
+# compete as duplicates. www is sent to the apex instead.
+#
+# Navigations only. A form POST redirected across hostnames is a cross-origin
+# request the browser would block, and www is a perfectly good origin to answer
+# the API on — only the page the user lands on needs to settle on one host.
+CANONICAL_HOST = "yantrailabs.com"
+
+
+@app.before_request
+def redirect_to_canonical_host():
+    if request.method not in ("GET", "HEAD"):
+        return None
+    if request.host.split(":")[0].lower() != "www." + CANONICAL_HOST:
+        return None
+    # full_path always appends "?"; drop it when there was no query string.
+    return redirect(
+        "https://" + CANONICAL_HOST + request.full_path.rstrip("?"), code=301
+    )
 
 
 def _clean(value, max_len=1000):
