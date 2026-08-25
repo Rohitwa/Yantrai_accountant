@@ -1,0 +1,5 @@
+# Only the entrypoint is read here — the Python buildpack uses it when Cloud Run
+# builds from source. Handlers and env_variables would be App Engine settings and
+# are ignored; environment variables are set on the Cloud Run service itself.
+runtime: python314
+entrypoint: gunicorn -b :$PORT main:app

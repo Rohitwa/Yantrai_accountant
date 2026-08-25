@@ -1,0 +1,110 @@
+<section id="book" data-book="1">
+  <div data-book-inner="1">
+
+    <div data-book-intro="1">
+      <span data-eyebrow="1"><span></span>The savings check</span>
+      <h2>Tell us where the money goes.<br>We'll show you what's <span data-em="1">recoverable</span>.</h2>
+      <p>Ninety days of your highest-spend vendor invoices, run through the agents. You get the findings with evidence attached — duplicates, overcharges, credits not claimed, clocks about to breach.</p>
+      <ul data-book-points="1">
+        <li>No connector and no project to start — an export your team already produces is enough.</li>
+        <li>Your data stays yours. Nothing is used to train anything.</li>
+        <li>You see the findings before you decide anything.</li>
+      </ul>
+    </div>
+
+    <div data-book-teaser="1">
+      <span data-teaser-kicker="1">One export. No connector. About a minute.</span>
+      <p data-teaser-body="1">We come back within one working day with the findings — duplicates, overcharges, credits not claimed, clocks about to breach — each with the invoice attached.</p>
+      <button type="button" data-book-open="1" aria-expanded="false" aria-controls="savings-form">
+        <span data-rupee="1">&#8377;</span><span>Check your savings</span><span data-arrow="1">&#8594;</span>
+      </button>
+    </div>
+
+    <form id="savings-form" data-book-form="1" novalidate hidden>
+      <div data-field="1">
+        <label for="f-name">Name</label>
+        <input id="f-name" name="name" type="text" autocomplete="name" required>
+      </div>
+
+      <div data-field="1">
+        <label for="f-email">Work email</label>
+        <input id="f-email" name="email" type="email" autocomplete="email" inputmode="email" required>
+      </div>
+
+      <div data-field="1">
+        <label for="f-company">Company</label>
+        <input id="f-company" name="company" type="text" autocomplete="organization" required>
+      </div>
+
+      <div data-field-row="1">
+        <div data-field="1">
+          <label for="f-role">Your role</label>
+          <select id="f-role" name="role">
+            <option value="">Select</option>
+            <option>CFO</option>
+            <option>Controller</option>
+            <option>Head of Finance</option>
+            <option>AP Lead</option>
+            <option>Group Treasurer</option>
+            <option>Internal Audit</option>
+            <option>Other</option>
+          </select>
+        </div>
+        <div data-field="1">
+          <label for="f-erp">ERP</label>
+          <select id="f-erp" name="erp">
+            <option value="">Select</option>
+            <option>SAP</option>
+            <option>Oracle</option>
+            <option>Oracle NetSuite</option>
+            <option>Tally</option>
+            <option>Zoho Books</option>
+            <option>QuickBooks</option>
+            <option>Sage</option>
+            <option>Odoo</option>
+            <option>More than one</option>
+            <option>Something else</option>
+          </select>
+        </div>
+      </div>
+
+      <div data-field="1">
+        <label for="f-outflow">Annual outflow</label>
+        <select id="f-outflow" name="outflow">
+          <option value="">Select</option>
+          <option>Under &#8377;100 crore</option>
+          <option>&#8377;100&#8211;500 crore</option>
+          <option>&#8377;500&#8211;1,000 crore</option>
+          <option>&#8377;1,000&#8211;5,000 crore</option>
+          <option>Over &#8377;5,000 crore</option>
+        </select>
+      </div>
+
+      <div data-field="1">
+        <label for="f-note">Anything specific you want checked <span data-optional="1">optional</span></label>
+        <textarea id="f-note" name="note" rows="3"></textarea>
+      </div>
+
+      <!-- spam trap: hidden from people, tempting to bots -->
+      <div data-honeypot="1" aria-hidden="true">
+        <label for="f-website">Website</label>
+        <input id="f-website" name="website" type="text" tabindex="-1" autocomplete="off">
+      </div>
+
+      <button type="submit" data-book-submit="1">
+        <span data-rupee="1">&#8377;</span><span data-submit-label="1">Check your savings</span><span data-arrow="1">&#8594;</span>
+      </button>
+
+      <p data-book-note="1">We reply within one working day. No newsletter, no sequence.</p>
+      <p data-book-error="1" role="alert" hidden></p>
+    </form>
+
+    <div data-book-done="1" hidden>
+      <span data-done-mark="1">&#10003;</span>
+      <h3>Got it.</h3>
+      <p data-done-body="1">We'll come back within one working day with what we need for the 90-day check — usually a single export.</p>
+      <p data-done-alt="1">Sooner? <a href="mailto:rohit@yantrailabs.com">rohit@yantrailabs.com</a></p>
+    </div>
+
+  </div>
+</section>

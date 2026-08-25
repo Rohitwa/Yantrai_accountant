@@ -1,0 +1,43 @@
+<!doctype html><meta charset="utf-8"><title>shot</title>
+<style>html,body{margin:0;padding:0;overflow:hidden}iframe{border:0;display:block}</style>
+<iframe id="f"></iframe>
+<script>
+/* Dev-only screenshot harness. Headless Chrome's --screenshot captures the
+   compositor at document scroll 0, so the page under test is hosted in an
+   iframe that scrolls internally while the outer document stays put. */
+var p = new URLSearchParams(location.search);
+var w = +p.get('w') || 1440, h = +p.get('h') || 900, y = +p.get('y') || 0;
+var frac = p.get('frac'), sec = p.get('sec');
+var f = document.getElementById('f');
+f.width = w; f.height = h;
+f.src = p.get('u') || 'index.html';
+f.onload = function () {
+  var win = f.contentWindow, doc = f.contentDocument;
+  doc.documentElement.style.scrollBehavior = 'auto';
+  function place() {
+    var top = y;
+    if (sec) {
+      var el = doc.getElementById(sec); if (!el) return;
+      var r = el.getBoundingClientRect();
+      top = win.scrollY + r.top + Math.max(0, r.height - h) * (frac ? parseFloat(frac) : 0);
+    }
+    win.scrollTo(0, top);
+  }
+  [50, 150, 300, 500].forEach(function (t) { setTimeout(place, t); });
+  if (p.get('measure')) setTimeout(function () {
+    var ai = doc.querySelector('[data-agents-inner]'), pi = doc.querySelector('[data-proof-inner]');
+    var box = function (el) { var r = el.getBoundingClientRect(); return { h: Math.round(r.height), t: Math.round(r.top) }; };
+    fetch('/_capture?measure.json', { method: 'POST', body: JSON.stringify({
+      vw: win.innerWidth, vh: win.innerHeight,
+      y: win.scrollY,
+      adherence: doc.querySelector('[data-adherence]').textContent,
+      taskRef: doc.querySelector('[data-task-ref]').textContent,
+      activeStage: [].slice.call(doc.querySelectorAll('[data-stage]')).map(function (e) { return e.style.background; }),
+      agentsInner: box(ai),
+      agentsKids: [].slice.call(ai.children).map(box),
+      proofInner: box(pi),
+      proofKids: [].slice.call(pi.children).map(box)
+    }, null, 1) });
+  }, 3000);
+};
+</script>

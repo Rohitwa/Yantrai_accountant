@@ -1,0 +1,532 @@
+/* ------------------------------------------------------------------------
+   AiFA landing page — production stylesheet.
+   Layer 1 replaces values the design canvas computed in JS with real CSS.
+   Layer 2 adds the small-screen layout the canvas artboard never had.
+   ---------------------------------------------------------------------- */
+
+html { scroll-behavior: smooth; -webkit-text-size-adjust: 100%; }
+@media (prefers-reduced-motion: reduce) { html { scroll-behavior: auto; } }
+body { margin: 0; background: #FFFFFF; overflow-x: hidden; }
+img, video { max-width: 100%; }
+/* [data-book-done] and [data-book-error] set display in CSS, which would
+   otherwise beat the hidden attribute */
+[hidden] { display: none !important; }
+
+:focus-visible { outline: 2px solid #151414; outline-offset: 3px; border-radius: 4px; }
+
+.visually-hidden {
+  position: absolute; width: 1px; height: 1px; margin: -1px;
+  padding: 0; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; border: 0;
+}
+
+/* --- Layer 1: was JS (renderVals) --------------------------------------- */
+
+[data-hero-col] { max-width: 460px !important; }
+[data-hero-h1]  { font-size: 40px !important; }
+
+@media (min-width: 1060px) {
+  [data-hero-col] { max-width: 600px !important; }
+  [data-hero-h1]  { font-size: 50px !important; }
+}
+@media (min-width: 1280px) {
+  [data-hero-col] { max-width: 760px !important; }
+  [data-hero-h1]  { font-size: 60px !important; }
+}
+
+/* --- Layer 2: small screens --------------------------------------------- */
+
+/* Nav: below 1020px the design hides the link row. Give it a disclosure. */
+[data-nav-toggle] { display: none; }
+
+@media (max-width: 1020px) {
+  [data-nav] { padding: 14px 20px !important; gap: 12px !important; }
+  [data-nav-toggle] {
+    display: inline-flex; align-items: center; justify-content: center;
+    width: 40px; height: 40px; padding: 0;
+    background: #FFFFFF; border: 1px solid #E6EAE4; border-radius: 10px;
+    cursor: pointer; color: #151414;
+  }
+  [data-nav-toggle] span {
+    position: relative; display: block; width: 16px; height: 1.5px; background: currentColor;
+  }
+  [data-nav-toggle] span::before,
+  [data-nav-toggle] span::after {
+    content: ''; position: absolute; left: 0; width: 16px; height: 1.5px; background: currentColor;
+  }
+  [data-nav-toggle] span::before { top: -5px; }
+  [data-nav-toggle] span::after  { top: 5px; }
+
+  [data-nav-links] {
+    display: none !important;
+    position: absolute; left: 0; right: 0; top: 100%;
+    flex-direction: column; align-items: flex-start; gap: 0 !important;
+    background: #FFFFFF; border-bottom: 1px solid #E6EAE4;
+    padding: 6px 20px 14px;
+  }
+  html.nav-open [data-nav-links] { display: flex !important; }
+  [data-nav-links] a { width: 100%; padding: 12px 0; border-top: 1px solid #F1F3EF; }
+}
+
+@media (max-width: 760px) {
+  [data-nav] { padding: 12px 16px !important; }
+  [data-nav-cta] { gap: 14px !important; }
+
+  /* Hero */
+  [data-hero] { padding: 56px 20px 36px !important; min-height: 0 !important; }
+  [data-hero-h1] { font-size: 32px !important; }
+  [data-hero-cta] a { width: 100%; justify-content: center; }
+
+  /* Video */
+  [data-video-section] { padding: 0 16px 64px !important; }
+
+  /* Trust band */
+  [data-trust] { flex-direction: column !important; align-items: flex-start !important; gap: 20px !important; padding: 30px 0 32px !important; }
+  [data-trust] > div:first-child { padding-left: 20px !important; }
+
+  /* Section padding */
+  [data-section="problem"], [data-section="demo"] { padding: 84px 20px !important; }
+  [data-section="integration"] { padding: 84px 0 0 !important; }
+  [data-compare] { padding: 0 16px 84px !important; }
+  [data-footer] { padding: 72px 20px 0 !important; }
+
+  /* Display headings are sized for a 1440px artboard */
+  #problem h2, #demo h2, #integration h2 { font-size: 32px !important; }
+  #problem p, #demo p, #integration p { font-size: 15.5px !important; }
+  [data-stat] > span:first-child { font-size: 44px !important; }
+  [data-stat-row] { margin-top: 56px !important; }
+}
+
+/* --- Agents: the ring needs ~430px; below that, lay it out linearly ----- */
+
+@media (max-width: 900px) {
+  /* Keep the pinned scroll narrative, but shorten the track and swap the dial
+     for a linear layout that fits a phone. */
+  #agents { height: 300vh !important; }
+  #agents > div { height: 100svh !important; padding: 12px 20px !important; }
+  [data-agents-inner] { gap: 14px !important; }
+  [data-agents-head] h2, #agents h2 { font-size: 25px !important; }
+  [data-stage] { padding: 11px 14px !important; }
+  [data-stage] { padding: 9px 14px !important; }
+  /* the notes duplicate what the policy column already says; the rail only
+     needs to show which of the three steps is running */
+  [data-stage] span + span { display: none !important; }
+  [data-stage] [data-stage-name] { font-size: 13.5px !important; }
+  [data-policy] span:last-child { font-size: 11.5px !important; }
+  [data-ring-center] { margin-bottom: 14px !important; }
+
+  [data-ring-row] {
+    display: flex !important;
+    flex-direction: column !important;
+    align-items: stretch !important;   /* the grid's align-items:center would
+                                          centre-shrink each row in a column */
+    gap: 22px !important;
+  }
+
+  /* Dial -> stacked block */
+  [data-ring] { max-width: none !important; aspect-ratio: auto !important; }
+  [data-ring-arc], [data-ring-hole] { display: none !important; }
+  [data-ring-center] {
+    position: static !important;
+    width: auto !important;
+    margin: 0 0 20px !important;
+    transform: none !important;
+    align-items: flex-start !important;
+    text-align: left !important;
+  }
+  [data-ring] > [data-ring-agent] {
+    position: static !important;
+    transform: none !important;
+    margin: 0 !important;
+  }
+  [data-ring] {
+    display: flex !important;
+    flex-wrap: wrap !important;
+    gap: 8px !important;
+  }
+  [data-ring-center] { flex: 0 0 100% !important; }
+  [data-ring-agent] { font-size: 12px !important; padding: 7px 12px !important; }
+}
+
+/* --- Proof: stack each metric row -------------------------------------- */
+
+@media (max-width: 900px) {
+  #proof { height: 300vh !important; }
+  #proof > div { height: 100svh !important; padding: 20px !important; }
+  [data-proof-inner] { gap: 18px !important; }
+  #proof h2 { font-size: 30px !important; }
+  [data-proof-row] { gap: 18px !important; }
+  [data-proof-row] > div {
+    display: flex !important;
+    flex-direction: column !important;
+    align-items: stretch !important;
+    gap: 12px !important;
+    margin-top: 0 !important;
+    min-height: 0 !important;
+  }
+  [data-proof-row] > div > div:empty { display: none !important; }
+  [data-gate-conn] { display: none !important; }
+  [data-gate-card] { transform: none !important; }
+  [data-gate-side] {
+    /* rows alternate side/card/side in the grid; stacked, the label must always
+       follow its card rather than leading the next one */
+    order: 2 !important;
+    align-items: flex-start !important;
+    text-align: left !important;
+    padding: 0 !important;
+    transform: none !important;
+    flex-direction: row !important;
+    gap: 12px !important;
+    align-items: baseline !important;
+  }
+  [data-gate-side] > span:first-child { font-size: 34px !important; }
+}
+
+/* --- Comparison table + footer ----------------------------------------- */
+
+@media (max-width: 760px) {
+  [data-compare] > div > div { grid-template-columns: 1.1fr 1fr 1fr !important; }
+  [data-compare] > div > div > div { padding: 14px 12px !important; }
+  [data-compare] span { font-size: 12px !important; letter-spacing: -0.2px !important; }
+}
+
+/* Touch devices: no hover, so the "hover to play" affordance is meaningless
+   (app.js autoplays the clip in view instead). */
+@media (hover: none) {
+  [data-video-hint] { display: none !important; }
+}
+
+/* ======================================================================
+   The savings-check form (#book) — not part of the canvas artboard.
+   Palette and metrics follow the design: Archivo, #151414 ink, #E6EAE4
+   hairlines, #B2EEDC / #F9EBA6 accents.
+   ==================================================================== */
+
+#book {
+  background: #FFFFFF;
+  border-top: 1px solid #E6EAE4;
+  padding: 128px 56px;
+  scroll-margin-top: 90px;
+  display: flex;
+  justify-content: center;
+  font-family: Archivo, system-ui, -apple-system, 'Segoe UI', sans-serif;
+  color: #151414;
+  letter-spacing: -0.03em;
+}
+
+[data-book-inner] {
+  width: 100%;
+  max-width: 1160px;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 520px);
+  gap: 80px;
+  align-items: start;
+}
+
+[data-book-intro] h2 {
+  margin: 30px 0 0;
+  font-family: Newsreader, Georgia, 'Times New Roman', serif;
+  font-weight: 300;
+  font-size: 44px;
+  line-height: 1.08;
+  letter-spacing: -0.03em;
+  text-wrap: balance;
+}
+[data-em] {
+  font-style: italic;
+  background: linear-gradient(180deg, transparent 82%, #B2EEDC 82%, #B2EEDC 96%, transparent 96%);
+}
+[data-book-intro] > p {
+  margin: 26px 0 0;
+  max-width: 480px;
+  font-size: 16.5px;
+  font-weight: 500;
+  line-height: 1.6;
+  letter-spacing: -0.5px;
+  color: #5A5A5A;
+  text-wrap: pretty;
+}
+
+[data-eyebrow] {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 12.5px;
+  font-weight: 600;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: #5A5A5A;
+}
+[data-eyebrow] > span {
+  width: 7px;
+  height: 7px;
+  background: #5ADEB7;
+  display: block;
+}
+
+[data-book-points] {
+  margin: 32px 0 0;
+  padding: 0;
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: 13px;
+  max-width: 470px;
+}
+[data-book-points] li {
+  position: relative;
+  padding-left: 24px;
+  font-family: ui-monospace, 'SF Mono', Menlo, Consolas, monospace;
+  font-size: 12.5px;
+  line-height: 1.5;
+  letter-spacing: -0.2px;
+  color: #5A5A5A;
+  text-wrap: pretty;
+}
+[data-book-points] li::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 5px;
+  width: 11px;
+  height: 11px;
+  border-radius: 9999px;
+  background: #B2EEDC;
+}
+
+/* --- the form itself --- */
+
+[data-book-form] {
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+  border: 1px solid #E6EAE4;
+  border-radius: 20px;
+  padding: 34px;
+  background: #FFFFFF;
+  box-shadow: 0 24px 60px rgba(21, 20, 20, 0.07);
+}
+
+[data-field] { display: flex; flex-direction: column; gap: 8px; }
+[data-field-row] { display: grid; grid-template-columns: 1fr 1fr; gap: 18px; }
+
+[data-field] label {
+  font-size: 13px;
+  font-weight: 600;
+  letter-spacing: -0.26px;
+  color: #151414;
+}
+[data-optional] {
+  font-weight: 500;
+  letter-spacing: 0;
+  color: #9A9A9A;
+  text-transform: uppercase;
+  font-size: 10.5px;
+  margin-left: 6px;
+}
+
+[data-book-form] input,
+[data-book-form] select,
+[data-book-form] textarea {
+  font-family: inherit;
+  font-size: 15px;
+  font-weight: 500;
+  letter-spacing: -0.3px;
+  color: #151414;
+  background: #FFFFFF;
+  border: 1px solid #DCE0DA;
+  border-radius: 10px;
+  padding: 12px 14px;
+  width: 100%;
+  box-sizing: border-box;
+  transition: border-color 0.2s linear, box-shadow 0.2s linear;
+}
+[data-book-form] textarea { resize: vertical; min-height: 76px; line-height: 1.5; }
+
+[data-book-form] select {
+  appearance: none;
+  background-image: linear-gradient(45deg, transparent 50%, #5A5A5A 50%),
+                    linear-gradient(135deg, #5A5A5A 50%, transparent 50%);
+  background-position: calc(100% - 18px) 21px, calc(100% - 13px) 21px;
+  background-size: 5px 5px, 5px 5px;
+  background-repeat: no-repeat;
+  padding-right: 36px;
+}
+
+[data-book-form] input:focus,
+[data-book-form] select:focus,
+[data-book-form] textarea:focus {
+  outline: none;
+  border-color: #151414;
+  box-shadow: 0 0 0 3px rgba(178, 238, 220, 0.55);
+}
+[data-book-form] [aria-invalid="true"] {
+  border-color: #E69393;
+  box-shadow: 0 0 0 3px rgba(242, 169, 169, 0.3);
+}
+
+[data-honeypot] {
+  position: absolute;
+  width: 1px; height: 1px;
+  margin: -1px; padding: 0;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+[data-book-submit] {
+  margin-top: 6px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 11px;
+  background: #151414;
+  color: #FFFFFF;
+  border: 0;
+  border-radius: 10px;
+  padding: 17px 24px;
+  font-family: inherit;
+  font-size: 15px;
+  font-weight: 600;
+  letter-spacing: -0.45px;
+  cursor: pointer;
+  transition: background 0.2s linear, opacity 0.2s linear;
+}
+[data-book-submit]:hover { background: #272C2B; }
+[data-book-submit][disabled] { opacity: 0.55; cursor: default; }
+[data-rupee] {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 22px; height: 22px;
+  border-radius: 9999px;
+  background: #F9EBA6;
+  color: #151414;
+  font-size: 13px;
+  font-weight: 700;
+  line-height: 1;
+  flex: 0 0 auto;
+}
+[data-arrow] { font-size: 15px; line-height: 1; }
+
+[data-book-note] {
+  margin: 0;
+  font-size: 12.5px;
+  font-weight: 500;
+  letter-spacing: -0.25px;
+  color: #767676;
+}
+[data-book-error] {
+  margin: 0;
+  font-size: 13px;
+  font-weight: 500;
+  letter-spacing: -0.26px;
+  color: #C25B5B;
+}
+
+/* --- success state --- */
+
+[data-book-done] {
+  border: 1px solid #E6EAE4;
+  border-radius: 20px;
+  padding: 46px 34px;
+  background: #FFFFFF;
+  box-shadow: 0 24px 60px rgba(21, 20, 20, 0.07);
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 14px;
+}
+[data-done-mark] {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 42px; height: 42px;
+  border-radius: 9999px;
+  background: #B2EEDC;
+  color: #151414;
+  font-size: 20px;
+  line-height: 1;
+}
+[data-book-done] h3 {
+  margin: 0;
+  font-family: Newsreader, Georgia, 'Times New Roman', serif;
+  font-weight: 300;
+  font-size: 30px;
+  letter-spacing: -0.6px;
+}
+[data-done-body], [data-done-alt] {
+  margin: 0;
+  font-size: 15.5px;
+  font-weight: 500;
+  line-height: 1.55;
+  letter-spacing: -0.31px;
+  color: #5A5A5A;
+  text-wrap: pretty;
+}
+[data-done-alt] a { text-decoration: underline; text-underline-offset: 3px; }
+
+@media (max-width: 1020px) {
+  [data-book-inner] { grid-template-columns: 1fr; gap: 44px; }
+  [data-book-intro] h2 { font-size: 36px; }
+}
+@media (max-width: 760px) {
+  #book { padding: 84px 20px; }
+  [data-book-intro] h2 { font-size: 30px; }
+  [data-book-form] { padding: 22px; border-radius: 16px; }
+  [data-field-row] { grid-template-columns: 1fr; gap: 18px; }
+  [data-book-submit] { width: 100%; }
+  [data-book-done] { padding: 32px 22px; }
+}
+
+/* --- #book: closed state --------------------------------------------- */
+
+[data-book-teaser] {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 20px;
+  border: 1px solid #E6EAE4;
+  border-radius: 20px;
+  padding: 34px;
+  background: #FFFFFF;
+  box-shadow: 0 24px 60px rgba(21, 20, 20, 0.07);
+}
+[data-teaser-kicker] {
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: #767676;
+}
+[data-teaser-body] {
+  margin: 0;
+  font-size: 16px;
+  font-weight: 500;
+  line-height: 1.6;
+  letter-spacing: -0.32px;
+  color: #5A5A5A;
+  text-wrap: pretty;
+}
+[data-book-open] {
+  display: inline-flex;
+  align-items: center;
+  gap: 11px;
+  background: #151414;
+  color: #FFFFFF;
+  border: 0;
+  border-radius: 10px;
+  padding: 17px 24px;
+  font-family: inherit;
+  font-size: 15px;
+  font-weight: 600;
+  letter-spacing: -0.45px;
+  cursor: pointer;
+  transition: background 0.2s linear;
+}
+[data-book-open]:hover { background: #272C2B; }
+
+@media (max-width: 760px) {
+  [data-book-teaser] { padding: 22px; border-radius: 16px; }
+  [data-book-open] { width: 100%; justify-content: center; }
+}

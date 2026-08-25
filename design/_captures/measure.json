@@ -1,0 +1,44 @@
+{
+ "vw": 390,
+ "vh": 844,
+ "y": 3474,
+ "adherence": "0%",
+ "taskRef": "Vendor invoice",
+ "activeStage": [
+  "rgb(245, 247, 243)",
+  "transparent",
+  "transparent"
+ ],
+ "agentsInner": {
+  "h": 852,
+  "t": -4
+ },
+ "agentsKids": [
+  {
+   "h": 178,
+   "t": -4
+  },
+  {
+   "h": 614,
+   "t": 188
+  },
+  {
+   "h": 32,
+   "t": 816
+  }
+ ],
+ "proofInner": {
+  "h": 560,
+  "t": 1409
+ },
+ "proofKids": [
+  {
+   "h": 32,
+   "t": 1409
+  },
+  {
+   "h": 510,
+   "t": 1459
+  }
+ ]
+}
