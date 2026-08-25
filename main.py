@@ -46,7 +46,11 @@ def _send_mail(subject, body, reply_to=""):
     """Send one plain-text mail. Returns (ok, error_message, http_status)."""
     host = os.getenv("SMTP_HOST")
     user = os.getenv("SMTP_USER")
-    password = os.getenv("SMTP_PASS")
+    # Google shows a 16-character app password in four spaced groups, and a
+    # secret created with `echo` carries a trailing newline. Both get pasted in
+    # as-is and both make login fail with an error indistinguishable from a
+    # genuinely wrong password, so normalise rather than trust the stored form.
+    password = "".join(os.getenv("SMTP_PASS", "").split())
     port = int(os.getenv("SMTP_PORT", "587"))
     recipient = os.getenv("DEMO_TO_EMAIL", "rohit@yantrailabs.com")
     sender = os.getenv("DEMO_FROM_EMAIL") or user
