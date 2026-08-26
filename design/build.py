@@ -170,6 +170,48 @@ for _sec in ('agents', 'proof'):
     body = body[:_start] + _tag.replace('content-visibility: auto; ', '') + body[_end:]
 assert body.count('content-visibility') == 4   # problem/integration/demo/footer keep it
 
+# ------------------------------------------------- research band (homepage)
+# Sits between the integrations grid and the demo pitch: the case that this is
+# where the category is going, before the ask.
+RESEARCH_BAND = '''
+  <div id="research" data-section="research" style="content-visibility: auto; contain-intrinsic-size: auto 700px; scroll-margin-top: 90px; background: #FFFFFF; border-top: 1px solid #E6EAE4; padding: 128px 56px; display: flex; justify-content: center">
+    <div style="width: 100%; max-width: 1160px; display: flex; flex-direction: column">
+      <span style="display: inline-flex; align-items: center; gap: 10px; font-size: 12.5px; font-weight: 600; letter-spacing: 0.12em; text-transform: uppercase; color: #5A5A5A">
+        <span style="width: 7px; height: 7px; background: #EADC8F; display: block"></span>The evidence
+      </span>
+      <h2 data-research-h2="1" style="margin: 30px 0 0; max-width: 860px; font-family: Newsreader, Georgia, 'Times New Roman', serif; font-weight: 300; font-size: 44px; line-height: 1.08; letter-spacing: -0.03em; color: #151414; text-wrap: balance">Finance AI isn't stalling on models.<br>It's stalling on <span style="font-style: italic; background: linear-gradient(180deg, transparent 82%, #F9EBA6 82%, #F9EBA6 96%, transparent 96%)">governance and data</span>.</h2>
+      <p style="margin: 26px 0 0; max-width: 620px; font-size: 17px; font-weight: 500; line-height: 1.55; letter-spacing: -0.51px; color: #5A5A5A; text-wrap: pretty">Three independent studies point the same way. None of the blockers they name is a model problem — which is why buying a better model has not moved the number.</p>
+
+      <div data-research-grid="1" style="margin-top: 56px; display: grid; grid-template-columns: repeat(3, 1fr); gap: 1px; background: #E6EAE4; border: 1px solid #E6EAE4">
+        <div style="background: #FFFFFF; padding: 30px 28px; display: flex; flex-direction: column; gap: 12px">
+          <span style="font-family: Newsreader, Georgia, serif; font-weight: 300; font-size: 46px; line-height: 1; letter-spacing: -1.38px; color: #151414; font-variant-numeric: tabular-nums">59%</span>
+          <span style="font-size: 15px; font-weight: 500; line-height: 1.45; letter-spacing: -0.45px; color: #5A5A5A">of finance departments use AI — against 58% a year earlier. A year of attention, one point of movement.</span>
+          <span style="margin-top: auto; padding-top: 8px; font-family: ui-monospace, Menlo, monospace; font-size: 11.5px; letter-spacing: -0.1px; color: #9A9A9A">Gartner · Nov 2025 · n=183</span>
+        </div>
+        <div style="background: #FFFFFF; padding: 30px 28px; display: flex; flex-direction: column; gap: 12px">
+          <span style="font-family: Newsreader, Georgia, serif; font-weight: 300; font-size: 46px; line-height: 1; letter-spacing: -1.38px; color: #151414; font-variant-numeric: tabular-nums">1 in 3</span>
+          <span style="font-size: 15px; font-weight: 500; line-height: 1.45; letter-spacing: -0.45px; color: #5A5A5A">organisations reach maturity on agentic governance and controls. Security and risk is the top barrier to scaling.</span>
+          <span style="margin-top: auto; padding-top: 8px; font-family: ui-monospace, Menlo, monospace; font-size: 11.5px; letter-spacing: -0.1px; color: #9A9A9A">McKinsey · State of AI Trust 2026</span>
+        </div>
+        <div style="background: #FFFFFF; padding: 30px 28px; display: flex; flex-direction: column; gap: 12px">
+          <span style="font-family: Newsreader, Georgia, serif; font-weight: 300; font-size: 46px; line-height: 1; letter-spacing: -1.38px; color: #151414; font-variant-numeric: tabular-nums">3</span>
+          <span style="font-size: 15px; font-weight: 500; line-height: 1.45; letter-spacing: -0.45px; color: #5A5A5A">infrastructure obstacles hold agents back in finance: legacy integration, data architecture, governance frameworks.</span>
+          <span style="margin-top: auto; padding-top: 8px; font-family: ui-monospace, Menlo, monospace; font-size: 11.5px; letter-spacing: -0.1px; color: #9A9A9A">Deloitte · Tech Trends 2026</span>
+        </div>
+      </div>
+
+      <div data-research-cta="1" style="margin-top: 40px; display: flex; align-items: center; gap: 16px; flex-wrap: wrap">
+        <a href="/research" style="display: inline-flex; align-items: center; gap: 10px; background: #FFFFFF; border: 1px solid #DCE0DA; border-radius: 10px; padding: 15px 22px; font-size: 15px; font-weight: 600; letter-spacing: -0.45px; color: #151414; text-decoration: none">Read the full argument<span>&#8594;</span></a>
+        <span style="font-size: 14px; font-weight: 500; letter-spacing: -0.42px; color: #767676">Why AiFA is an ecosystem for deploying finance agents, not an AP tool</span>
+      </div>
+    </div>
+  </div>
+'''
+
+_demo_i = body.index('id="demo"')
+_demo_start = body.rfind('<div ', 0, _demo_i)
+body = body[:_demo_start] + RESEARCH_BAND.strip() + '\n\n  ' + body[_demo_start:]
+
 # ------------------------------------------------------- savings-check form
 # The artboard's "Book a demo" button already points at #book, but the canvas
 # has no such section. Insert it between #demo and the footer.
@@ -240,6 +282,61 @@ body = body.replace(_tile_logo.group(0),
                     '<img src="assets/aifa-mark-onDark.svg" alt="" width="30" height="30" '
                     'style="height: 30px; width: 30px; display: block;">')
 
+# ------------------------------------------------------ bake footer links
+# These were href="#" rewritten by app.js on load, which meant the whole
+# internal link graph depended on a crawler executing JS. Now they ship
+# resolved, and app.js only has to keep the genuinely-unrouted ones inert.
+LINK_MAP = {
+    'duplicate agent': '/agents/duplicate-agent',
+    'pricing agent': '/agents/pricing-agent',
+    '3-way match agent': '/agents/3-way-match-agent',
+    'gst agent': '/agents/gst-agent',
+    'tds agent': '/agents/tds-agent',
+    'discount agent': '/agents/discount-agent',
+    'payments agent': '/agents', 'msme agent': '/agents',
+    'view all agents': '/agents',
+    'invoice entry': '/workflows/invoice-entry',
+    'sync to erp': '/workflows/sync-to-erp',
+    'payment processing': '/workflows/payment-processing',
+    'daily close': '/workflows/sync-to-erp',
+    'multi-entity groups': '/workflows/sync-to-erp',
+    'multi-currency': '/workflows/sync-to-erp',
+    'about yantrai labs': '/about',
+    'careers': '/careers',
+    'security': '/security',
+    'contact': '/#book', 'support': '/#book',
+    'how aifa works': '/#how',
+    'what it found': '/what-it-found',
+    'implementation': '/#integration',
+    'anything with an export': '/#integration',
+    'sap': '/#integration', 'oracle': '/#integration', 'oracle netsuite': '/#integration',
+    'tally': '/#integration', 'zoho books': '/#integration', 'quickbooks': '/#integration',
+    'sage': '/#integration', 'odoo': '/#integration',
+    'cfo': '/#book', 'controller': '/#book', 'head of finance': '/#book',
+    'ap lead': '/#book', 'group treasurer': '/#book', 'internal audit': '/#book',
+}
+
+_baked, _left = 0, []
+
+
+def _bake_anchor(m):
+    """Resolve one <a href="#"> against LINK_MAP, by its visible label."""
+    global _baked
+    whole, inner = m.group(0), m.group(2)
+    key = re.sub(r'\s+', ' ', re.sub(r'<[^>]+>', '', inner)).strip().lower()
+    key = key.rstrip(' \u2192').strip()
+    target = LINK_MAP.get(key)
+    if not target:
+        _left.append(key)
+        return whole
+    _baked += 1
+    return (whole.replace('href="#"', 'href="%s"' % target)
+                 .replace(' data-placeholder-link="1"', ''))
+
+
+body = re.sub(r'(<a\b[^>]*href="#"[^>]*>)(.*?)(</a>)', _bake_anchor, body, flags=re.S)
+print('footer links baked: %d   still inert: %s' % (_baked, sorted(set(_left)) or 'none'))
+
 # --------------------------------------------------------------- cleanup --
 body = re.sub(r' data-dc-tpl="\d+"', '', body)          # runtime bookkeeping
 body = re.sub(r'<template[^>]*id="__bundler_thumbnail"[^>]*>.*?</template>', '', body, flags=re.S)
@@ -296,6 +393,15 @@ PAGES = [
     ('security', 'Security — the PRISM-ES stack | AiFA',
      'Where your data sits, who can see it, what is retained, and what trains on it. '
      'Seven layers, read bottom-up.'),
+    ('research', 'Finance AI is stalling on governance, not models | AiFA',
+     'Adoption in finance functions has gone flat. Gartner, McKinsey and Deloitte point '
+     'the same way — the blockers are data and governance, not model capability.'),
+    ('about', 'About YantrAI Labs | AiFA',
+     'We build AI teams for the work people can only ever spot-check. Vision, mission, '
+     'what we believe, and who we are.'),
+    ('careers', 'Careers — tell us what you\'d build | AiFA',
+     'No posted roles. We hire people we cannot not hire. What the work is like, and a '
+     'form that goes straight to a founder.'),
 ]
 
 CALC_JS = '''<script>

@@ -8,12 +8,24 @@ import smtplib
 from email.message import EmailMessage
 
 from flask import Flask, jsonify, redirect, request, send_from_directory
+from werkzeug.utils import secure_filename
 
 # static_folder is off on purpose — Flask's built-in static route would be
 # registered ahead of ours and serve the repo root, source files included.
 app = Flask(__name__, static_folder=None)
 
 PUBLIC = os.path.join(os.path.dirname(os.path.abspath(__file__)), "public")
+
+MAX_CV_BYTES = 10 * 1024 * 1024
+CV_EXTENSIONS = {
+    ".pdf": "application/pdf",
+    ".doc": "application/msword",
+    ".docx": ("application/"
+              "vnd.openxmlformats-officedocument.wordprocessingml.document"),
+}
+
+# reject an oversized body at the edge rather than reading it into memory
+app.config["MAX_CONTENT_LENGTH"] = MAX_CV_BYTES + (1 << 20)
 
 # The page declares yantrailabs.com canonical — <link rel="canonical">, og:url,
 # the sitemap and robots.txt all name it. Both hostnames are mapped to this
@@ -42,7 +54,7 @@ def _clean(value, max_len=1000):
     return (value or "").strip()[:max_len]
 
 
-def _send_mail(subject, body, reply_to=""):
+def _send_mail(subject, body, reply_to="", attachment=None):
     """Send one plain-text mail. Returns (ok, error_message, http_status)."""
     host = os.getenv("SMTP_HOST")
     user = os.getenv("SMTP_USER")
@@ -71,6 +83,10 @@ def _send_mail(subject, body, reply_to=""):
     msg["To"] = recipient
     msg["Reply-To"] = reply_to or sender
     msg.set_content(body)
+    if attachment:
+        filename, mime, data = attachment
+        maintype, _, subtype = mime.partition("/")
+        msg.add_attachment(data, maintype=maintype, subtype=subtype, filename=filename)
 
     try:
         with smtplib.SMTP(host, port, timeout=20) as smtp:
@@ -152,6 +168,65 @@ def savings_check():
 
 # not /healthz — Cloud Run reserves that path and answers it before the
 # request reaches the container
+@app.post("/api/careers")
+def careers():
+    """Open applications. The CV rides along as a mail attachment rather than
+    landing in a bucket — at this hiring volume an inbox is the right store,
+    and it means no storage to secure or clean up."""
+    if _clean(request.form.get("website")):          # honeypot
+        return jsonify({"ok": True})
+
+    name = _clean(request.form.get("name"), 120)
+    email = _clean(request.form.get("email"), 180)
+    linkedin = _clean(request.form.get("linkedin"), 300)
+    work = _clean(request.form.get("work"), 300)
+    area = _clean(request.form.get("area"), 120)
+    note = _clean(request.form.get("note"), 6000)
+    page = _clean(request.form.get("page"), 300)
+
+    if not name or not email:
+        return jsonify({"ok": False, "error": "Missing required fields"}), 400
+
+    attachment = None
+    cv = request.files.get("resume")
+    if cv and cv.filename:
+        ext = os.path.splitext(cv.filename)[1].lower()
+        if ext not in CV_EXTENSIONS:
+            return jsonify({"ok": False, "error": "Unsupported file type"}), 400
+        data = cv.read(MAX_CV_BYTES + 1)
+        if len(data) > MAX_CV_BYTES:
+            return jsonify({"ok": False, "error": "File too large"}), 413
+        if data:
+            attachment = (secure_filename(cv.filename) or "cv" + ext,
+                          CV_EXTENSIONS[ext], data)
+
+    ok, error, status = _send_mail(
+        subject=f"Careers: {name}" + (f" — {area}" if area else ""),
+        body="\n".join(
+            [
+                "Open application",
+                "",
+                f"Name: {name}",
+                f"Email: {email}",
+                f"LinkedIn: {linkedin or 'Not provided'}",
+                f"Something they made: {work or 'Not provided'}",
+                f"Area: {area or 'Not provided'}",
+                f"CV: {attachment[0] if attachment else 'Not attached'}",
+                "",
+                "What they'd want to own:",
+                note or "Not provided",
+                "",
+                f"From: {page or 'Not provided'}",
+            ]
+        ),
+        reply_to=email,
+        attachment=attachment,
+    )
+    if not ok:
+        return jsonify({"ok": False, "error": error}), status
+    return jsonify({"ok": True})
+
+
 @app.get("/_status")
 def status():
     return jsonify({"ok": True, "mail": bool(os.getenv("SMTP_PASS"))})

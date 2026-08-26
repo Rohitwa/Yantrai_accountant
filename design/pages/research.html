@@ -1,0 +1,133 @@
+<div class="wrap">
+  <div class="crumb"><a href="/">AiFA</a> · Research</div>
+  <div class="masthead">
+    <span class="eyebrow sand"><i></i>Research</span>
+    <h1 class="display">Finance AI isn't stalling<br>on models. It's stalling on<br><em class="mark">governance and data</em>.</h1>
+    <p class="lede">Adoption in finance functions has gone flat. Read the surveys next to each other and the reason is consistent — and it is not that the technology fell short. It is that most finance AI has no answer for who the agent is, what it may reach, and what happens when it is unsure.</p>
+  </div>
+</div>
+
+<section class="band">
+  <div class="wrap wrap-wide">
+    <h2 class="sec">What the studies say</h2>
+    <p>Three findings, from three independent sources, that point the same way.</p>
+
+    <div class="tablewrap">
+      <table class="grid">
+        <thead><tr><th>Finding</th><th class="col-why">What it means</th><th>Source</th></tr></thead>
+        <tbody>
+          <tr>
+            <td>Adoption is flat — 59% of finance departments using AI, against 58% a year earlier<span class="why-m">A year of intense attention moved the number by one point. The pilots are not converting into production.</span></td>
+            <td class="col-why">A year of intense attention moved the number by one point. The pilots are not converting into production.</td>
+            <td>Gartner, Nov 2025 · n=183 CFOs and senior finance leaders</td>
+          </tr>
+          <tr>
+            <td>The top blockers are data quality and data literacy<span class="why-m">Not model accuracy, not cost. The things that stop finance AI are the things a finance team cannot fix by buying a better model.</span></td>
+            <td class="col-why">Not model accuracy, and not cost. What stops finance AI is what a team cannot fix by buying a better model.</td>
+            <td>Gartner, Nov 2025</td>
+          </tr>
+          <tr>
+            <td>Only about a third of organisations reach maturity level 3+ on agentic governance and controls<span class="why-m">Security and risk is the number one barrier to scaling agents, cited by nearly two-thirds.</span></td>
+            <td class="col-why">Security and risk is the number one barrier to scaling agents, cited by nearly two-thirds of respondents.</td>
+            <td>McKinsey, State of AI Trust 2026</td>
+          </tr>
+          <tr>
+            <td>Three infrastructure obstacles hold agentic AI back in finance<span class="why-m">Legacy system integration, data architecture constraints, and governance and control frameworks.</span></td>
+            <td class="col-why">Legacy system integration, data architecture constraints, and governance and control frameworks.</td>
+            <td>Deloitte, Tech Trends 2026 · CFO guide</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="callout">
+      <span class="label">Where the AP number sits</span>
+      <p>In the same Gartner survey, among finance teams actually using AI, accounts payable automation is the second most common use case at <strong>37%</strong>, behind knowledge management at 49% and ahead of anomaly detection at 34%. Money-out is where finance teams go first — and it is where the blockers bite hardest, because it is the one place an agent's mistake moves cash.</p>
+    </div>
+  </div>
+</section>
+
+<section class="band wash">
+  <div class="wrap">
+    <h2 class="sec">Read together, they describe one failure</h2>
+    <p>A finance team runs a promising pilot. It works on the sample. Then it meets the three questions that decide whether anything reaches production:</p>
+
+    <div class="flow">
+      <div class="step"><div class="n">01</div><div><h3>Whose permissions does it have?</h3><p>An agent that can read the vendor master can read every vendor's bank details. If the answer to "what can it reach" is "whatever we gave the service account", the risk team is right to stop it.</p></div></div>
+      <div class="step"><div class="n">02</div><div><h3>Where does the data have to move to?</h3><p>Most finance AI assumes a data project first — warehouse, pipelines, a canonical model. That project is where the timeline dies, and it is the reason "data architecture constraints" shows up as a blocker rather than a task.</p></div></div>
+      <div class="step"><div class="n">03</div><div><h3>What happens when it is wrong?</h3><p>A pilot is judged on its hit rate. Production is judged on its failure mode. Without a defined answer for the ambiguous case, every exception becomes an argument, and the control gets switched off.</p></div></div>
+    </div>
+
+    <p>None of those are model problems. They are architecture and governance problems, and no amount of additional model quality resolves them.</p>
+  </div>
+</section>
+
+<section class="band">
+  <div class="wrap">
+    <h2 class="sec">What has to be true instead</h2>
+    <p class="statement">The agent has to be governed like a person, and posted like a clerk.<span class="after">Scoped by the same access control that governs a human, acting through defined tools rather than around them, and writing into the ERP that already holds the books — so nothing has to move for it to start.</span></p>
+
+    <ul class="checks">
+      <li><strong>Permissions resolve before the model runs.</strong> An agent inherits the signed-in user's scope and cannot exceed it. That single ordering answers most of what a risk committee wants to know.</li>
+      <li><strong>The system of record does not change.</strong> Your ERP stays authoritative. Agents read from it and post back to it, which removes the data-architecture project from the critical path entirely.</li>
+      <li><strong>Ambiguity has a defined destination.</strong> Every check that runs on every transaction will meet cases it cannot settle. Naming what happens then is what makes it a control rather than a suggestion.</li>
+      <li><strong>The unit of work is a team, not a tool.</strong> One check is a feature. What changes a finance function is many checks running on every transaction at once, handing findings to each other.</li>
+    </ul>
+  </div>
+</section>
+
+<section class="band wash">
+  <div class="wrap wrap-wide">
+    <h2 class="sec">Why this is an ecosystem question, not a feature one</h2>
+    <p>The reason finance is the function where agents compound is that its work is already a graph. An invoice is not one decision; it is a dozen checks that depend on each other, spread across systems that were never designed to talk.</p>
+
+    <div class="cards">
+      <div>
+        <h3>Each agent is narrow on purpose</h3>
+        <p>One rule, absolutely enforced, is verifiable. "An AI that handles your AP" is not. Narrow scope is what makes each one auditable.</p>
+      </div>
+      <div>
+        <h3>They compound by handing over</h3>
+        <p>A duplicate found at entry becomes context for the payment run. Findings accumulate against the transaction rather than being re-derived by each tool.</p>
+      </div>
+      <div>
+        <h3>The platform is the governance</h3>
+        <p>Access, redaction, guardrails and the audit trail live once, underneath. Adding the nineteenth agent does not mean a nineteenth security review.</p>
+      </div>
+      <div>
+        <h3>Local rules are the moat</h3>
+        <p>GST filing status, TDS sections, MSME clocks. Global finance AI does not model them, and in an Indian company they are where the recoverable money is.</p>
+      </div>
+    </div>
+
+    <p>That is what AiFA is: not an AP tool with AI in it, but a place to deploy finance agents where governance, access and the audit trail are already solved — so the nth control costs a fraction of the first.</p>
+  </div>
+</section>
+
+<section class="band">
+  <div class="wrap">
+    <h2 class="sec">Sources</h2>
+    <ul class="mono">
+      <li>Gartner, survey of 183 CFOs and senior finance leaders, November 2025 — AI adoption 59% vs 58%; use cases: knowledge management 49%, AP automation 37%, anomaly detection 34%; leading obstacles data literacy and data quality. Reported by CFO Dive.</li>
+      <li>McKinsey, <em>State of AI trust in 2026: shifting to the agentic era</em> — AI Trust Maturity Survey, ~500 organisations, Dec 2025–Jan 2026.</li>
+      <li>Deloitte, <em>Tech Trends 2026</em> and the accompanying CFO guide — infrastructure obstacles to agentic AI in the finance function.</li>
+    </ul>
+    <div class="callout">
+      <span class="label">On these numbers</span>
+      <p>The Gartner figures are quoted from CFO Dive's reporting of the survey, with the sample size and date as published. The McKinsey and Deloitte findings are summarised from their published research. We have not restated any figure we could not attribute to a named study — and none of the numbers on this page are ours.</p>
+    </div>
+  </div>
+</section>
+
+<section class="next">
+  <div class="wrap">
+    <h2>The argument is only worth as much as your own data.</h2>
+    <p>Ninety days of invoices, one export, findings back within a working day.</p>
+    <a class="btn" href="/#book"><span class="rupee">₹</span>Check your savings<span>→</span></a>
+    <div class="inline-links">
+      <a href="/security">How the governance actually works →</a>
+      <a href="/agents">The AI team →</a>
+      <a href="/what-it-found">What the checks find →</a>
+    </div>
+  </div>
+</section>

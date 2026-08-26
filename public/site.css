@@ -326,7 +326,10 @@ img, video { max-width: 100%; }
 
 [data-book-form] input,
 [data-book-form] select,
-[data-book-form] textarea {
+[data-book-form] textarea,
+[data-career-form] input:not([type="file"]),
+[data-career-form] select,
+[data-career-form] textarea {
   font-family: inherit;
   font-size: 15px;
   font-weight: 500;
@@ -340,9 +343,11 @@ img, video { max-width: 100%; }
   box-sizing: border-box;
   transition: border-color 0.2s linear, box-shadow 0.2s linear;
 }
-[data-book-form] textarea { resize: vertical; min-height: 76px; line-height: 1.5; }
+[data-book-form] textarea,
+[data-career-form] textarea { resize: vertical; min-height: 76px; line-height: 1.5; }
 
-[data-book-form] select {
+[data-book-form] select,
+[data-career-form] select {
   appearance: none;
   background-image: linear-gradient(45deg, transparent 50%, #5A5A5A 50%),
                     linear-gradient(135deg, #5A5A5A 50%, transparent 50%);
@@ -354,12 +359,16 @@ img, video { max-width: 100%; }
 
 [data-book-form] input:focus,
 [data-book-form] select:focus,
-[data-book-form] textarea:focus {
+[data-book-form] textarea:focus,
+[data-career-form] input:focus,
+[data-career-form] select:focus,
+[data-career-form] textarea:focus {
   outline: none;
   border-color: #151414;
   box-shadow: 0 0 0 3px rgba(178, 238, 220, 0.55);
 }
-[data-book-form] [aria-invalid="true"] {
+[data-book-form] [aria-invalid="true"],
+[data-career-form] [aria-invalid="true"] {
   border-color: #E69393;
   box-shadow: 0 0 0 3px rgba(242, 169, 169, 0.3);
 }
@@ -529,4 +538,56 @@ img, video { max-width: 100%; }
 @media (max-width: 760px) {
   [data-book-teaser] { padding: 22px; border-radius: 16px; }
   [data-book-open] { width: 100%; justify-content: center; }
+}
+
+/* --- careers form --- */
+[data-career-form] {
+  display: flex; flex-direction: column; gap: 18px;
+  border: 1px solid #E6EAE4; border-radius: 20px; padding: 34px;
+  background: #FFFFFF; box-shadow: 0 24px 60px rgba(21, 20, 20, 0.07);
+  margin-top: 34px; max-width: 620px;
+}
+[data-career-form] input[type="file"] {
+  font-family: inherit; font-size: 14px; color: var(--body);
+  border: 1px dashed #DCE0DA; border-radius: 10px; padding: 16px 14px;
+  width: 100%; box-sizing: border-box; cursor: pointer; background: #FFFFFF;
+}
+[data-career-form] input[type="file"]::file-selector-button {
+  font-family: inherit; font-size: 13px; font-weight: 600; letter-spacing: -0.26px;
+  color: #151414; background: #F5F7F3; border: 1px solid #DCE0DA;
+  border-radius: 8px; padding: 8px 14px; margin-right: 14px; cursor: pointer;
+}
+[data-career-form] input[type="file"]:hover { border-color: #151414; }
+[data-file-name] { font-size: 12.5px; font-weight: 500; letter-spacing: -0.25px; color: var(--mute); }
+[data-career-submit] {
+  margin-top: 6px; display: inline-flex; align-items: center; justify-content: center; gap: 11px;
+  background: #151414; color: #FFFFFF; border: 0; border-radius: 10px; padding: 17px 24px;
+  font-family: inherit; font-size: 15px; font-weight: 600; letter-spacing: -0.45px; cursor: pointer;
+  transition: background 0.2s linear, opacity 0.2s linear;
+}
+[data-career-submit]:hover { background: #272C2B; }
+[data-career-submit][disabled] { opacity: 0.55; cursor: default; }
+[data-career-form] ::placeholder { font-family: inherit; opacity: 0.55; }
+[data-career-error] { margin: 0; font-size: 13px; font-weight: 500; letter-spacing: -0.26px; color: #C25B5B; }
+[data-career-done] {
+  border: 1px solid #E6EAE4; border-radius: 20px; padding: 46px 34px; background: #FFFFFF;
+  box-shadow: 0 24px 60px rgba(21, 20, 20, 0.07); margin-top: 34px; max-width: 620px;
+  display: flex; flex-direction: column; align-items: flex-start; gap: 14px;
+}
+@media (max-width: 760px) {
+  [data-career-form], [data-career-done] { padding: 22px; border-radius: 16px; }
+  [data-career-submit] { width: 100%; }
+}
+
+/* --- the evidence band (homepage, inline-styled like the canvas sections) --- */
+@media (max-width: 1020px) {
+  [data-research-h2] { font-size: 34px !important; }
+}
+@media (max-width: 760px) {
+  #research { padding: 84px 20px !important; }
+  [data-research-h2] { font-size: 27px !important; }
+  [data-research-grid] { grid-template-columns: 1fr !important; margin-top: 36px !important; }
+  [data-research-grid] > div { padding: 24px 20px !important; }
+  [data-research-cta] { align-items: stretch !important; flex-direction: column !important; gap: 14px !important; }
+  [data-research-cta] a { justify-content: center; }
 }

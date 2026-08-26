@@ -10,7 +10,9 @@
      Until it is set, the form refuses to submit and tells the visitor to email
      instead, rather than silently swallowing a lead. */
   var FORM_ENDPOINT = '/api/savings-check';
+  var CAREER_ENDPOINT = '/api/careers';
   var FORM_FALLBACK_EMAIL = 'rohit@yantrailabs.com';
+  var MAX_CV_BYTES = 10 * 1024 * 1024;
 
   var reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
   var clamp = function (v, lo, hi) { return Math.max(lo, Math.min(hi, v)); };
@@ -452,6 +454,85 @@
         if (labelEl) labelEl.textContent = 'Check your savings';
         showError('That did not go through. Please try again, or email ' + FORM_FALLBACK_EMAIL + '.');
       });
+    });
+  }
+
+  /* ------------------------------------------------------------- careers */
+
+  var cForm   = $('[data-career-form]');
+  var cDone   = $('[data-career-done]');
+  var cError  = $('[data-career-error]');
+  var cSubmit = $('[data-career-submit]');
+  var cFile   = document.getElementById('c-resume');
+  var cFileName = $('[data-file-name]');
+
+  if (cFile && cFileName) {
+    cFile.addEventListener('change', function () {
+      var f = cFile.files && cFile.files[0];
+      cFileName.hidden = !f;
+      if (f) cFileName.textContent = f.name + ' · ' + Math.round(f.size / 1024) + ' KB';
+    });
+  }
+
+  if (cForm) {
+    function cShowError(msg) {
+      if (!cError) return;
+      cError.textContent = msg;
+      cError.hidden = false;
+    }
+
+    cForm.addEventListener('input', function () { if (cError) cError.hidden = true; });
+
+    cForm.addEventListener('submit', function (e) {
+      e.preventDefault();
+      if (cError) cError.hidden = true;
+
+      var trap = document.getElementById('c-website');
+      if (trap && trap.value) return;
+
+      var ok = true, firstBad = null;
+      ['c-name', 'c-email'].forEach(function (id) {
+        var el = document.getElementById(id);
+        if (!el) return;
+        var bad = !el.value.trim() ||
+          (el.type === 'email' && !/^[^@\s]+@[^@\s.]+\.[^@\s]+$/.test(el.value.trim()));
+        el.setAttribute('aria-invalid', bad ? 'true' : 'false');
+        if (bad && !firstBad) firstBad = el;
+        if (bad) ok = false;
+      });
+      if (!ok) {
+        if (firstBad) firstBad.focus();
+        cShowError('Please give us a name and an email we can reply to.');
+        return;
+      }
+
+      var f = cFile && cFile.files && cFile.files[0];
+      if (f && f.size > MAX_CV_BYTES) {
+        cShowError('That CV is over 10 MB. Send a smaller file, or email it to ' +
+                   FORM_FALLBACK_EMAIL + '.');
+        return;
+      }
+
+      var body = new FormData(cForm);
+      body.delete('website');
+      body.append('page', location.href);
+
+      cSubmit.disabled = true;
+      var cLabel = $('[data-submit-label]', cForm);
+      if (cLabel) cLabel.textContent = 'Sending';
+
+      fetch(CAREER_ENDPOINT, { method: 'POST', body: body })
+        .then(function (r) {
+          if (!r.ok) throw new Error('HTTP ' + r.status);
+          cForm.hidden = true;
+          if (cDone) cDone.hidden = false;
+        })
+        .catch(function () {
+          cSubmit.disabled = false;
+          if (cLabel) cLabel.textContent = 'Send it to a founder';
+          cShowError('That did not go through. Please try again, or email ' +
+                     FORM_FALLBACK_EMAIL + '.');
+        });
     });
   }
 
