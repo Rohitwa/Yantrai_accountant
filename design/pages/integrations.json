@@ -1,0 +1,151 @@
+[
+  {
+    "slug": "tally",
+    "name": "Tally",
+    "accent": "mint",
+    "logo": "logo_tally.png",
+    "headline": "The books most of Indian mid-market actually runs on.",
+    "lede": "TallyPrime and Tally.ERP 9 hold the ledger for a very large share of Indian companies — including plenty with a global ERP sitting above them. AiFA reads what Tally already holds and posts back into it, without asking anyone to leave Tally.",
+    "reads": [
+      "Purchase register and the daybook, as XML or Excel export",
+      "Ledger vouchers and outstanding payables by party",
+      "Vendor masters, including GSTIN and PAN held against the ledger",
+      "Stock and receipt entries where goods are tracked in Tally"
+    ],
+    "writes": [
+      "Purchase and journal vouchers, posted against the correct ledger",
+      "TDS and GST detail on the voucher, not as a later adjustment",
+      "The check trail against each entry, so the finding stays attached to the voucher"
+    ],
+    "never": "Tally stays your system of record. AiFA does not hold your books, does not become a second ledger, and does not need Tally replaced or upgraded to work.",
+    "start": "An export your team already produces — a purchase register for a period is enough to run the savings check. A live connection over Tally's XML interface comes later, when you want it.",
+    "note": "Tally is where the India-specific work matters most: GSTIN validity, filing status before credit, TDS section and rate, and MSME clocks all sit against the party ledger, and are exactly what generic finance AI does not model."
+  },
+  {
+    "slug": "sap",
+    "name": "SAP",
+    "accent": "iris",
+    "logo": "logo_sap.png",
+    "headline": "Checks at entry, in the system that already holds the controls.",
+    "lede": "SAP has the control framework. What it does not have is something running every control on every document at the moment it arrives, which is why the exceptions surface at the close instead.",
+    "reads": [
+      "Vendor line items and open payables (FBL1N)",
+      "Purchase orders and their history (ME2N)",
+      "Goods receipts and material documents (MIGO, MB51)",
+      "Invoice verification documents (MIRO) and the vendor master"
+    ],
+    "writes": [
+      "Findings against the document, with the clause or rule they were tested on",
+      "Blocks and holds through the same statuses your team already works with",
+      "The audit trail, immutable and re-readable months later"
+    ],
+    "never": "SAP remains authoritative. AiFA does not re-post your ledger elsewhere, and there is no shadow book to reconcile.",
+    "start": "Standard extracts from the reports above, for a 90-day window. Nothing needs to be built, and no basis work is required to find out whether there is money in it.",
+    "note": "Three-way match tolerance in SAP is configured once and applied uniformly. Most of what leaks sits in what tolerance permits — a rate above contract inside tolerance still clears."
+  },
+  {
+    "slug": "oracle",
+    "name": "Oracle",
+    "accent": "rose",
+    "logo": "logo_oracle.png",
+    "headline": "Every invoice checked, not the ones that hit a workflow rule.",
+    "lede": "Oracle Fusion and E-Business Suite both route invoices well. Routing is not checking — an approval confirms someone looked, not that the rate matched the contract.",
+    "reads": [
+      "AP invoices and their distributions",
+      "Purchase orders, receipts and matching status",
+      "Supplier master, sites and payment terms",
+      "Payment batches before they are released"
+    ],
+    "writes": [
+      "Holds on the invoice, with the reason and evidence attached",
+      "Journal entries balanced and supported",
+      "The check history against the transaction"
+    ],
+    "never": "Oracle stays the system of record. AiFA reads from it and posts back to it.",
+    "start": "A standard AP invoice and PO extract for the last 90 days.",
+    "note": "Where a group runs Oracle at the centre and something else at the subsidiaries, the checks run the same way on both — the agents are not tied to one ERP's schema."
+  },
+  {
+    "slug": "netsuite",
+    "name": "Oracle NetSuite",
+    "accent": "iris",
+    "logo": "logo_netsuite.png",
+    "headline": "Multi-entity, multi-currency, and the same six leaks.",
+    "lede": "NetSuite handles the consolidation. It does not tell you that the rate on line four was above the contract, because it has no idea what the contract said.",
+    "reads": [
+      "Vendor bills and their line detail, via saved search or export",
+      "Purchase orders and item receipts",
+      "Vendor records, terms and subsidiary assignment",
+      "Payment runs before release"
+    ],
+    "writes": [
+      "Findings and holds against the bill",
+      "Journal entries in the correct subsidiary and period",
+      "The audit trail behind each decision"
+    ],
+    "never": "NetSuite stays authoritative across every subsidiary.",
+    "start": "A saved search exported for a 90-day window — the same one your team likely already runs.",
+    "note": "In a multi-subsidiary group, duplicates hide across entities: the same vendor invoice booked in two subsidiaries reads as two legitimate bills to anyone looking at either one."
+  },
+  {
+    "slug": "zoho-books",
+    "name": "Zoho Books",
+    "accent": "sand",
+    "logo": "logo_zohobooks.png",
+    "headline": "Small finance team, same statutory exposure.",
+    "lede": "A company on Zoho Books has the same GST, TDS and MSME obligations as one on SAP, and usually a fraction of the people to meet them. That is the case for putting agents on it.",
+    "reads": [
+      "Bills, expenses and their line detail",
+      "Purchase orders and vendor credits",
+      "Contacts, including GSTIN and TDS configuration",
+      "Payments made and scheduled"
+    ],
+    "writes": [
+      "Findings against the bill before it is paid",
+      "Corrected tax treatment where the section or rate was wrong",
+      "The trail of what ran and what it found"
+    ],
+    "never": "Zoho Books holds the books. Nothing moves.",
+    "start": "An export of bills for the last 90 days.",
+    "note": "Smaller teams feel the MSME clock hardest — one person tracking day 45 across a few hundred vendors is a control that exists on paper only."
+  },
+  {
+    "slug": "quickbooks",
+    "name": "QuickBooks",
+    "accent": "mint",
+    "logo": "logo_quickbooks.jpeg",
+    "headline": "Bills approved on trust, checked on evidence.",
+    "lede": "QuickBooks makes it easy to approve and pay. Nothing in that path opens the contract, checks the vendor's filing, or notices the same invoice arriving twice through a different route.",
+    "reads": ["Bills and their line detail", "Purchase orders where used", "Vendor records and terms", "Payments and scheduled runs"],
+    "writes": ["Findings and holds against the bill", "Balanced entries with support attached", "An audit trail per decision"],
+    "never": "QuickBooks stays the system of record.",
+    "start": "A bills export for a 90-day window.",
+    "note": "Where a group runs QuickBooks alongside Tally or an Indian ERP, AiFA checks both the same way rather than requiring one to win."
+  },
+  {
+    "slug": "sage",
+    "name": "Sage",
+    "accent": "iris",
+    "logo": "logo_sage.png",
+    "headline": "Controls that run per transaction, not per period.",
+    "lede": "Sage closes the period reliably. The question this answers is what happened during it — every invoice checked as it arrived rather than sampled afterwards.",
+    "reads": ["Purchase invoices and line detail", "Orders and receipts", "Supplier records and terms", "Payment runs"],
+    "writes": ["Findings against the invoice", "Journals balanced and supported, in the open period", "The check trail"],
+    "never": "Sage remains authoritative.",
+    "start": "A purchase invoice extract for 90 days.",
+    "note": "Multi-company Sage estates get the same benefit as any group — intercompany entries agreed by both sides before either posts."
+  },
+  {
+    "slug": "odoo",
+    "name": "Odoo",
+    "accent": "rose",
+    "logo": "logo_odoo.webp",
+    "headline": "Configurable enough to be inconsistent.",
+    "lede": "Odoo's flexibility is its strength and the reason controls drift — the tolerance one company set is not the one another did, and neither is checked against the contract.",
+    "reads": ["Vendor bills and lines", "Purchase orders and receipts", "Partner records, taxes and terms", "Payment batches"],
+    "writes": ["Findings and holds against the bill", "Entries posted in the open period", "The audit trail behind each"],
+    "never": "Odoo stays the system of record.",
+    "start": "A vendor bill export for the last 90 days.",
+    "note": "Odoo estates are often heavily customised. The checks depend on the contract, the PO and the receipt — not on how a particular install was configured."
+  }
+]

@@ -1,129 +1,562 @@
 {
-  "workflows": {
-    "invoice-entry": "Invoice entry",
-    "sync-to-erp": "Sync to ERP",
-    "payment-processing": "Payment processing"
+ "workflows": {
+  "invoice-entry": "Invoice entry",
+  "sync-to-erp": "Sync to ERP",
+  "payment-processing": "Payment processing",
+  "daily-close": "Daily close",
+  "multi-entity-groups": "Multi-entity groups",
+  "multi-currency": "Multi-currency"
+ },
+ "agents": [
+  {
+   "slug": "duplicate-agent",
+   "name": "Duplicate Agent",
+   "workflow": "invoice-entry",
+   "accent": "rose",
+   "statement": "The same invoice cannot be paid twice.",
+   "mechanism": "Every arriving invoice is matched against every invoice that vendor has ever sent — the portal, the shared mailbox, the one handed to someone at the site office. The channel is not a hiding place.",
+   "lede": "Duplicates are not a fraud problem. They are a filing problem that costs real money, and they survive because the second copy usually arrives through a different door than the first.",
+   "checks": [
+    "Invoice number against every prior invoice from the same vendor, not just the current period",
+    "Same amount, same date, same PO — the near-match that a changed invoice number is meant to hide",
+    "The same document arriving on a second channel after it was already booked",
+    "Credit notes that reverse an invoice which was never actually paid"
+   ],
+   "reads": [
+    "Vendor invoices from every channel — portal, email, file drop, scanned paper",
+    "The full invoice history for that vendor",
+    "PO and GRN references"
+   ],
+   "writes": [
+    "A hold on the second copy, before it can enter a payment run",
+    "The matching earlier invoice, attached, so the reviewer can see why",
+    "An audit entry recording what matched and who released it"
+   ],
+   "upstream": [],
+   "downstream": [
+    "pricing-agent",
+    "3-way-match-agent"
+   ],
+   "ambiguity": "A near-match is not a duplicate. Where the amount and date align but the invoice number does not, the entry is held and both documents are put side by side for a person to decide — it is not silently released, and it is not silently blocked."
   },
-  "agents": [
-    {
-      "slug": "duplicate-agent",
-      "name": "Duplicate Agent",
-      "workflow": "invoice-entry",
-      "accent": "rose",
-      "statement": "The same invoice cannot be paid twice.",
-      "mechanism": "Every arriving invoice is matched against every invoice that vendor has ever sent — the portal, the shared mailbox, the one handed to someone at the site office. The channel is not a hiding place.",
-      "lede": "Duplicates are not a fraud problem. They are a filing problem that costs real money, and they survive because the second copy usually arrives through a different door than the first.",
-      "checks": [
-        "Invoice number against every prior invoice from the same vendor, not just the current period",
-        "Same amount, same date, same PO — the near-match that a changed invoice number is meant to hide",
-        "The same document arriving on a second channel after it was already booked",
-        "Credit notes that reverse an invoice which was never actually paid"
-      ],
-      "reads": ["Vendor invoices from every channel — portal, email, file drop, scanned paper", "The full invoice history for that vendor", "PO and GRN references"],
-      "writes": ["A hold on the second copy, before it can enter a payment run", "The matching earlier invoice, attached, so the reviewer can see why", "An audit entry recording what matched and who released it"],
-      "upstream": [],
-      "downstream": ["pricing-agent", "3-way-match-agent"],
-      "ambiguity": "A near-match is not a duplicate. Where the amount and date align but the invoice number does not, the entry is held and both documents are put side by side for a person to decide — it is not silently released, and it is not silently blocked."
-    },
-    {
-      "slug": "pricing-agent",
-      "name": "Pricing Agent",
-      "workflow": "invoice-entry",
-      "accent": "sand",
-      "statement": "Nothing is paid above the rate that was agreed.",
-      "mechanism": "Every line is checked against the contract and the PO it belongs to. A variance does not get approved quietly — it stops, and it names the buyer who owns the contract.",
-      "lede": "This is the largest of the six leaks, and the most ordinary. The contract says one number, the invoice says another, and nobody opens the contract for a bill this size.",
-      "checks": [
-        "Line rate against the contracted rate for that item, that vendor, that period",
-        "Rate against the PO, where a PO exists and the contract does not cover the item",
-        "Price escalations claimed against the escalation clause that permits them",
-        "Freight, handling and surcharges against what the contract actually allows to be added"
-      ],
-      "reads": ["The vendor contract and its rate schedule", "The purchase order", "Invoice lines, item by item"],
-      "writes": ["A hold on the line, with the variance in both percentage and rupees", "The contract clause the line was tested against", "A note to the buyer who owns the contract"],
-      "upstream": ["duplicate-agent"],
-      "downstream": ["3-way-match-agent", "discount-agent"],
-      "ambiguity": "Where no contract covers the item, the agent says so rather than passing the line. An uncovered rate is a different finding from an overcharge, and it is reported as its own thing — usually it means a contract expired and nobody renewed it."
-    },
-    {
-      "slug": "3-way-match-agent",
-      "name": "3-way match Agent",
-      "workflow": "invoice-entry",
-      "accent": "rose",
-      "statement": "Nothing is paid for that wasn't received.",
-      "mechanism": "PO, GRN and invoice have to agree on quantity, rate and item before the entry stands. All three, on every line, every time.",
-      "lede": "The invoice bills 82 MT. The gate received 78. Both facts are true, and they live in different systems, which is why the difference is usually found in a stock reconciliation months later.",
-      "checks": [
-        "Invoiced quantity against goods actually received, line by line",
-        "Item and specification, not just the total — a substituted grade at the contracted rate is still a variance",
-        "Partial deliveries billed as complete",
-        "Tolerances you define, applied consistently rather than at each approver's discretion"
-      ],
-      "reads": ["Purchase orders", "Goods receipt notes from the plant or warehouse system", "Invoice lines"],
-      "writes": ["A short-receipt finding with the quantity gap priced", "The GRN reference the invoice was tested against", "A hold until the gap is explained or the invoice is revised"],
-      "upstream": ["pricing-agent", "duplicate-agent"],
-      "downstream": ["gst-agent", "tds-agent"],
-      "ambiguity": "Where the GRN has not arrived yet, the invoice is not failed — it is parked as awaiting receipt, with the age of the wait visible. A missing GRN and a short receipt are different problems and are never merged into one."
-    },
-    {
-      "slug": "gst-agent",
-      "name": "GST Agent",
-      "workflow": "invoice-entry",
-      "accent": "mint",
-      "statement": "Input credit is never claimed before the vendor has earned it.",
-      "mechanism": "The vendor's filing status is checked at the point of entry, not discovered at the annual return when the credit has already been taken and spent.",
-      "lede": "Input credit depends on someone else's compliance. If the vendor has not filed, the credit was never yours to take — and finding that out a year later means reversing it with interest.",
-      "checks": [
-        "Vendor GSTIN active and valid on the invoice date",
-        "Filing status for the relevant period before the credit is claimed",
-        "Place of supply, and whether the tax charged is the tax that should have been charged",
-        "Invoice appearing in the vendor's outward supplies, matched against what was booked"
-      ],
-      "reads": ["Vendor GSTIN and filing status", "Tax lines on the invoice", "Your own claim register"],
-      "writes": ["A hold on the credit claim, not on the payment, where the vendor has not filed", "The period and status the decision was based on", "A follow-up to the vendor to file"],
-      "upstream": ["3-way-match-agent"],
-      "downstream": ["tds-agent"],
-      "ambiguity": "Filing status changes. A credit held today may be claimable next month, so the hold is a queue rather than a rejection — the claim is re-tested as status updates, and released when it qualifies."
-    },
-    {
-      "slug": "tds-agent",
-      "name": "TDS Agent",
-      "workflow": "invoice-entry",
-      "accent": "iris",
-      "statement": "Tax is deducted at the right section and the right rate, on every payment.",
-      "mechanism": "Vendor type, threshold and section are resolved before the entry is posted — not corrected in a return two quarters later, and not paid out of your own pocket as interest.",
-      "lede": "Under-deducting is the expensive direction. The shortfall is recoverable from the vendor in theory and almost never in practice, so it becomes a cost plus interest.",
-      "checks": [
-        "The correct section for the nature of the payment, not the one used last time",
-        "Rate against vendor status — PAN validity, and whether a lower-deduction certificate applies",
-        "Annual thresholds, including whether this payment is the one that crosses them",
-        "Cumulative deduction against the vendor for the year, so the crossing is caught on the day"
-      ],
-      "reads": ["Vendor master, PAN status and any certificates on file", "Payment nature and the invoice narration", "Year-to-date payments to that vendor"],
-      "writes": ["The section and rate applied, with the reason recorded", "A correction where the entry was raised at the wrong rate", "A flag when this payment crosses a threshold"],
-      "upstream": ["gst-agent"],
-      "downstream": ["pan-agent", "msme-agent"],
-      "ambiguity": "Where the nature of a payment is genuinely arguable between two sections, the agent applies the higher-deduction reading and flags it for review, rather than choosing the cheaper one and leaving you exposed."
-    },
-    {
-      "slug": "discount-agent",
-      "name": "Discount Agent",
-      "workflow": "payment-processing",
-      "accent": "mint",
-      "statement": "An early-payment discount that was available is never left unclaimed.",
-      "mechanism": "Discount terms are read off the contract and the invoice, and the payment run is built to hit the date the discount actually requires.",
-      "lede": "This is the only one of the six that is not a leak so much as an unopened envelope. The money is offered, the terms are on the invoice, and the approval takes twelve days when the discount needed ten.",
-      "checks": [
-        "Discount terms on the invoice against the terms in the contract, where they differ",
-        "The date the discount actually expires, counted from the right event",
-        "Whether the run is scheduled to land inside that window",
-        "The trade-off, where taking the discount conflicts with a payment date set for cash reasons"
-      ],
-      "reads": ["Contract payment terms", "Invoice terms and dates", "The scheduled payment run"],
-      "writes": ["A recommended payment date that captures the discount", "The value of taking it against the value of holding cash", "A record when a discount was consciously let go, and why"],
-      "upstream": ["pricing-agent"],
-      "downstream": ["payments-agent"],
-      "ambiguity": "Cash position beats a discount sometimes, and that is a treasury decision rather than an accounts one. The agent surfaces the number and the deadline; it does not move a payment date on its own."
-    }
-  ]
+  {
+   "slug": "pricing-agent",
+   "name": "Pricing Agent",
+   "workflow": "invoice-entry",
+   "accent": "sand",
+   "statement": "Nothing is paid above the rate that was agreed.",
+   "mechanism": "Every line is checked against the contract and the PO it belongs to. A variance does not get approved quietly — it stops, and it names the buyer who owns the contract.",
+   "lede": "This is the largest of the six leaks, and the most ordinary. The contract says one number, the invoice says another, and nobody opens the contract for a bill this size.",
+   "checks": [
+    "Line rate against the contracted rate for that item, that vendor, that period",
+    "Rate against the PO, where a PO exists and the contract does not cover the item",
+    "Price escalations claimed against the escalation clause that permits them",
+    "Freight, handling and surcharges against what the contract actually allows to be added"
+   ],
+   "reads": [
+    "The vendor contract and its rate schedule",
+    "The purchase order",
+    "Invoice lines, item by item"
+   ],
+   "writes": [
+    "A hold on the line, with the variance in both percentage and rupees",
+    "The contract clause the line was tested against",
+    "A note to the buyer who owns the contract"
+   ],
+   "upstream": [
+    "duplicate-agent"
+   ],
+   "downstream": [
+    "3-way-match-agent",
+    "discount-agent"
+   ],
+   "ambiguity": "Where no contract covers the item, the agent says so rather than passing the line. An uncovered rate is a different finding from an overcharge, and it is reported as its own thing — usually it means a contract expired and nobody renewed it."
+  },
+  {
+   "slug": "3-way-match-agent",
+   "name": "3-way match Agent",
+   "workflow": "invoice-entry",
+   "accent": "rose",
+   "statement": "Nothing is paid for that wasn't received.",
+   "mechanism": "PO, GRN and invoice have to agree on quantity, rate and item before the entry stands. All three, on every line, every time.",
+   "lede": "The invoice bills 82 MT. The gate received 78. Both facts are true, and they live in different systems, which is why the difference is usually found in a stock reconciliation months later.",
+   "checks": [
+    "Invoiced quantity against goods actually received, line by line",
+    "Item and specification, not just the total — a substituted grade at the contracted rate is still a variance",
+    "Partial deliveries billed as complete",
+    "Tolerances you define, applied consistently rather than at each approver's discretion"
+   ],
+   "reads": [
+    "Purchase orders",
+    "Goods receipt notes from the plant or warehouse system",
+    "Invoice lines"
+   ],
+   "writes": [
+    "A short-receipt finding with the quantity gap priced",
+    "The GRN reference the invoice was tested against",
+    "A hold until the gap is explained or the invoice is revised"
+   ],
+   "upstream": [
+    "pricing-agent",
+    "duplicate-agent"
+   ],
+   "downstream": [
+    "gst-agent",
+    "tds-agent"
+   ],
+   "ambiguity": "Where the GRN has not arrived yet, the invoice is not failed — it is parked as awaiting receipt, with the age of the wait visible. A missing GRN and a short receipt are different problems and are never merged into one."
+  },
+  {
+   "slug": "gst-agent",
+   "name": "GST Agent",
+   "workflow": "invoice-entry",
+   "accent": "mint",
+   "statement": "Input credit is never claimed before the vendor has earned it.",
+   "mechanism": "The vendor's filing status is checked at the point of entry, not discovered at the annual return when the credit has already been taken and spent.",
+   "lede": "Input credit depends on someone else's compliance. If the vendor has not filed, the credit was never yours to take — and finding that out a year later means reversing it with interest.",
+   "checks": [
+    "Vendor GSTIN active and valid on the invoice date",
+    "Filing status for the relevant period before the credit is claimed",
+    "Place of supply, and whether the tax charged is the tax that should have been charged",
+    "Invoice appearing in the vendor's outward supplies, matched against what was booked"
+   ],
+   "reads": [
+    "Vendor GSTIN and filing status",
+    "Tax lines on the invoice",
+    "Your own claim register"
+   ],
+   "writes": [
+    "A hold on the credit claim, not on the payment, where the vendor has not filed",
+    "The period and status the decision was based on",
+    "A follow-up to the vendor to file"
+   ],
+   "upstream": [
+    "3-way-match-agent"
+   ],
+   "downstream": [
+    "tds-agent"
+   ],
+   "ambiguity": "Filing status changes. A credit held today may be claimable next month, so the hold is a queue rather than a rejection — the claim is re-tested as status updates, and released when it qualifies."
+  },
+  {
+   "slug": "tds-agent",
+   "name": "TDS Agent",
+   "workflow": "invoice-entry",
+   "accent": "iris",
+   "statement": "Tax is deducted at the right section and the right rate, on every payment.",
+   "mechanism": "Vendor type, threshold and section are resolved before the entry is posted — not corrected in a return two quarters later, and not paid out of your own pocket as interest.",
+   "lede": "Under-deducting is the expensive direction. The shortfall is recoverable from the vendor in theory and almost never in practice, so it becomes a cost plus interest.",
+   "checks": [
+    "The correct section for the nature of the payment, not the one used last time",
+    "Rate against vendor status — PAN validity, and whether a lower-deduction certificate applies",
+    "Annual thresholds, including whether this payment is the one that crosses them",
+    "Cumulative deduction against the vendor for the year, so the crossing is caught on the day"
+   ],
+   "reads": [
+    "Vendor master, PAN status and any certificates on file",
+    "Payment nature and the invoice narration",
+    "Year-to-date payments to that vendor"
+   ],
+   "writes": [
+    "The section and rate applied, with the reason recorded",
+    "A correction where the entry was raised at the wrong rate",
+    "A flag when this payment crosses a threshold"
+   ],
+   "upstream": [
+    "gst-agent"
+   ],
+   "downstream": [
+    "pan-agent",
+    "msme-agent"
+   ],
+   "ambiguity": "Where the nature of a payment is genuinely arguable between two sections, the agent applies the higher-deduction reading and flags it for review, rather than choosing the cheaper one and leaving you exposed."
+  },
+  {
+   "slug": "discount-agent",
+   "name": "Discount Agent",
+   "workflow": "payment-processing",
+   "accent": "mint",
+   "statement": "An early-payment discount that was available is never left unclaimed.",
+   "mechanism": "Discount terms are read off the contract and the invoice, and the payment run is built to hit the date the discount actually requires.",
+   "lede": "This is the only one of the six that is not a leak so much as an unopened envelope. The money is offered, the terms are on the invoice, and the approval takes twelve days when the discount needed ten.",
+   "checks": [
+    "Discount terms on the invoice against the terms in the contract, where they differ",
+    "The date the discount actually expires, counted from the right event",
+    "Whether the run is scheduled to land inside that window",
+    "The trade-off, where taking the discount conflicts with a payment date set for cash reasons"
+   ],
+   "reads": [
+    "Contract payment terms",
+    "Invoice terms and dates",
+    "The scheduled payment run"
+   ],
+   "writes": [
+    "A recommended payment date that captures the discount",
+    "The value of taking it against the value of holding cash",
+    "A record when a discount was consciously let go, and why"
+   ],
+   "upstream": [
+    "pricing-agent"
+   ],
+   "downstream": [
+    "payments-agent"
+   ],
+   "ambiguity": "Cash position beats a discount sometimes, and that is a treasury decision rather than an accounts one. The agent surfaces the number and the deadline; it does not move a payment date on its own."
+  },
+  {
+   "slug": "payments-agent",
+   "name": "Payments Agent",
+   "workflow": "payment-processing",
+   "accent": "mint",
+   "statement": "A payment run contains only entries that passed every check.",
+   "mechanism": "Eligibility is decided by what cleared at entry, not by what is due. An invoice that is still held cannot be swept into a run because the date arrived.",
+   "lede": "The run is the last point at which anything is reversible. Everything after it is a recovery conversation.",
+   "checks": [
+    "Every line in the run traces to an entry that cleared its checks",
+    "Held items cannot enter the run because their due date passed",
+    "Amounts in the run match the approved entry, not the original invoice",
+    "Nothing is in the run twice under two references"
+   ],
+   "reads": [
+    "Approved entries and their check history",
+    "The proposed payment run",
+    "Payment terms and due dates"
+   ],
+   "writes": [
+    "The run, with anything ineligible excluded and the reason recorded",
+    "A traceable link from each payment back to the invoice and the checks behind it"
+   ],
+   "upstream": [
+    "discount-agent",
+    "doa-agent"
+   ],
+   "downstream": [
+    "bank-agent",
+    "msme-agent"
+   ],
+   "ambiguity": "Where an entry is eligible but something changed since approval — an amount, a bank account, a vendor status — it leaves the run and is named, rather than being paid on the strength of an approval that no longer describes it."
+  },
+  {
+   "slug": "msme-agent",
+   "name": "MSME Agent",
+   "workflow": "invoice-entry",
+   "accent": "iris",
+   "statement": "The 45-day clock starts on day one and never runs out unnoticed.",
+   "mechanism": "Every registered small vendor's invoice is dated, tracked and scheduled inside the statutory window, so the deadline is a constraint on the payment run rather than an interest calculation afterwards.",
+   "lede": "Section 43B(h) made late payment to registered micro and small enterprises an expense you cannot deduct until you actually pay it. The clock is unforgiving and nobody has time to watch it per vendor.",
+   "checks": [
+    "Udyam registration status against the vendor, not against memory",
+    "The day the clock actually started, from the right event",
+    "Days remaining on every open invoice for a registered vendor",
+    "Whether the scheduled run lands inside the window"
+   ],
+   "reads": [
+    "Vendor master and Udyam registration",
+    "Invoice and acceptance dates",
+    "The scheduled payment run"
+   ],
+   "writes": [
+    "Days remaining against every open MSME invoice",
+    "A scheduling constraint on the run",
+    "A flag where the window cannot be met, before it is missed"
+   ],
+   "upstream": [
+    "tds-agent"
+   ],
+   "downstream": [
+    "doa-agent"
+   ],
+   "ambiguity": "Registration status changes, and a vendor can be registered after invoicing. Where status is unclear the invoice is treated as in-scope and flagged — the expensive direction is assuming it is not."
+  },
+  {
+   "slug": "pan-agent",
+   "name": "PAN Agent",
+   "workflow": "invoice-entry",
+   "accent": "sand",
+   "statement": "No payment goes to an unverified PAN.",
+   "mechanism": "Status and linkage are confirmed before the vendor is paid at the standard rate, because an inoperative PAN means deduction at a much higher rate and the shortfall lands on you.",
+   "lede": "A PAN that has gone inoperative does not announce itself. It shows up as a demand for the difference, plus interest, long after the payment.",
+   "checks": [
+    "PAN present, valid and active against the vendor",
+    "PAN linked, so the higher deduction rate does not apply",
+    "Name on the PAN against the name on the invoice",
+    "New vendors verified before the first payment rather than after"
+   ],
+   "reads": [
+    "Vendor master",
+    "Invoice party details"
+   ],
+   "writes": [
+    "Verified status against the vendor record",
+    "A hold where the PAN would force a higher rate",
+    "The evidence behind the decision"
+   ],
+   "upstream": [
+    "tds-agent"
+   ],
+   "downstream": [
+    "msme-agent"
+   ],
+   "ambiguity": "Where a name is close but not identical — an initial, a suffix, a legal-entity form — the agent does not decide the match. It shows both and asks, because a wrong assumption here is a wrong deduction on every payment that follows."
+  },
+  {
+   "slug": "doa-agent",
+   "name": "DOA Agent",
+   "workflow": "invoice-entry",
+   "accent": "rose",
+   "statement": "Nothing is approved by someone who isn't allowed to approve it.",
+   "mechanism": "The delegation of authority is applied at entry rather than audited afterwards, against limits and tolerances you define, with every override logged against a named user.",
+   "lede": "The delegation exists. It is a document. Whether it operated on a given invoice is a separate question, usually answered months later by someone testing a sample.",
+   "checks": [
+    "Approver against the limit for that value, that category, that entity",
+    "Splitting — two entries just under a limit that together cross it",
+    "Maker and checker are actually different people",
+    "Overrides recorded against a named user with a reason"
+   ],
+   "reads": [
+    "The delegation matrix and your defined limits",
+    "Invoice value, category and entity",
+    "The approval chain as it happened"
+   ],
+   "writes": [
+    "A block where the approval exceeds authority",
+    "The rule that was applied",
+    "An override log entry where someone went past it deliberately"
+   ],
+   "upstream": [
+    "msme-agent",
+    "pan-agent"
+   ],
+   "downstream": [
+    "payments-agent"
+   ],
+   "ambiguity": "Where a category is ambiguous and two limits could apply, the lower is enforced and the case is named. It is the reversible direction — an unnecessary approval costs a day, an unauthorised one costs the control."
+  },
+  {
+   "slug": "journal-agent",
+   "name": "Journal Agent",
+   "workflow": "sync-to-erp",
+   "accent": "iris",
+   "statement": "Every entry that reaches the ledger is balanced and carries its support.",
+   "mechanism": "Balance, account, period and attachment are checked before the entry is written, so the ledger never holds something that has to be found and fixed later.",
+   "lede": "An unbalanced or unsupported entry is not caught by the ledger. It is caught by a person, during the close, when there is least time to deal with it.",
+   "checks": [
+    "Debits equal credits, at the entry rather than at the batch",
+    "Accounts exist, are active, and are the ones the transaction implies",
+    "Supporting document attached and readable",
+    "Narration that will still mean something in nine months"
+   ],
+   "reads": [
+    "The transaction and its checks",
+    "Chart of accounts",
+    "Source documents"
+   ],
+   "writes": [
+    "A balanced entry into your ERP",
+    "The support, attached",
+    "The check history against the entry"
+   ],
+   "upstream": [
+    "payments-agent"
+   ],
+   "downstream": [
+    "reconciliation-agent",
+    "period-agent"
+   ],
+   "ambiguity": "Where the correct account is genuinely arguable, the entry is not guessed into the nearest one. It is held with the candidates and what distinguishes them."
+  },
+  {
+   "slug": "reconciliation-agent",
+   "name": "Reconciliation Agent",
+   "workflow": "sync-to-erp",
+   "accent": "mint",
+   "statement": "The sub-ledger agrees to the control account every day, not every month.",
+   "mechanism": "Matching runs continuously, so a break is found on the day it appears rather than at the close, when its cause is a month cold.",
+   "lede": "A break found on the day it happened usually has an obvious cause. The same break found five weeks later is an investigation.",
+   "checks": [
+    "Sub-ledger balance against the control account, daily",
+    "Bank lines against booked payments",
+    "Unmatched items, with an age against each",
+    "Breaks that are growing rather than static"
+   ],
+   "reads": [
+    "Sub-ledger and control account balances",
+    "Bank statements",
+    "Booked payments and receipts"
+   ],
+   "writes": [
+    "The break, with its age and probable cause",
+    "Matched items cleared automatically",
+    "The reconciliation trail"
+   ],
+   "upstream": [
+    "journal-agent"
+   ],
+   "downstream": [
+    "intercompany-agent",
+    "report-agent"
+   ],
+   "ambiguity": "A probable match is not a match. Where confidence is short of certain, the item stays open with both candidates shown — a wrongly cleared break is worse than an open one, because it stops being visible."
+  },
+  {
+   "slug": "intercompany-agent",
+   "name": "Intercompany Agent",
+   "workflow": "sync-to-erp",
+   "accent": "rose",
+   "statement": "Both sides agree before either is posted.",
+   "mechanism": "The counterparty entity confirms the entry before it lands, so eliminations at consolidation are arithmetic rather than negotiation.",
+   "lede": "Intercompany differences are not usually errors. They are two entities booking the same transaction on different days, at different amounts, in different currencies, and both being right.",
+   "checks": [
+    "Counterparty entity, amount and date agreed on both sides",
+    "Currency and the rate applied on each side",
+    "The entry exists in both books before consolidation",
+    "Balances that will eliminate cleanly"
+   ],
+   "reads": [
+    "Both entities' entries",
+    "Group structure and elimination rules",
+    "Exchange rates applied"
+   ],
+   "writes": [
+    "The agreed entry in both books",
+    "A hold where the sides do not agree, showing the difference",
+    "The agreement trail"
+   ],
+   "upstream": [
+    "reconciliation-agent"
+   ],
+   "downstream": [
+    "period-agent"
+   ],
+   "ambiguity": "Where the two sides disagree, neither is assumed right. The difference is quantified and put to both entity controllers, because the resolution is a decision about the transaction, not about the bookkeeping."
+  },
+  {
+   "slug": "period-agent",
+   "name": "Period Agent",
+   "workflow": "sync-to-erp",
+   "accent": "sand",
+   "statement": "Nothing is posted into a closed period.",
+   "mechanism": "The period is checked at the moment of posting, and cut-off is applied by the date of the event rather than the date someone got to the paperwork.",
+   "lede": "Most cut-off errors are not deliberate. They are an invoice for March processed in April, booked on the day it was keyed.",
+   "checks": [
+    "The period is open for this entry type and entity",
+    "The event date, not the entry date, decides the period",
+    "Accruals raised for what belongs in the period but has not arrived",
+    "Prior-period items routed as adjustments rather than posted quietly"
+   ],
+   "reads": [
+    "Period status per entity",
+    "Event dates on the transaction",
+    "Accrual policy"
+   ],
+   "writes": [
+    "The entry in the correct period",
+    "An accrual where the document has not arrived",
+    "A routed adjustment where the period is closed"
+   ],
+   "upstream": [
+    "journal-agent",
+    "intercompany-agent"
+   ],
+   "downstream": [
+    "audit-agent"
+   ],
+   "ambiguity": "Where the event date is genuinely unclear — a service spanning a period end — the entry is split or flagged rather than assigned to whichever period is convenient."
+  },
+  {
+   "slug": "audit-agent",
+   "name": "Audit Agent",
+   "workflow": "sync-to-erp",
+   "accent": "iris",
+   "statement": "Every decision can be re-read later: what was checked, what was found, who released it.",
+   "mechanism": "The trail is written as the checks run, immutably, so evidence is a record rather than a reconstruction.",
+   "lede": "The difference between a control that operated and one that is asserted to have operated is whether anyone can show it, months later, without rebuilding the story.",
+   "checks": [
+    "Every check that ran against the transaction, and its result",
+    "Who approved, who overrode, and the reason given",
+    "The document version the decision was made on",
+    "That the trail cannot be edited after the fact"
+   ],
+   "reads": [
+    "Every agent's output",
+    "Approvals and overrides",
+    "Document versions"
+   ],
+   "writes": [
+    "An immutable record per transaction",
+    "Evidence packs that can be handed to an auditor as they are",
+    "Control adherence per step"
+   ],
+   "upstream": [
+    "period-agent"
+   ],
+   "downstream": [
+    "report-agent"
+   ],
+   "ambiguity": "Nothing is omitted for being inconvenient. A check that failed and was overridden is recorded exactly as that, including who decided and why — a trail that only holds the clean cases is not a trail."
+  },
+  {
+   "slug": "report-agent",
+   "name": "Report Agent",
+   "workflow": "sync-to-erp",
+   "accent": "mint",
+   "statement": "The books are reportable the day the period ends, without a cleanup pass.",
+   "mechanism": "Because entries arrived clean, closing is a confirmation rather than a correction exercise.",
+   "lede": "A close is long in proportion to how much was deferred into it. Nothing is deferred here, so there is nothing waiting.",
+   "checks": [
+    "All entries for the period posted, balanced and supported",
+    "Reconciliations complete and breaks explained",
+    "Intercompany eliminated",
+    "Nothing sitting in a suspense account"
+   ],
+   "reads": [
+    "The full ledger for the period",
+    "Reconciliation and intercompany status",
+    "Accrual completeness"
+   ],
+   "writes": [
+    "Close status, by entity and by step",
+    "What remains, with an owner against each",
+    "Reports ready without adjustment"
+   ],
+   "upstream": [
+    "audit-agent",
+    "reconciliation-agent"
+   ],
+   "downstream": [],
+   "ambiguity": "The close is not declared complete because a date arrived. Anything unresolved is named and owned, and the status says so rather than rounding to done."
+  },
+  {
+   "slug": "bank-agent",
+   "name": "Bank Agent",
+   "workflow": "payment-processing",
+   "accent": "rose",
+   "statement": "A beneficiary account cannot change silently between approval and payment.",
+   "mechanism": "Bank details are verified against what was approved, not against what is current in the vendor master — which is the exact gap a vendor-impersonation attempt is built to exploit.",
+   "lede": "The most expensive fraud in accounts payable is not a fake invoice. It is a real invoice, from a real vendor, paid into an account that changed last week.",
+   "checks": [
+    "Beneficiary account against the one on the approved entry",
+    "Any change to vendor bank details since approval, and who made it",
+    "Account name against the vendor name",
+    "First payments to a newly changed account, held for confirmation"
+   ],
+   "reads": [
+    "The approved entry and its bank details",
+    "Vendor master change history",
+    "The payment file before release"
+   ],
+   "writes": [
+    "A hold where details changed after approval",
+    "The change, with who made it and when",
+    "Confirmation before the first payment on new details"
+   ],
+   "upstream": [
+    "payments-agent"
+   ],
+   "downstream": [
+    "doa-agent"
+   ],
+   "ambiguity": "A legitimate bank change looks identical to a fraudulent one at the moment it is made. So the agent never decides which it is — it stops the first payment on changed details and asks for confirmation through a channel that is not the one the change arrived on."
+  }
+ ]
 }

@@ -293,27 +293,38 @@ LINK_MAP = {
     'gst agent': '/agents/gst-agent',
     'tds agent': '/agents/tds-agent',
     'discount agent': '/agents/discount-agent',
-    'payments agent': '/agents', 'msme agent': '/agents',
+    'payments agent': '/agents/payments-agent',
+    'msme agent': '/agents/msme-agent',
     'view all agents': '/agents',
     'invoice entry': '/workflows/invoice-entry',
     'sync to erp': '/workflows/sync-to-erp',
     'payment processing': '/workflows/payment-processing',
-    'daily close': '/workflows/sync-to-erp',
-    'multi-entity groups': '/workflows/sync-to-erp',
-    'multi-currency': '/workflows/sync-to-erp',
+    'daily close': '/workflows/daily-close',
+    'multi-entity groups': '/workflows/multi-entity-groups',
+    'multi-currency': '/workflows/multi-currency',
+    'sap': '/integrations/sap',
+    'oracle': '/integrations/oracle',
+    'oracle netsuite': '/integrations/netsuite',
+    'tally': '/integrations/tally',
+    'zoho books': '/integrations/zoho-books',
+    'quickbooks': '/integrations/quickbooks',
+    'sage': '/integrations/sage',
+    'odoo': '/integrations/odoo',
+    'anything with an export': '/integrations',
+    'cfo': '/for/cfo',
+    'controller': '/for/controller',
+    'head of finance': '/for/head-of-finance',
+    'ap lead': '/for/ap-lead',
+    'group treasurer': '/for/group-treasurer',
+    'internal audit': '/for/internal-audit',
     'about yantrai labs': '/about',
     'careers': '/careers',
     'security': '/security',
-    'contact': '/#book', 'support': '/#book',
+    'contact': '/#book',
+    'support': '/#book',
     'how aifa works': '/#how',
     'what it found': '/what-it-found',
-    'implementation': '/#integration',
-    'anything with an export': '/#integration',
-    'sap': '/#integration', 'oracle': '/#integration', 'oracle netsuite': '/#integration',
-    'tally': '/#integration', 'zoho books': '/#integration', 'quickbooks': '/#integration',
-    'sage': '/#integration', 'odoo': '/#integration',
-    'cfo': '/#book', 'controller': '/#book', 'head of finance': '/#book',
-    'ap lead': '/#book', 'group treasurer': '/#book', 'internal audit': '/#book',
+    'implementation': '/integrations',
 }
 
 _baked, _left = 0, []
@@ -747,4 +758,268 @@ for w in WORKFLOW_PAGES:
         f.write(html_out)
     page_count += 1
 print('%-18s %d pages' % ('workflows/', len(WORKFLOW_PAGES)))
+
+
+# --------------------------------------------- generated integration pages
+INTEGRATIONS = json.loads(read('pages', 'integrations.json'))
+
+
+def render_integration(x):
+    others = [o for o in INTEGRATIONS if o['slug'] != x['slug']][:5]
+    return """<div class="wrap">
+  <div class="crumb"><a href="/">AiFA</a> · <a href="/integrations">Integrations</a> · %(name)s</div>
+  <div class="masthead">
+    <span class="eyebrow %(accent)s"><i></i>%(name)s</span>
+    <h1 class="display">%(headline)s</h1>
+    <p class="lede">%(lede)s</p>
+  </div>
+</div>
+
+<section class="band">
+  <div class="wrap wrap-wide">
+    <h2 class="sec">What AiFA reads, what it writes back</h2>
+    <div class="cards">
+      <div>
+        <h3>Reads from %(name)s</h3>
+        <ul class="checks" style="margin-top:16px">
+%(reads)s
+        </ul>
+      </div>
+      <div>
+        <h3>Writes back into %(name)s</h3>
+        <ul class="checks" style="margin-top:16px">
+%(writes)s
+        </ul>
+      </div>
+    </div>
+    <div class="callout">
+      <span class="label">What it never touches</span>
+      <p>%(never)s</p>
+    </div>
+  </div>
+</section>
+
+<section class="band wash">
+  <div class="wrap">
+    <h2 class="sec">Where you start</h2>
+    <p class="statement">An export, not a project.<span class="after">%(start)s</span></p>
+    <p>%(note)s</p>
+  </div>
+</section>
+
+<section class="band">
+  <div class="wrap wrap-wide">
+    <h2 class="sec">What runs against it</h2>
+    <p>The same team, whichever system holds the books. The checks depend on the contract, the PO and the receipt — not on one ERP\u2019s schema.</p>
+    <div class="inline-links">
+      <a href="/agents">All 17 agents \u2192</a>
+      <a href="/workflows/invoice-entry">Invoice entry \u2192</a>
+      <a href="/workflows/payment-processing">Payment processing \u2192</a>
+      <a href="/security">How your data is handled \u2192</a>
+    </div>
+  </div>
+</section>
+
+<section class="next">
+  <div class="wrap">
+    <h2>Run it on 90 days of your own %(name)s data.</h2>
+    <p>One export. No connector, and nothing to install.</p>
+    <a class="btn" href="/#book"><span class="rupee">\u20B9</span>Check your savings<span>\u2192</span></a>
+    <div class="inline-links">
+      %(others)s
+    </div>
+  </div>
+</section>
+""" % {
+        'name': x['name'], 'accent': x['accent'], 'headline': x['headline'], 'lede': x['lede'],
+        'reads': li(x['reads']), 'writes': li(x['writes']),
+        'never': x['never'], 'start': x['start'], 'note': x['note'],
+        'others': '\n      '.join('<a href="/integrations/%s">%s \u2192</a>' % (o['slug'], o['name'])
+                                  for o in others),
+    }
+
+
+def render_integrations_index():
+    cards = '\n      '.join(
+        '<div><h3><a href="/integrations/%s" style="color:inherit;text-decoration:none">%s</a></h3>'
+        '<p>%s</p></div>' % (x['slug'], x['name'], x['headline']) for x in INTEGRATIONS)
+    return """<div class="wrap">
+  <div class="crumb"><a href="/">AiFA</a> · Integrations</div>
+  <div class="masthead">
+    <span class="eyebrow"><i></i>Integrations</span>
+    <h1 class="display">Your ERP stays<br>the system of <em class="mark">record</em>.</h1>
+    <p class="lede">AiFA reads from the system that already holds your books and posts outcomes back into it. There is no migration, no second ledger, and nothing to reconcile between the two.</p>
+  </div>
+</div>
+
+<section class="band">
+  <div class="wrap wrap-wide">
+    <h2 class="sec">Where the books already live</h2>
+    <div class="cards">
+      %(cards)s
+    </div>
+    <div class="callout">
+      <span class="label">Anything with an export</span>
+      <p>The list above is where we have done the work of knowing the data model. It is not a gate. The savings check runs on a purchase register or an AP extract, and every ERP produces one — including the one you built yourself.</p>
+    </div>
+  </div>
+</section>
+
+<section class="next">
+  <div class="wrap">
+    <h2>Start with the export your team already produces.</h2>
+    <a class="btn" href="/#book"><span class="rupee">\u20B9</span>Check your savings<span>\u2192</span></a>
+    <div class="inline-links">
+      <a href="/security">How your data is handled \u2192</a>
+      <a href="/agents">The AI team \u2192</a>
+    </div>
+  </div>
+</section>
+""" % {'cards': cards}
+
+
+for x in INTEGRATIONS:
+    html_out = build_content_page(
+        'integrations/' + x['slug'],
+        '%s + AiFA — %s | AiFA' % (x['name'], x['headline'].rstrip('.')),
+        x['lede'][:200], render_integration(x), NAV, FOOTER)
+    d = os.path.join(ROOT, 'integrations', x['slug'])
+    os.makedirs(d, exist_ok=True)
+    with open(os.path.join(d, 'index.html'), 'w', encoding='utf-8') as f:
+        f.write(html_out)
+    page_count += 1
+
+_idx = build_content_page('integrations', 'Integrations — your ERP stays the system of record | AiFA',
+                          'AiFA reads from the ERP that already holds your books and posts back into it. '
+                          'Tally, SAP, Oracle, NetSuite, Zoho Books, QuickBooks, Sage, Odoo.',
+                          render_integrations_index(), NAV, FOOTER)
+os.makedirs(os.path.join(ROOT, 'integrations'), exist_ok=True)
+with open(os.path.join(ROOT, 'integrations', 'index.html'), 'w', encoding='utf-8') as f:
+    f.write(_idx)
+page_count += 1
+print('%-18s %d pages + index' % ('integrations/', len(INTEGRATIONS)))
+
+
+# ---------------------------------------------------- generated role pages
+ROLES = json.loads(read('pages', 'roles.json'))
+
+
+def render_role(r):
+    others = [o for o in ROLES if o['slug'] != r['slug']]
+    asks = '\n'.join('      <div class="step"><div class="n">%02d</div><div><h3>%s</h3></div></div>'
+                     % (i + 1, q) for i, q in enumerate(r['asks']))
+    return """<div class="wrap">
+  <div class="crumb"><a href="/">AiFA</a> · <a href="/for">Roles</a> · %(name)s</div>
+  <div class="masthead">
+    <span class="eyebrow %(accent)s"><i></i>For the %(name)s</span>
+    <h1 class="display">%(headline)s</h1>
+    <p class="lede">%(lede)s</p>
+  </div>
+</div>
+
+<section class="band">
+  <div class="wrap wrap-wide">
+    <h2 class="sec">What you are measured on</h2>
+    <ul class="checks">
+%(measured)s
+    </ul>
+    <div class="callout">
+      <span class="label">Where the leak hits your number</span>
+      <p>%(leak)s</p>
+    </div>
+  </div>
+</section>
+
+<section class="band wash">
+  <div class="wrap">
+    <h2 class="sec">What changes in your week</h2>
+    <ul class="checks">
+%(changes)s
+    </ul>
+  </div>
+</section>
+
+<section class="band">
+  <div class="wrap">
+    <h2 class="sec">What you would ask in the first meeting</h2>
+    <div class="flow">
+%(asks)s
+    </div>
+    <p class="statement" style="margin-top:34px">%(answer)s</p>
+  </div>
+</section>
+
+<section class="next">
+  <div class="wrap">
+    <h2>Ninety days of invoices answers this better than a meeting.</h2>
+    <p>One export, findings back within a working day, with the invoice attached to each.</p>
+    <a class="btn" href="/#book"><span class="rupee">\u20B9</span>Check your savings<span>\u2192</span></a>
+    <div class="inline-links">
+      %(others)s
+    </div>
+  </div>
+</section>
+""" % {
+        'name': r['name'], 'accent': r['accent'], 'headline': r['headline'], 'lede': r['lede'],
+        'measured': li(r['measured']), 'changes': li(r['changes']),
+        'leak': r['leak'], 'asks': asks, 'answer': r['answer'],
+        'others': '\n      '.join('<a href="/for/%s">For the %s \u2192</a>' % (o['slug'], o['name'])
+                                  for o in others),
+    }
+
+
+def render_roles_index():
+    cards = '\n      '.join(
+        '<div><h3><a href="/for/%s" style="color:inherit;text-decoration:none">%s</a></h3>'
+        '<p>%s</p></div>' % (r['slug'], r['name'], r['headline']) for r in ROLES)
+    return """<div class="wrap">
+  <div class="crumb"><a href="/">AiFA</a> · Roles</div>
+  <div class="masthead">
+    <span class="eyebrow rose"><i></i>By role</span>
+    <h1 class="display">The same product,<br>argued for the person<br>who has to <em class="mark">sign</em>.</h1>
+    <p class="lede">A CFO, a controller and an AP lead are not buying the same thing. Same six leaks, same seventeen agents — different reason to care.</p>
+  </div>
+</div>
+
+<section class="band">
+  <div class="wrap wrap-wide">
+    <div class="cards">
+      %(cards)s
+    </div>
+  </div>
+</section>
+
+<section class="next">
+  <div class="wrap">
+    <h2>Whoever you are, it starts the same way.</h2>
+    <a class="btn" href="/#book"><span class="rupee">\u20B9</span>Check your savings<span>\u2192</span></a>
+    <div class="inline-links">
+      <a href="/what-it-found">What the checks find \u2192</a>
+      <a href="/security">How your data is handled \u2192</a>
+    </div>
+  </div>
+</section>
+""" % {'cards': cards}
+
+
+for r in ROLES:
+    html_out = build_content_page(
+        'for/' + r['slug'],
+        'AiFA for the %s — %s | AiFA' % (r['name'], r['headline'].rstrip('.')),
+        r['lede'][:200], render_role(r), NAV, FOOTER)
+    d = os.path.join(ROOT, 'for', r['slug'])
+    os.makedirs(d, exist_ok=True)
+    with open(os.path.join(d, 'index.html'), 'w', encoding='utf-8') as f:
+        f.write(html_out)
+    page_count += 1
+
+_ridx = build_content_page('for', 'AiFA by role — CFO, Controller, AP Lead | AiFA',
+                           'Same six leaks, same seventeen agents, different reason to care. '
+                           'AiFA for the CFO, controller, head of finance, AP lead, treasurer and internal audit.',
+                           render_roles_index(), NAV, FOOTER)
+os.makedirs(os.path.join(ROOT, 'for'), exist_ok=True)
+with open(os.path.join(ROOT, 'for', 'index.html'), 'w', encoding='utf-8') as f:
+    f.write(_ridx)
+page_count += 1
+print('%-18s %d pages + index' % ('for/', len(ROLES)))
 print('total content pages: %d' % page_count)

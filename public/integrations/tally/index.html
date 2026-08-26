@@ -1,0 +1,273 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Tally + AiFA — The books most of Indian mid-market actually runs on | AiFA</title>
+<meta name="description" content="TallyPrime and Tally.ERP 9 hold the ledger for a very large share of Indian companies — including plenty with a global ERP sitting above them. AiFA reads what Tally already holds and posts back into i">
+<link rel="canonical" href="https://yantrailabs.com/integrations/tally">
+<meta name="theme-color" content="#FFFFFF">
+<meta name="robots" content="index, follow">
+
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="YantrAI">
+<meta property="og:title" content="Tally + AiFA — The books most of Indian mid-market actually runs on | AiFA">
+<meta property="og:description" content="TallyPrime and Tally.ERP 9 hold the ledger for a very large share of Indian companies — including plenty with a global ERP sitting above them. AiFA reads what Tally already holds and posts back into i">
+<meta property="og:url" content="https://yantrailabs.com/integrations/tally">
+<meta property="og:image" content="https://yantrailabs.com/assets/og-cover.jpg">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="AiFA — AI Teams for Finance">
+<meta name="twitter:description" content="TallyPrime and Tally.ERP 9 hold the ledger for a very large share of Indian companies — including plenty with a global ERP sitting above them. AiFA reads what Tally already holds and posts back into i">
+<meta name="twitter:image" content="https://yantrailabs.com/assets/og-cover.jpg">
+
+<link rel="icon" href="/assets/favicon.svg" type="image/svg+xml">
+<link rel="apple-touch-icon" href="/assets/apple-touch-icon.png">
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Newsreader:opsz,wght@6..72,200..600&family=Archivo:wght@400;500;600&display=swap">
+<link rel="preload" as="image" href="/assets/aifa-video-poster.jpg">
+<style>
+body { margin: 0; background: #FFFFFF; }
+    a { color: #151414; text-decoration: none; }
+    a:hover { color: #5A5A5A; }
+    @keyframes rise { from { opacity: 0; transform: translateY(14px); } to { opacity: 1; transform: none; } }
+    @keyframes chipIn { from { opacity: 0; } to { opacity: 1; } }
+    @keyframes chipOut1 { from { opacity: 0; transform: translate(190px, 110px) scale(0.82); } to { opacity: 1; transform: none; } }
+    @keyframes chipOut2 { from { opacity: 0; transform: translate(-190px, 130px) scale(0.82); } to { opacity: 1; transform: none; } }
+    @keyframes chipOut3 { from { opacity: 0; transform: translate(210px, 20px) scale(0.82); } to { opacity: 1; transform: none; } }
+    @keyframes chipOut4 { from { opacity: 0; transform: translate(-200px, -10px) scale(0.82); } to { opacity: 1; transform: none; } }
+    @keyframes chipOut5 { from { opacity: 0; transform: translate(180px, -120px) scale(0.82); } to { opacity: 1; transform: none; } }
+    @keyframes chipOut6 { from { opacity: 0; transform: translate(-190px, -110px) scale(0.82); } to { opacity: 1; transform: none; } }
+    @keyframes marqueeR { from { transform: translateX(-50%); } to { transform: translateX(0); } }
+    @keyframes marqueeL { from { transform: translateX(0); } to { transform: translateX(-50%); } }
+    @media (prefers-reduced-motion: reduce) {
+      [data-rise] { animation: none !important; opacity: 1 !important; transform: none !important; }
+      [data-chip] { animation: none !important; opacity: 1 !important; }
+      [data-float], [data-marquee] { animation: none !important; }
+    }
+    @media (max-width: 1180px) { [data-nav-tagline] { display: none !important; } [data-ghost] { display: none !important; } }
+    @media (max-width: 1020px) { [data-nav-links] { display: none !important; } }
+    @media (max-width: 1240px) { [data-ring-row] { grid-template-columns: 200px minmax(0, 1fr) 250px !important; gap: 28px !important; } }
+    @media (max-height: 780px) { [data-agents-inner] { gap: 26px !important; } [data-ring] { max-width: 360px !important; } }
+    @media (prefers-reduced-motion: reduce) { #agents { height: auto !important; } #agents > div { position: static !important; height: auto !important; padding: 128px 56px !important; } }
+    @media (max-width: 1180px) { [data-proof-row] > div { grid-template-columns: 1fr 260px 1fr !important; } }
+    @media (max-height: 760px) { [data-proof-inner] { gap: 22px !important; } [data-proof-row] > div { min-height: 80px !important; } }
+    @media (prefers-reduced-motion: reduce) { #proof { height: auto !important; } #proof > div { position: static !important; height: auto !important; padding: 128px 56px !important; } }
+    @media (max-width: 1180px) { [data-agent-grid] { grid-template-columns: repeat(2, 1fr) !important; } }
+    @media (max-width: 1020px) { [data-int-head] { grid-template-columns: 1fr !important; gap: 32px !important; } }
+    @media (max-width: 860px) { [data-expect] { grid-template-columns: 1fr !important; gap: 22px !important; } }
+    @media (max-width: 1180px) { [data-foot-grid] { grid-template-columns: 1.2fr 1fr 1fr !important; } [data-foot-grid] > div:first-child { grid-row: span 3 !important; } }
+    @media (max-width: 820px) { [data-foot-grid] { grid-template-columns: 1fr 1fr !important; gap: 48px 32px !important; } [data-foot-grid] > div:first-child { grid-row: auto !important; grid-column: span 2 !important; } }
+    @media (max-width: 1180px) { [data-agents-head], [data-catch-row] { grid-template-columns: 1fr !important; gap: 40px !important; } }
+    @media (max-width: 1180px) { [data-teams] > div { grid-template-columns: 1fr !important; gap: 24px !important; } }
+    @media (max-width: 760px) { [data-team-members] { grid-template-columns: 1fr !important; } }
+    @media (max-width: 900px) { [data-stat-row] { grid-template-columns: 1fr !important; gap: 44px !important; } [data-stat] { border-left: 0 !important; padding-left: 0 !important; } }
+.scp0:hover { background: rgb(39, 44, 43) !important; color: rgb(255, 255, 255) !important; }
+.scp1:hover { background: rgb(21, 20, 20) !important; color: rgb(255, 255, 255) !important; border-color: rgb(21, 20, 20) !important; }
+.scp2:hover { animation-play-state: paused !important; }
+.scp3:hover { background: rgb(249, 235, 166) !important; color: rgb(21, 20, 20) !important; border-color: rgb(249, 235, 166) !important; }
+.scp4:hover { color: rgb(255, 255, 255) !important; }
+.scp5:hover { color: rgb(249, 235, 166) !important; }
+</style>
+<link rel="stylesheet" href="/site.css">
+<link rel="stylesheet" href="/page.css">
+
+</head>
+<body class="page">
+<a class="visually-hidden" href="#main">Skip to content</a>
+<div data-nav="1" style="position: sticky; top: 0px; z-index: 30; background: rgb(255, 255, 255); border-bottom: 1px solid rgb(230, 234, 228); display: flex; align-items: center; justify-content: space-between; gap: 32px; padding: 16px 64px;">
+    <div style="display: flex; align-items: center; gap: 14px;">
+      <a href="/" data-brand="1" style="display: flex; align-items: center; gap: 11px; text-decoration: none;"><img src="/assets/aifa-mark.svg" alt="" width="30" height="30" style="height: 30px; width: 30px; display: block;"><span style="display: flex; flex-direction: column; line-height: 1;"><span style="font-size: 19px; font-weight: 700; letter-spacing: -0.022em; color: #151414;">AiFA</span><span data-brand-by="1" style="margin-top: 3px; font-size: 10.5px; font-weight: 500; letter-spacing: 0.02em; color: #9A9A9A;">by YantrAI</span></span></a>
+      <span data-nav-tagline="1" style="display: flex; align-items: baseline; gap: 9px; white-space: nowrap; border-left: 1px solid rgb(220, 224, 218); padding-left: 14px;">
+        
+        <span style="font-size: 13px; font-weight: 500; letter-spacing: -0.26px; color: rgb(90, 90, 90);">AI Teams for Finance</span>
+      </span>
+    </div>
+    <div id="nav-links" data-nav-links="1" style="display: flex; align-items: center; gap: 26px; flex: 0 1 auto; font-size: 14px; font-weight: 500; letter-spacing: -0.28px; color: rgb(21, 20, 20);">
+      <a href="/#how" style="white-space: nowrap;">How it works</a>
+      <a href="/#problem" style="white-space: nowrap;">The problem</a>
+      <a href="/#agents" style="white-space: nowrap;">The AI team</a>
+      <a href="/#proof" style="white-space: nowrap;">The metrics</a>
+      <a href="/#integration" style="white-space: nowrap;">Integration</a>
+    </div>
+    <button type="button" data-nav-toggle="1" aria-expanded="false" aria-controls="nav-links" aria-label="Menu"><span></span></button><div data-nav-cta="1" style="display: flex; align-items: center; gap: 22px; flex: 0 0 auto;">
+      <a href="https://workspace.yantrailabs.com/" style="white-space: nowrap; font-size: 14px; font-weight: 500; letter-spacing: -0.28px; color: rgb(90, 90, 90);">Log in</a>
+      <a href="/#book" style="white-space: nowrap; font-size: 14px; font-weight: 600; letter-spacing: -0.42px; color: rgb(21, 20, 20);">Book a demo</a>
+    </div>
+  </div>
+<main id="main">
+<div class="wrap">
+  <div class="crumb"><a href="/">AiFA</a> · <a href="/integrations">Integrations</a> · Tally</div>
+  <div class="masthead">
+    <span class="eyebrow mint"><i></i>Tally</span>
+    <h1 class="display">The books most of Indian mid-market actually runs on.</h1>
+    <p class="lede">TallyPrime and Tally.ERP 9 hold the ledger for a very large share of Indian companies — including plenty with a global ERP sitting above them. AiFA reads what Tally already holds and posts back into it, without asking anyone to leave Tally.</p>
+  </div>
+</div>
+
+<section class="band">
+  <div class="wrap wrap-wide">
+    <h2 class="sec">What AiFA reads, what it writes back</h2>
+    <div class="cards">
+      <div>
+        <h3>Reads from Tally</h3>
+        <ul class="checks" style="margin-top:16px">
+        <li>Purchase register and the daybook, as XML or Excel export</li>
+        <li>Ledger vouchers and outstanding payables by party</li>
+        <li>Vendor masters, including GSTIN and PAN held against the ledger</li>
+        <li>Stock and receipt entries where goods are tracked in Tally</li>
+        </ul>
+      </div>
+      <div>
+        <h3>Writes back into Tally</h3>
+        <ul class="checks" style="margin-top:16px">
+        <li>Purchase and journal vouchers, posted against the correct ledger</li>
+        <li>TDS and GST detail on the voucher, not as a later adjustment</li>
+        <li>The check trail against each entry, so the finding stays attached to the voucher</li>
+        </ul>
+      </div>
+    </div>
+    <div class="callout">
+      <span class="label">What it never touches</span>
+      <p>Tally stays your system of record. AiFA does not hold your books, does not become a second ledger, and does not need Tally replaced or upgraded to work.</p>
+    </div>
+  </div>
+</section>
+
+<section class="band wash">
+  <div class="wrap">
+    <h2 class="sec">Where you start</h2>
+    <p class="statement">An export, not a project.<span class="after">An export your team already produces — a purchase register for a period is enough to run the savings check. A live connection over Tally's XML interface comes later, when you want it.</span></p>
+    <p>Tally is where the India-specific work matters most: GSTIN validity, filing status before credit, TDS section and rate, and MSME clocks all sit against the party ledger, and are exactly what generic finance AI does not model.</p>
+  </div>
+</section>
+
+<section class="band">
+  <div class="wrap wrap-wide">
+    <h2 class="sec">What runs against it</h2>
+    <p>The same team, whichever system holds the books. The checks depend on the contract, the PO and the receipt — not on one ERP’s schema.</p>
+    <div class="inline-links">
+      <a href="/agents">All 17 agents →</a>
+      <a href="/workflows/invoice-entry">Invoice entry →</a>
+      <a href="/workflows/payment-processing">Payment processing →</a>
+      <a href="/security">How your data is handled →</a>
+    </div>
+  </div>
+</section>
+
+<section class="next">
+  <div class="wrap">
+    <h2>Run it on 90 days of your own Tally data.</h2>
+    <p>One export. No connector, and nothing to install.</p>
+    <a class="btn" href="/#book"><span class="rupee">₹</span>Check your savings<span>→</span></a>
+    <div class="inline-links">
+      <a href="/integrations/sap">SAP →</a>
+      <a href="/integrations/oracle">Oracle →</a>
+      <a href="/integrations/netsuite">Oracle NetSuite →</a>
+      <a href="/integrations/zoho-books">Zoho Books →</a>
+      <a href="/integrations/quickbooks">QuickBooks →</a>
+    </div>
+  </div>
+</section>
+
+</main>
+<div data-footer="1" id="footer" style="content-visibility: auto; contain-intrinsic-size: auto 600px; background: rgb(18, 16, 14); border-top: 1px solid rgb(42, 36, 30); padding: 104px 56px 0px; display: flex; justify-content: center;">
+    <div style="width: 100%; max-width: 1320px; display: flex; flex-direction: column;">
+
+      <div data-foot-grid="1" style="display: grid; grid-template-columns: 1.25fr 1fr 1fr 1fr; gap: 76px 56px; align-items: start;">
+
+        <div style="grid-row: span 2; display: flex; flex-direction: column; gap: 30px;">
+          <span style="font-family: ui-monospace, &quot;SF Mono&quot;, Menlo, Consolas, monospace; font-size: 14px; letter-spacing: -0.2px; color: rgb(255, 255, 255);"><span style="font-weight: 700;">AiFA</span> · AI Teams for Finance</span>
+          <div style="display: flex; flex-direction: column; gap: 4px;">
+            <span style="font-size: 15px; font-weight: 600; letter-spacing: -0.45px; color: rgb(255, 255, 255);">507, DLF Corporate Green</span>
+            <span style="font-size: 15px; font-weight: 500; letter-spacing: -0.45px; color: rgb(190, 184, 174);">Sector 74A, Gurgaon, 122004</span>
+          </div>
+          <a href="mailto:rohit@yantrailabs.com" data-hv="4" class="scp4" style="align-self: flex-start; font-size: 15px; font-weight: 500; letter-spacing: -0.45px; color: rgb(249, 235, 166); text-decoration: none;">rohit@yantrailabs.com</a>
+          <div style="display: flex; align-items: center; gap: 10px; padding-top: 6px;">
+            <span style="width: 7px; height: 7px; border-radius: 9999px; background: rgb(90, 222, 183); display: block;"></span>
+            <span style="font-size: 14px; font-weight: 500; letter-spacing: -0.42px; color: rgb(190, 184, 174);">Live in India, Dubai, the USA and Africa</span>
+          </div>
+        </div>
+
+        <div style="display: flex; flex-direction: column; gap: 15px;">
+          <span style="display: inline-flex; align-items: center; gap: 10px; margin-bottom: 7px; font-size: 12.5px; font-weight: 600; letter-spacing: 0.14em; text-transform: uppercase; color: rgb(255, 255, 255);">
+            <span style="color: rgb(249, 235, 166); font-size: 14px; line-height: 1;">+</span>The AI team
+          </span>
+          <a href="/agents/duplicate-agent" data-hv="4" class="scp4" style="font-size: 15px; font-weight: 500; letter-spacing: -0.45px; color: rgb(190, 184, 174); text-decoration: none;">Duplicate Agent</a>
+          <a href="/agents/pricing-agent" data-hv="4" class="scp4" style="font-size: 15px; font-weight: 500; letter-spacing: -0.45px; color: rgb(190, 184, 174); text-decoration: none;">Pricing Agent</a>
+          <a href="/agents/3-way-match-agent" data-hv="4" class="scp4" style="font-size: 15px; font-weight: 500; letter-spacing: -0.45px; color: rgb(190, 184, 174); text-decoration: none;">3-way match Agent</a>
+          <a href="/agents/payments-agent" data-hv="4" class="scp4" style="font-size: 15px; font-weight: 500; letter-spacing: -0.45px; color: rgb(190, 184, 174); text-decoration: none;">Payments Agent</a>
+          <a href="/agents/discount-agent" data-hv="4" class="scp4" style="font-size: 15px; font-weight: 500; letter-spacing: -0.45px; color: rgb(190, 184, 174); text-decoration: none;">Discount Agent</a>
+          <a href="/agents/gst-agent" data-hv="4" class="scp4" style="font-size: 15px; font-weight: 500; letter-spacing: -0.45px; color: rgb(190, 184, 174); text-decoration: none;">GST Agent</a>
+          <a href="/agents/tds-agent" data-hv="4" class="scp4" style="font-size: 15px; font-weight: 500; letter-spacing: -0.45px; color: rgb(190, 184, 174); text-decoration: none;">TDS Agent</a>
+          <a href="/agents/msme-agent" data-hv="4" class="scp4" style="font-size: 15px; font-weight: 500; letter-spacing: -0.45px; color: rgb(190, 184, 174); text-decoration: none;">MSME Agent</a>
+          <a href="/agents" data-hv="5" class="scp5" style="margin-top: 6px; display: inline-flex; align-items: center; gap: 8px; font-size: 15px; font-weight: 600; letter-spacing: -0.45px; color: rgb(255, 255, 255); text-decoration: none;">View all agents<span style="font-size: 14px; line-height: 1;">→</span></a>        </div>
+        <div style="display: flex; flex-direction: column; gap: 15px;">
+          <span style="display: inline-flex; align-items: center; gap: 10px; margin-bottom: 7px; font-size: 12.5px; font-weight: 600; letter-spacing: 0.14em; text-transform: uppercase; color: rgb(255, 255, 255);">
+            <span style="color: rgb(249, 235, 166); font-size: 14px; line-height: 1;">+</span>Workflows
+          </span>
+          <a href="/workflows/invoice-entry" data-hv="4" class="scp4" style="font-size: 15px; font-weight: 500; letter-spacing: -0.45px; color: rgb(190, 184, 174); text-decoration: none;">Invoice entry</a>
+          <a href="/workflows/sync-to-erp" data-hv="4" class="scp4" style="font-size: 15px; font-weight: 500; letter-spacing: -0.45px; color: rgb(190, 184, 174); text-decoration: none;">Sync to ERP</a>
+          <a href="/workflows/payment-processing" data-hv="4" class="scp4" style="font-size: 15px; font-weight: 500; letter-spacing: -0.45px; color: rgb(190, 184, 174); text-decoration: none;">Payment processing</a>
+          <a href="/workflows/daily-close" data-hv="4" class="scp4" style="font-size: 15px; font-weight: 500; letter-spacing: -0.45px; color: rgb(190, 184, 174); text-decoration: none;">Daily close</a>
+          <a href="/workflows/multi-entity-groups" data-hv="4" class="scp4" style="font-size: 15px; font-weight: 500; letter-spacing: -0.45px; color: rgb(190, 184, 174); text-decoration: none;">Multi-entity groups</a>
+          <a href="/workflows/multi-currency" data-hv="4" class="scp4" style="font-size: 15px; font-weight: 500; letter-spacing: -0.45px; color: rgb(190, 184, 174); text-decoration: none;">Multi-currency</a>
+        </div>
+        <div style="display: flex; flex-direction: column; gap: 15px;">
+          <span style="display: inline-flex; align-items: center; gap: 10px; margin-bottom: 7px; font-size: 12.5px; font-weight: 600; letter-spacing: 0.14em; text-transform: uppercase; color: rgb(255, 255, 255);">
+            <span style="color: rgb(249, 235, 166); font-size: 14px; line-height: 1;">+</span>Integrations
+          </span>
+          <a href="/integrations/sap" data-hv="4" class="scp4" style="font-size: 15px; font-weight: 500; letter-spacing: -0.45px; color: rgb(190, 184, 174); text-decoration: none;">SAP</a>
+          <a href="/integrations/oracle" data-hv="4" class="scp4" style="font-size: 15px; font-weight: 500; letter-spacing: -0.45px; color: rgb(190, 184, 174); text-decoration: none;">Oracle</a>
+          <a href="/integrations/netsuite" data-hv="4" class="scp4" style="font-size: 15px; font-weight: 500; letter-spacing: -0.45px; color: rgb(190, 184, 174); text-decoration: none;">Oracle NetSuite</a>
+          <a href="/integrations/tally" data-hv="4" class="scp4" style="font-size: 15px; font-weight: 500; letter-spacing: -0.45px; color: rgb(190, 184, 174); text-decoration: none;">Tally</a>
+          <a href="/integrations/zoho-books" data-hv="4" class="scp4" style="font-size: 15px; font-weight: 500; letter-spacing: -0.45px; color: rgb(190, 184, 174); text-decoration: none;">Zoho Books</a>
+          <a href="/integrations/quickbooks" data-hv="4" class="scp4" style="font-size: 15px; font-weight: 500; letter-spacing: -0.45px; color: rgb(190, 184, 174); text-decoration: none;">QuickBooks</a>
+          <a href="/integrations/sage" data-hv="4" class="scp4" style="font-size: 15px; font-weight: 500; letter-spacing: -0.45px; color: rgb(190, 184, 174); text-decoration: none;">Sage</a>
+          <a href="/integrations/odoo" data-hv="4" class="scp4" style="font-size: 15px; font-weight: 500; letter-spacing: -0.45px; color: rgb(190, 184, 174); text-decoration: none;">Odoo</a>
+          <a href="/integrations" data-hv="5" class="scp5" style="margin-top: 6px; display: inline-flex; align-items: center; gap: 8px; font-size: 15px; font-weight: 600; letter-spacing: -0.45px; color: rgb(255, 255, 255); text-decoration: none;">Anything with an export<span style="font-size: 14px; line-height: 1;">→</span></a>        </div>
+        <div style="display: flex; flex-direction: column; gap: 15px;">
+          <span style="display: inline-flex; align-items: center; gap: 10px; margin-bottom: 7px; font-size: 12.5px; font-weight: 600; letter-spacing: 0.14em; text-transform: uppercase; color: rgb(255, 255, 255);">
+            <span style="color: rgb(249, 235, 166); font-size: 14px; line-height: 1;">+</span>Roles
+          </span>
+          <a href="/for/cfo" data-hv="4" class="scp4" style="font-size: 15px; font-weight: 500; letter-spacing: -0.45px; color: rgb(190, 184, 174); text-decoration: none;">CFO</a>
+          <a href="/for/controller" data-hv="4" class="scp4" style="font-size: 15px; font-weight: 500; letter-spacing: -0.45px; color: rgb(190, 184, 174); text-decoration: none;">Controller</a>
+          <a href="/for/head-of-finance" data-hv="4" class="scp4" style="font-size: 15px; font-weight: 500; letter-spacing: -0.45px; color: rgb(190, 184, 174); text-decoration: none;">Head of Finance</a>
+          <a href="/for/ap-lead" data-hv="4" class="scp4" style="font-size: 15px; font-weight: 500; letter-spacing: -0.45px; color: rgb(190, 184, 174); text-decoration: none;">AP Lead</a>
+          <a href="/for/group-treasurer" data-hv="4" class="scp4" style="font-size: 15px; font-weight: 500; letter-spacing: -0.45px; color: rgb(190, 184, 174); text-decoration: none;">Group Treasurer</a>
+          <a href="/for/internal-audit" data-hv="4" class="scp4" style="font-size: 15px; font-weight: 500; letter-spacing: -0.45px; color: rgb(190, 184, 174); text-decoration: none;">Internal Audit</a>
+        </div>
+        <div style="display: flex; flex-direction: column; gap: 15px;">
+          <span style="display: inline-flex; align-items: center; gap: 10px; margin-bottom: 7px; font-size: 12.5px; font-weight: 600; letter-spacing: 0.14em; text-transform: uppercase; color: rgb(255, 255, 255);">
+            <span style="color: rgb(249, 235, 166); font-size: 14px; line-height: 1;">+</span>Company
+          </span>
+          <a href="/about" data-hv="4" class="scp4" style="font-size: 15px; font-weight: 500; letter-spacing: -0.45px; color: rgb(190, 184, 174); text-decoration: none;">About YantrAI Labs</a>
+          
+          <a href="/security" data-hv="4" class="scp4" style="font-size: 15px; font-weight: 500; letter-spacing: -0.45px; color: rgb(190, 184, 174); text-decoration: none;">Security</a>
+          <a href="/careers" data-hv="4" class="scp4" style="font-size: 15px; font-weight: 500; letter-spacing: -0.45px; color: rgb(190, 184, 174); text-decoration: none;">Careers</a>
+          <a href="/#book" data-hv="4" class="scp4" style="font-size: 15px; font-weight: 500; letter-spacing: -0.45px; color: rgb(190, 184, 174); text-decoration: none;">Contact</a>
+        </div>
+        <div style="display: flex; flex-direction: column; gap: 15px;">
+          <span style="display: inline-flex; align-items: center; gap: 10px; margin-bottom: 7px; font-size: 12.5px; font-weight: 600; letter-spacing: 0.14em; text-transform: uppercase; color: rgb(255, 255, 255);">
+            <span style="color: rgb(249, 235, 166); font-size: 14px; line-height: 1;">+</span>Resources
+          </span>
+          <a href="/#how" data-hv="4" class="scp4" style="font-size: 15px; font-weight: 500; letter-spacing: -0.45px; color: rgb(190, 184, 174); text-decoration: none;">How AiFA works</a>
+          <a href="/what-it-found" data-hv="4" class="scp4" style="font-size: 15px; font-weight: 500; letter-spacing: -0.45px; color: rgb(190, 184, 174); text-decoration: none;">What it found</a>
+          <a href="/integrations" data-hv="4" class="scp4" style="font-size: 15px; font-weight: 500; letter-spacing: -0.45px; color: rgb(190, 184, 174); text-decoration: none;">Implementation</a>
+          <a href="/#book" data-hv="4" class="scp4" style="font-size: 15px; font-weight: 500; letter-spacing: -0.45px; color: rgb(190, 184, 174); text-decoration: none;">Support</a>
+        </div>
+
+      </div>
+
+      <div style="margin-top: 88px; padding: 30px 0px 34px; border-top: 1px solid rgb(42, 36, 30); display: flex; flex-direction: column; gap: 12px;">
+        <span style="font-family: ui-monospace, &quot;SF Mono&quot;, Menlo, Consolas, monospace; font-size: 13px; letter-spacing: -0.2px; color: rgb(110, 104, 95);">© 2026 YantrAI Labs</span>
+      </div>
+
+    </div>
+  </div>
+<script src="/app.js" defer></script>
+</body>
+</html>

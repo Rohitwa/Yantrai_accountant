@@ -1,94 +1,286 @@
 [
-  {
-    "slug": "invoice-entry",
-    "name": "Invoice entry",
-    "accent": "rose",
-    "task": "Vendor invoice",
-    "stamp": "Entered clean",
-    "headline": "Every control, at the moment the invoice arrives.",
-    "lede": "Eight agents open the same invoice at once. Money-out, tax, receipt and authority checks all run before the entry stands — not in a batch at the close, when the money has already moved.",
-    "today": [
-      "The invoice lands in a shared mailbox, a portal, or someone's hand.",
-      "Someone keys it. Someone else approves a total they cannot check against a contract they have not read.",
-      "A sample gets audited weeks later. The rest was approved on trust.",
-      "What leaked surfaces at the close, on a spreadsheet, after payment."
-    ],
-    "withteam": [
-      "The document is read on arrival, whichever channel it came through.",
-      "Eight checks run in parallel on the same invoice, each against its own source of truth.",
-      "Anything clean posts. Anything that fails stops with a named reason and the evidence attached.",
-      "Nothing waits for the close, because nothing was deferred to it."
-    ],
-    "agents": [
-      ["duplicate-agent", "No earlier copy of this invoice"],
-      ["pricing-agent", "Price matches the contract and the PO"],
-      ["3-way-match-agent", "PO, GRN and invoice agree"],
-      ["gst-agent", "Vendor has filed before credit is claimed"],
-      ["tds-agent", "Right section, right rate"],
-      ["pan-agent", "Vendor PAN active and linked"],
-      ["msme-agent", "Small-vendor clock started"],
-      ["doa-agent", "Inside the approval limit"]
-    ],
-    "lands": "A vendor invoice entered against its PO and GRN, taxed correctly, authorised inside the delegation, with every check that ran recorded against it."
-  },
-  {
-    "slug": "sync-to-erp",
-    "name": "Sync to ERP",
-    "accent": "iris",
-    "task": "Journal entry",
-    "stamp": "Book clean",
-    "headline": "Posted compliant, so the book never needs a cleanup pass.",
-    "lede": "Entries reach your ERP already balanced, already supported, already in the right period. The ERP stays the system of record — AiFA posts into it rather than beside it.",
-    "today": [
-      "Entries are keyed, then corrected, then re-corrected during the close.",
-      "The sub-ledger and the control account disagree, and someone reconciles them by hand.",
-      "Intercompany entries are posted by one side and chased with the other.",
-      "The period closes late because the cleanup is the close."
-    ],
-    "withteam": [
-      "Every entry is balanced and carries its support before it is written.",
-      "The sub-ledger agrees to the control account daily, not monthly.",
-      "Both sides of an intercompany entry are agreed before either posts.",
-      "The books are reportable on the day the period ends."
-    ],
-    "agents": [
-      ["journal-agent", "Entry balanced, support attached"],
-      ["reconciliation-agent", "Sub-ledger agrees to the control account"],
-      ["intercompany-agent", "Counterparty entity agreed"],
-      ["period-agent", "Posted in the open period"],
-      ["audit-agent", "Immutable trail written"],
-      ["report-agent", "Books ready to report, no cleanup pass"]
-    ],
-    "lands": "A balanced journal in the open period, in your ERP, with its support attached and an audit trail that can be re-read months later."
-  },
-  {
-    "slug": "payment-processing",
-    "name": "Payment processing",
-    "accent": "mint",
-    "task": "Payment run",
-    "stamp": "Released",
-    "headline": "The run is built from approved entries only — and checked again before it leaves.",
-    "lede": "The last checkpoint before money is irreversible. Everything in the run passed entry, and the things that can change between approval and payment are tested one more time.",
-    "today": [
-      "The run is assembled from a list, under time pressure, on payment day.",
-      "A beneficiary account changed since approval and nobody re-checked it.",
-      "A discount that was available expired while the file was being prepared.",
-      "An MSME vendor crosses day 45 and the interest is discovered later."
-    ],
-    "withteam": [
-      "Only entries that passed every check are eligible for the run.",
-      "Bank details are re-verified against what was approved, not what is current in the master.",
-      "Discounts still open are captured; ones being let go are recorded as a decision.",
-      "Statutory clocks are respected as scheduling constraints, not reported as breaches."
-    ],
-    "agents": [
-      ["payments-agent", "Run built from approved entries only"],
-      ["bank-agent", "Beneficiary account unchanged"],
-      ["duplicate-agent", "No second payment against the same invoice"],
-      ["doa-agent", "Released by two signatories"],
-      ["discount-agent", "Early-payment discount captured"],
-      ["msme-agent", "Paid inside the statutory window"]
-    ],
-    "lands": "A payment file containing only entries that cleared every check, released under the delegation, with each payment traceable to the invoice and the checks behind it."
-  }
+ {
+  "slug": "invoice-entry",
+  "name": "Invoice entry",
+  "accent": "rose",
+  "task": "Vendor invoice",
+  "stamp": "Entered clean",
+  "headline": "Every control, at the moment the invoice arrives.",
+  "lede": "Eight agents open the same invoice at once. Money-out, tax, receipt and authority checks all run before the entry stands — not in a batch at the close, when the money has already moved.",
+  "today": [
+   "The invoice lands in a shared mailbox, a portal, or someone's hand.",
+   "Someone keys it. Someone else approves a total they cannot check against a contract they have not read.",
+   "A sample gets audited weeks later. The rest was approved on trust.",
+   "What leaked surfaces at the close, on a spreadsheet, after payment."
+  ],
+  "withteam": [
+   "The document is read on arrival, whichever channel it came through.",
+   "Eight checks run in parallel on the same invoice, each against its own source of truth.",
+   "Anything clean posts. Anything that fails stops with a named reason and the evidence attached.",
+   "Nothing waits for the close, because nothing was deferred to it."
+  ],
+  "agents": [
+   [
+    "duplicate-agent",
+    "No earlier copy of this invoice"
+   ],
+   [
+    "pricing-agent",
+    "Price matches the contract and the PO"
+   ],
+   [
+    "3-way-match-agent",
+    "PO, GRN and invoice agree"
+   ],
+   [
+    "gst-agent",
+    "Vendor has filed before credit is claimed"
+   ],
+   [
+    "tds-agent",
+    "Right section, right rate"
+   ],
+   [
+    "pan-agent",
+    "Vendor PAN active and linked"
+   ],
+   [
+    "msme-agent",
+    "Small-vendor clock started"
+   ],
+   [
+    "doa-agent",
+    "Inside the approval limit"
+   ]
+  ],
+  "lands": "A vendor invoice entered against its PO and GRN, taxed correctly, authorised inside the delegation, with every check that ran recorded against it."
+ },
+ {
+  "slug": "sync-to-erp",
+  "name": "Sync to ERP",
+  "accent": "iris",
+  "task": "Journal entry",
+  "stamp": "Book clean",
+  "headline": "Posted compliant, so the book never needs a cleanup pass.",
+  "lede": "Entries reach your ERP already balanced, already supported, already in the right period. The ERP stays the system of record — AiFA posts into it rather than beside it.",
+  "today": [
+   "Entries are keyed, then corrected, then re-corrected during the close.",
+   "The sub-ledger and the control account disagree, and someone reconciles them by hand.",
+   "Intercompany entries are posted by one side and chased with the other.",
+   "The period closes late because the cleanup is the close."
+  ],
+  "withteam": [
+   "Every entry is balanced and carries its support before it is written.",
+   "The sub-ledger agrees to the control account daily, not monthly.",
+   "Both sides of an intercompany entry are agreed before either posts.",
+   "The books are reportable on the day the period ends."
+  ],
+  "agents": [
+   [
+    "journal-agent",
+    "Entry balanced, support attached"
+   ],
+   [
+    "reconciliation-agent",
+    "Sub-ledger agrees to the control account"
+   ],
+   [
+    "intercompany-agent",
+    "Counterparty entity agreed"
+   ],
+   [
+    "period-agent",
+    "Posted in the open period"
+   ],
+   [
+    "audit-agent",
+    "Immutable trail written"
+   ],
+   [
+    "report-agent",
+    "Books ready to report, no cleanup pass"
+   ]
+  ],
+  "lands": "A balanced journal in the open period, in your ERP, with its support attached and an audit trail that can be re-read months later."
+ },
+ {
+  "slug": "payment-processing",
+  "name": "Payment processing",
+  "accent": "mint",
+  "task": "Payment run",
+  "stamp": "Released",
+  "headline": "The run is built from approved entries only — and checked again before it leaves.",
+  "lede": "The last checkpoint before money is irreversible. Everything in the run passed entry, and the things that can change between approval and payment are tested one more time.",
+  "today": [
+   "The run is assembled from a list, under time pressure, on payment day.",
+   "A beneficiary account changed since approval and nobody re-checked it.",
+   "A discount that was available expired while the file was being prepared.",
+   "An MSME vendor crosses day 45 and the interest is discovered later."
+  ],
+  "withteam": [
+   "Only entries that passed every check are eligible for the run.",
+   "Bank details are re-verified against what was approved, not what is current in the master.",
+   "Discounts still open are captured; ones being let go are recorded as a decision.",
+   "Statutory clocks are respected as scheduling constraints, not reported as breaches."
+  ],
+  "agents": [
+   [
+    "payments-agent",
+    "Run built from approved entries only"
+   ],
+   [
+    "bank-agent",
+    "Beneficiary account unchanged"
+   ],
+   [
+    "duplicate-agent",
+    "No second payment against the same invoice"
+   ],
+   [
+    "doa-agent",
+    "Released by two signatories"
+   ],
+   [
+    "discount-agent",
+    "Early-payment discount captured"
+   ],
+   [
+    "msme-agent",
+    "Paid inside the statutory window"
+   ]
+  ],
+  "lands": "A payment file containing only entries that cleared every check, released under the delegation, with each payment traceable to the invoice and the checks behind it."
+ },
+ {
+  "slug": "daily-close",
+  "name": "Daily close",
+  "accent": "iris",
+  "task": "Daily position",
+  "stamp": "Current",
+  "headline": "The close stops being an event because nothing is deferred to it.",
+  "lede": "A monthly close exists to catch up on a month of decisions nobody had time to make properly. When entries arrive clean and reconciliations run daily, there is nothing to catch up on.",
+  "today": [
+   "Entries accumulate through the month, correct enough to post and wrong enough to fix later.",
+   "Reconciliations run at the close, so a break from week one is found in week five.",
+   "The first reliable number appears well after the period it describes.",
+   "Everyone knows the first version of the close is not the final one."
+  ],
+  "withteam": [
+   "Entries are checked at the moment they arrive, so nothing accumulates.",
+   "The sub-ledger agrees to the control account every day.",
+   "Breaks are found on the day they appear, when the cause is still obvious.",
+   "The period-end number is a confirmation, not a first draft."
+  ],
+  "agents": [
+   [
+    "journal-agent",
+    "Entry balanced, support attached"
+   ],
+   [
+    "reconciliation-agent",
+    "Sub-ledger agrees to the control account"
+   ],
+   [
+    "period-agent",
+    "Posted in the open period"
+   ],
+   [
+    "audit-agent",
+    "Immutable trail written"
+   ],
+   [
+    "report-agent",
+    "Books ready to report, no cleanup pass"
+   ]
+  ],
+  "lands": "A position that is current every day rather than accurate once a month, with anything unresolved named and owned instead of absorbed into the close."
+ },
+ {
+  "slug": "multi-entity-groups",
+  "name": "Multi-entity groups",
+  "accent": "rose",
+  "task": "Group position",
+  "stamp": "Agreed",
+  "headline": "Consolidation becomes arithmetic, because both sides already agreed.",
+  "lede": "Group consolidation is hard for one reason: two entities book the same transaction differently and both are right. Agreeing it at the point of entry removes the argument from the close entirely.",
+  "today": [
+   "Each entity books its side on its own timing, in its own way.",
+   "Intercompany differences surface at consolidation, weeks later.",
+   "Eliminations become a negotiation between controllers who have both moved on.",
+   "A duplicate invoice booked in two entities reads as two legitimate bills."
+  ],
+  "withteam": [
+   "Counterparty entity, amount and date are agreed before either side posts.",
+   "Eliminations are arithmetic because the numbers were reconciled at entry.",
+   "Duplicates are caught across entities, not just within one.",
+   "The group position is available without waiting for every entity to finish."
+  ],
+  "agents": [
+   [
+    "intercompany-agent",
+    "Counterparty entity agreed"
+   ],
+   [
+    "duplicate-agent",
+    "No second copy, across any entity"
+   ],
+   [
+    "reconciliation-agent",
+    "Sub-ledger agrees to the control account"
+   ],
+   [
+    "period-agent",
+    "Posted in the open period"
+   ],
+   [
+    "report-agent",
+    "Books ready to report"
+   ]
+  ],
+  "lands": "A consolidated position where the eliminations were agreed transaction by transaction, so the number does not move when someone checks it."
+ },
+ {
+  "slug": "multi-currency",
+  "name": "Multi-currency",
+  "accent": "sand",
+  "task": "Foreign-currency entry",
+  "stamp": "Rated",
+  "headline": "The rate applied is the rate policy says, on both sides, every time.",
+  "lede": "Currency differences are rarely a rate error. They are two entities applying different rates on different dates to the same transaction, each consistent with its own habit.",
+  "today": [
+   "The rate applied depends on who booked it and what they had to hand.",
+   "Revaluation surprises appear at the period end.",
+   "Two sides of an intercompany entry are rated differently and both look defensible.",
+   "Gains and losses are explained rather than predicted."
+  ],
+  "withteam": [
+   "The rate is taken from policy and the correct date, not from convenience.",
+   "Both sides of an intercompany entry are rated on the same basis before posting.",
+   "Exposure is visible as it accumulates rather than at revaluation.",
+   "Differences are quantified as they arise, with their cause attached."
+  ],
+  "agents": [
+   [
+    "journal-agent",
+    "Entry balanced, support attached"
+   ],
+   [
+    "intercompany-agent",
+    "Counterparty entity agreed"
+   ],
+   [
+    "reconciliation-agent",
+    "Sub-ledger agrees to the control account"
+   ],
+   [
+    "period-agent",
+    "Posted in the open period"
+   ],
+   [
+    "report-agent",
+    "Books ready to report"
+   ]
+  ],
+  "lands": "Foreign-currency entries rated on a stated policy, consistently across entities, with the difference between entities explainable line by line."
+ }
 ]
