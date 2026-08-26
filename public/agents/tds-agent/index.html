@@ -3,23 +3,23 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>TDS Agent — Tax is deducted at the right section and the right rate, on every payment | AiFA</title>
-<meta name="description" content="Tax is deducted at the right section and the right rate, on every payment. Vendor type, threshold and section are resolved before the entry is posted — not corrected in a return two quarters later, and not paid out of your ow">
+<title>TDS Agent — Tax is deducted at the right section and the right rate — including when a certificate or a threshold changes it | AiFA</title>
+<meta name="description" content="Tax is deducted at the right section and the right rate — including when a certificate or a threshold changes it. Section, rate, vendor status and year-to-date position are resolved before the entry is posted — not corrected in a return two quarters later, and not">
 <link rel="canonical" href="https://yantrailabs.com/agents/tds-agent">
 <meta name="theme-color" content="#FFFFFF">
 <meta name="robots" content="index, follow">
 
 <meta property="og:type" content="website">
 <meta property="og:site_name" content="YantrAI">
-<meta property="og:title" content="TDS Agent — Tax is deducted at the right section and the right rate, on every payment | AiFA">
-<meta property="og:description" content="Tax is deducted at the right section and the right rate, on every payment. Vendor type, threshold and section are resolved before the entry is posted — not corrected in a return two quarters later, and not paid out of your ow">
+<meta property="og:title" content="TDS Agent — Tax is deducted at the right section and the right rate — including when a certificate or a threshold changes it | AiFA">
+<meta property="og:description" content="Tax is deducted at the right section and the right rate — including when a certificate or a threshold changes it. Section, rate, vendor status and year-to-date position are resolved before the entry is posted — not corrected in a return two quarters later, and not">
 <meta property="og:url" content="https://yantrailabs.com/agents/tds-agent">
 <meta property="og:image" content="https://yantrailabs.com/assets/og-cover.jpg">
 <meta property="og:image:width" content="1200">
 <meta property="og:image:height" content="630">
 <meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:title" content="AiFA — AI Teams for Finance">
-<meta name="twitter:description" content="Tax is deducted at the right section and the right rate, on every payment. Vendor type, threshold and section are resolved before the entry is posted — not corrected in a return two quarters later, and not paid out of your ow">
+<meta name="twitter:description" content="Tax is deducted at the right section and the right rate — including when a certificate or a threshold changes it. Section, rate, vendor status and year-to-date position are resolved before the entry is posted — not corrected in a return two quarters later, and not">
 <meta name="twitter:image" content="https://yantrailabs.com/assets/og-cover.jpg">
 
 <link rel="icon" href="/assets/favicon.svg" type="image/svg+xml">
@@ -110,7 +110,7 @@ body { margin: 0; background: #FFFFFF; }
 
 <section class="band">
   <div class="wrap">
-    <p class="statement">Tax is deducted at the right section and the right rate, on every payment.<span class="after">Vendor type, threshold and section are resolved before the entry is posted — not corrected in a return two quarters later, and not paid out of your own pocket as interest.</span></p>
+    <p class="statement">Tax is deducted at the right section and the right rate — including when a certificate or a threshold changes it.<span class="after">Section, rate, vendor status and year-to-date position are resolved before the entry is posted — not corrected in a return two quarters later, and not paid out of your own pocket as interest.</span></p>
   </div>
 </section>
 
@@ -120,7 +120,8 @@ body { margin: 0; background: #FFFFFF; }
     <p>On every invoice, not a sample.</p>
     <ul class="checks">
         <li>The correct section for the nature of the payment, not the one used last time</li>
-        <li>Rate against vendor status — PAN validity, and whether a lower-deduction certificate applies</li>
+        <li>A lower-deduction certificate under section 197, applied within its limit and validity</li>
+        <li>Higher rates where they apply — no PAN, or an inoperative one</li>
         <li>Annual thresholds, including whether this payment is the one that crosses them</li>
         <li>Cumulative deduction against the vendor for the year, so the crossing is caught on the day</li>
     </ul>
@@ -133,7 +134,7 @@ body { margin: 0; background: #FFFFFF; }
     <div class="cards">
       <div>
         <h3>Reads</h3>
-        <p>Vendor master, PAN status and any certificates on file · Payment nature and the invoice narration · Year-to-date payments to that vendor</p>
+        <p>Vendor master, PAN status and any section 197 certificate on file · Payment nature and the invoice narration · Year-to-date payments to that vendor</p>
       </div>
       <div>
         <h3>Writes</h3>

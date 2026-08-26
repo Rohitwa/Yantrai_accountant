@@ -143,17 +143,18 @@
    "name": "TDS Agent",
    "workflow": "invoice-entry",
    "accent": "iris",
-   "statement": "Tax is deducted at the right section and the right rate, on every payment.",
-   "mechanism": "Vendor type, threshold and section are resolved before the entry is posted — not corrected in a return two quarters later, and not paid out of your own pocket as interest.",
+   "statement": "Tax is deducted at the right section and the right rate — including when a certificate or a threshold changes it.",
+   "mechanism": "Section, rate, vendor status and year-to-date position are resolved before the entry is posted — not corrected in a return two quarters later, and not paid out of your own pocket as interest.",
    "lede": "Under-deducting is the expensive direction. The shortfall is recoverable from the vendor in theory and almost never in practice, so it becomes a cost plus interest.",
    "checks": [
     "The correct section for the nature of the payment, not the one used last time",
-    "Rate against vendor status — PAN validity, and whether a lower-deduction certificate applies",
+    "A lower-deduction certificate under section 197, applied within its limit and validity",
+    "Higher rates where they apply — no PAN, or an inoperative one",
     "Annual thresholds, including whether this payment is the one that crosses them",
     "Cumulative deduction against the vendor for the year, so the crossing is caught on the day"
    ],
    "reads": [
-    "Vendor master, PAN status and any certificates on file",
+    "Vendor master, PAN status and any section 197 certificate on file",
     "Payment nature and the invoice narration",
     "Year-to-date payments to that vendor"
    ],
@@ -241,24 +242,26 @@
    "name": "MSME Agent",
    "workflow": "invoice-entry",
    "accent": "iris",
-   "statement": "The 45-day clock starts on day one and never runs out unnoticed.",
-   "mechanism": "Every registered small vendor's invoice is dated, tracked and scheduled inside the statutory window, so the deadline is a constraint on the payment run rather than an interest calculation afterwards.",
-   "lede": "Section 43B(h) made late payment to registered micro and small enterprises an expense you cannot deduct until you actually pay it. The clock is unforgiving and nobody has time to watch it per vendor.",
+   "statement": "A registered small vendor is paid inside the statutory window — 45 days, or 15 where nothing was agreed in writing.",
+   "mechanism": "The clock runs from acceptance or deemed acceptance, not from the invoice date, and which window applies depends on whether there is a written agreement. Both are resolved per vendor and turned into a constraint on the payment run.",
+   "lede": "Section 15 of the MSMED Act sets the window: the date agreed in writing, never beyond 45 days from acceptance — and just 15 days where nothing was agreed in writing. Section 43B(h) then makes a late payment to a registered micro or small enterprise non-deductible until it is actually paid. Two different consequences, one clock, and nobody with the time to track it per vendor.",
    "checks": [
-    "Udyam registration status against the vendor, not against memory",
-    "The day the clock actually started, from the right event",
-    "Days remaining on every open invoice for a registered vendor",
-    "Whether the scheduled run lands inside the window"
+    "Udyam registration and enterprise category against the vendor, not against memory",
+    "Which window applies — 45 days on a written agreement, 15 days without one",
+    "The day the clock actually started: acceptance or deemed acceptance, not the invoice date",
+    "Whether written objection was raised inside 15 days, since that changes the computation",
+    "Days remaining on every open invoice, and whether the scheduled run lands inside the window"
    ],
    "reads": [
     "Vendor master and Udyam registration",
-    "Invoice and acceptance dates",
+    "Purchase terms, and whether they are agreed in writing",
+    "Acceptance and delivery dates",
     "The scheduled payment run"
    ],
    "writes": [
-    "Days remaining against every open MSME invoice",
-    "A scheduling constraint on the run",
-    "A flag where the window cannot be met, before it is missed"
+    "Days remaining against every open invoice for a registered vendor",
+    "The window applied and why, so the computation can be re-read",
+    "A scheduling constraint on the run, and a flag where the window cannot be met"
    ],
    "upstream": [
     "tds-agent"
@@ -266,7 +269,7 @@
    "downstream": [
     "doa-agent"
    ],
-   "ambiguity": "Registration status changes, and a vendor can be registered after invoicing. Where status is unclear the invoice is treated as in-scope and flagged — the expensive direction is assuming it is not."
+   "ambiguity": "Registration status changes, and a vendor can register after invoicing. Where status or the agreed-in-writing question is unclear, the shorter window is applied and the case is named — assuming the longer one is the expensive direction, because the consequence is both interest and a disallowed deduction."
   },
   {
    "slug": "pan-agent",

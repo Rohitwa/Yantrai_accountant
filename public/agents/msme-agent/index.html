@@ -3,23 +3,23 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>MSME Agent — The 45-day clock starts on day one and never runs out unnoticed | AiFA</title>
-<meta name="description" content="The 45-day clock starts on day one and never runs out unnoticed. Every registered small vendor's invoice is dated, tracked and scheduled inside the statutory window, so the deadline is a constraint on the payment ru">
+<title>MSME Agent — A registered small vendor is paid inside the statutory window — 45 days, or 15 where nothing was agreed in writing | AiFA</title>
+<meta name="description" content="A registered small vendor is paid inside the statutory window — 45 days, or 15 where nothing was agreed in writing. The clock runs from acceptance or deemed acceptance, not from the invoice date, and which window applies depends on whether there is a written agreeme">
 <link rel="canonical" href="https://yantrailabs.com/agents/msme-agent">
 <meta name="theme-color" content="#FFFFFF">
 <meta name="robots" content="index, follow">
 
 <meta property="og:type" content="website">
 <meta property="og:site_name" content="YantrAI">
-<meta property="og:title" content="MSME Agent — The 45-day clock starts on day one and never runs out unnoticed | AiFA">
-<meta property="og:description" content="The 45-day clock starts on day one and never runs out unnoticed. Every registered small vendor's invoice is dated, tracked and scheduled inside the statutory window, so the deadline is a constraint on the payment ru">
+<meta property="og:title" content="MSME Agent — A registered small vendor is paid inside the statutory window — 45 days, or 15 where nothing was agreed in writing | AiFA">
+<meta property="og:description" content="A registered small vendor is paid inside the statutory window — 45 days, or 15 where nothing was agreed in writing. The clock runs from acceptance or deemed acceptance, not from the invoice date, and which window applies depends on whether there is a written agreeme">
 <meta property="og:url" content="https://yantrailabs.com/agents/msme-agent">
 <meta property="og:image" content="https://yantrailabs.com/assets/og-cover.jpg">
 <meta property="og:image:width" content="1200">
 <meta property="og:image:height" content="630">
 <meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:title" content="AiFA — AI Teams for Finance">
-<meta name="twitter:description" content="The 45-day clock starts on day one and never runs out unnoticed. Every registered small vendor's invoice is dated, tracked and scheduled inside the statutory window, so the deadline is a constraint on the payment ru">
+<meta name="twitter:description" content="A registered small vendor is paid inside the statutory window — 45 days, or 15 where nothing was agreed in writing. The clock runs from acceptance or deemed acceptance, not from the invoice date, and which window applies depends on whether there is a written agreeme">
 <meta name="twitter:image" content="https://yantrailabs.com/assets/og-cover.jpg">
 
 <link rel="icon" href="/assets/favicon.svg" type="image/svg+xml">
@@ -104,13 +104,13 @@ body { margin: 0; background: #FFFFFF; }
   <div class="masthead">
     <span class="eyebrow iris"><i></i>Invoice entry</span>
     <h1 class="display">MSME Agent</h1>
-    <p class="lede">Section 43B(h) made late payment to registered micro and small enterprises an expense you cannot deduct until you actually pay it. The clock is unforgiving and nobody has time to watch it per vendor.</p>
+    <p class="lede">Section 15 of the MSMED Act sets the window: the date agreed in writing, never beyond 45 days from acceptance — and just 15 days where nothing was agreed in writing. Section 43B(h) then makes a late payment to a registered micro or small enterprise non-deductible until it is actually paid. Two different consequences, one clock, and nobody with the time to track it per vendor.</p>
   </div>
 </div>
 
 <section class="band">
   <div class="wrap">
-    <p class="statement">The 45-day clock starts on day one and never runs out unnoticed.<span class="after">Every registered small vendor's invoice is dated, tracked and scheduled inside the statutory window, so the deadline is a constraint on the payment run rather than an interest calculation afterwards.</span></p>
+    <p class="statement">A registered small vendor is paid inside the statutory window — 45 days, or 15 where nothing was agreed in writing.<span class="after">The clock runs from acceptance or deemed acceptance, not from the invoice date, and which window applies depends on whether there is a written agreement. Both are resolved per vendor and turned into a constraint on the payment run.</span></p>
   </div>
 </section>
 
@@ -119,10 +119,11 @@ body { margin: 0; background: #FFFFFF; }
     <h2 class="sec">What it checks</h2>
     <p>On every invoice, not a sample.</p>
     <ul class="checks">
-        <li>Udyam registration status against the vendor, not against memory</li>
-        <li>The day the clock actually started, from the right event</li>
-        <li>Days remaining on every open invoice for a registered vendor</li>
-        <li>Whether the scheduled run lands inside the window</li>
+        <li>Udyam registration and enterprise category against the vendor, not against memory</li>
+        <li>Which window applies — 45 days on a written agreement, 15 days without one</li>
+        <li>The day the clock actually started: acceptance or deemed acceptance, not the invoice date</li>
+        <li>Whether written objection was raised inside 15 days, since that changes the computation</li>
+        <li>Days remaining on every open invoice, and whether the scheduled run lands inside the window</li>
     </ul>
   </div>
 </section>
@@ -133,11 +134,11 @@ body { margin: 0; background: #FFFFFF; }
     <div class="cards">
       <div>
         <h3>Reads</h3>
-        <p>Vendor master and Udyam registration · Invoice and acceptance dates · The scheduled payment run</p>
+        <p>Vendor master and Udyam registration · Purchase terms, and whether they are agreed in writing · Acceptance and delivery dates · The scheduled payment run</p>
       </div>
       <div>
         <h3>Writes</h3>
-        <p>Days remaining against every open MSME invoice · A scheduling constraint on the run · A flag where the window cannot be met, before it is missed</p>
+        <p>Days remaining against every open invoice for a registered vendor · The window applied and why, so the computation can be re-read · A scheduling constraint on the run, and a flag where the window cannot be met</p>
       </div>
     </div>
 
@@ -153,7 +154,7 @@ body { margin: 0; background: #FFFFFF; }
 <section class="band wash">
   <div class="wrap">
     <h2 class="sec">When it isn't sure</h2>
-    <p>Registration status changes, and a vendor can be registered after invoicing. Where status is unclear the invoice is treated as in-scope and flagged — the expensive direction is assuming it is not.</p>
+    <p>Registration status changes, and a vendor can register after invoicing. Where status or the agreed-in-writing question is unclear, the shorter window is applied and the case is named — assuming the longer one is the expensive direction, because the consequence is both interest and a disallowed deduction.</p>
     <div class="callout">
       <span class="label">Why this matters more than the accuracy number</span>
       <p>Any check that runs on every transaction will meet cases it cannot settle. What makes a control trustworthy is not that it never hesitates — it is that hesitation produces a named question for a person, rather than a silent pass or a silent block.</p>
