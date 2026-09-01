@@ -1,164 +1,164 @@
 [
-  {
-    "slug": "cfo",
-    "name": "CFO",
-    "accent": "iris",
-    "headline": "You are asked to sign for controls you can only sample.",
-    "lede": "The representation you make is that controls operated. What actually operated is a sample, applied after the money moved, by people who ran out of month before they ran out of invoices.",
-    "measured": [
-      "Cash conversion and outflow discipline",
-      "Clean audit, no material weakness, no surprises in the review",
-      "Statutory exposure — GST credits reversed, TDS shortfalls, MSME interest",
-      "Finance headcount against a growing transaction volume"
-    ],
-    "leak": "Roughly 3% of outflow, spread across six ordinary failures. On ₹1,000 crore that is ₹30 crore, and none of it appears as a line item — it appears as margin that was always going to be that.",
-    "changes": [
-      "Control adherence becomes a number you can quote, not a hope",
-      "Findings arrive with the invoice attached, before payment, not as a post-mortem",
-      "The statutory clocks — MSME 45 days, GST filing, TDS thresholds — are scheduling constraints rather than year-end discoveries",
-      "Volume grows without the AP team growing with it"
-    ],
-    "asks": [
-      "What can the agent reach, and who decided that?",
-      "What happens when it is wrong?",
-      "Does anything have to move out of my ERP?",
-      "What does it cost me to find out if it works?"
-    ],
-    "answer": "Nothing moves. An agent inherits the signed-in user's scope and cannot exceed it. Ambiguity produces a named question rather than a silent pass. And finding out costs one export."
-  },
-  {
-    "slug": "controller",
-    "name": "Controller",
-    "accent": "mint",
-    "headline": "The close is a cleanup pass because the entries arrived dirty.",
-    "lede": "Most of what makes a close long is not the close. It is correcting entries that should never have been posted the way they were, in a period that is now trying to shut.",
-    "measured": [
-      "Days to close, and how many of them are corrections",
-      "Sub-ledger to control account agreement",
-      "Audit findings and the size of the adjustment list",
-      "Whether the numbers hold up when someone asks about them"
-    ],
-    "leak": "Every entry that posts wrong becomes work twice — once to post, once to find and fix. The second cost is invisible because it is just called the close.",
-    "changes": [
-      "Entries reach the ledger balanced and supported, in the open period",
-      "The sub-ledger agrees to the control account daily rather than monthly",
-      "Intercompany is agreed by both sides before either posts",
-      "The books are reportable on the day the period ends"
-    ],
-    "asks": [
-      "Does this create a second ledger I have to reconcile?",
-      "What does it do to my chart of accounts?",
-      "Can I see why it decided something, months later?",
-      "What happens when it cannot classify an entry?"
-    ],
-    "answer": "No second ledger — your ERP stays authoritative and AiFA posts into it. Every decision leaves an immutable trail of what was checked, what was found and who released it. Unclassifiable entries queue with a reason, they do not guess."
-  },
-  {
-    "slug": "head-of-finance",
-    "name": "Head of Finance",
-    "accent": "sand",
-    "headline": "You own the number and the team that produces it.",
-    "lede": "You are between a CFO who wants assurance and a team that is already at capacity. Adding controls means adding people, until the controls stop being something people do.",
-    "measured": [
-      "Accuracy of the reported number, and how late corrections arrive",
-      "Team capacity against transaction growth",
-      "Working capital — discounts taken, terms honoured, nothing paid early by accident",
-      "How much of the month is spent on exceptions"
-    ],
-    "leak": "The team is choosing what to check. That choice is invisible, undocumented, and made under time pressure by whoever is on the invoice that day.",
-    "changes": [
-      "Every transaction is checked, so nobody is choosing",
-      "Exceptions come with the reason and the evidence, so they are decisions rather than investigations",
-      "The same team handles several times the volume at the same standard",
-      "You can say which controls ran, on what, and when"
-    ],
-    "asks": [
-      "How much of my team's time does this actually take back?",
-      "What do I tell people about what changes for them?",
-      "How long before it is running on real data?",
-      "What if my ERP data is messy?"
-    ],
-    "answer": "The honest framing is throughput, not freed hours — the same people covering far more, at a standard nobody had time for before. Live on your stack in weeks, starting from an export, and messy data is what the checks are for."
-  },
-  {
-    "slug": "ap-lead",
-    "name": "AP Lead",
-    "accent": "rose",
-    "headline": "You know exactly which checks get skipped, and why.",
-    "lede": "It is not carelessness. It is a queue, a deadline, and a bill for ₹4 lakh where opening the contract costs twenty minutes you do not have. Every AP team makes that trade a hundred times a month.",
-    "measured": [
-      "Invoices processed, and how many are still open at cut-off",
-      "Duplicate payments and the recovery conversations that follow",
-      "Vendor escalations about payments that were late or wrong",
-      "How much of the month is spent chasing missing GRNs"
-    ],
-    "leak": "The invoices you did not have time to check are indistinguishable from the ones you did — until one of them turns out to be the second copy of something already paid.",
-    "changes": [
-      "The contract is opened on every line, every time, without costing you twenty minutes",
-      "A second copy is caught on arrival, whichever channel it came through",
-      "Missing GRNs are visible as a queue with an age, rather than a surprise at cut-off",
-      "The exceptions you work are real ones, with the reason already attached"
-    ],
-    "asks": [
-      "Does this mean my job is going away?",
-      "How many false flags am I going to have to clear?",
-      "Do I have to work somewhere new?",
-      "What happens to the vendor relationships I manage?"
-    ],
-    "answer": "The checking goes away, not the judgement — someone still decides what to do about a held invoice, and that someone is you. It runs in the systems you already use. And a vendor told about an overcharge on the day is a better conversation than one asked to refund it six months later."
-  },
-  {
-    "slug": "group-treasurer",
-    "name": "Group Treasurer",
-    "accent": "mint",
-    "headline": "Money leaves on a schedule set by whoever approved last.",
-    "lede": "You manage the cash position. What actually leaves is decided upstream, by approval timing you do not control, and by discounts nobody had time to evaluate against the cost of the cash.",
-    "measured": [
-      "Cash position and forecast accuracy",
-      "Early-payment discounts captured against cost of funds",
-      "Payment run integrity — nothing paid twice, nothing paid to the wrong account",
-      "Statutory payment windows honoured across entities"
-    ],
-    "leak": "A discount that was available and expired is a cost that never appears anywhere. Neither does a payment made earlier than it needed to be.",
-    "changes": [
-      "Every discount is surfaced with its deadline and its value against holding the cash",
-      "The run is built from entries that passed every check, so a stop is not needed after the fact",
-      "Beneficiary accounts are re-verified between approval and payment",
-      "MSME windows are scheduling constraints rather than interest discovered later"
-    ],
-    "asks": [
-      "Does it move money on its own?",
-      "How does it handle multi-entity and multi-currency?",
-      "What stops a compromised vendor bank change getting through?",
-      "Can I override it?"
-    ],
-    "answer": "It does not move money — it surfaces the number and the deadline, and the payment decision stays yours. Bank details are checked against what was approved rather than what is current in the master, which is the specific failure a vendor-impersonation attempt relies on."
-  },
-  {
-    "slug": "internal-audit",
-    "name": "Internal Audit",
-    "accent": "iris",
-    "headline": "Sampling was always a compromise with time.",
-    "lede": "You test a sample to estimate a rate of error. It was never the goal — it was what a human-sized team could do. When the check runs on everything, your job changes from finding instances to designing the control.",
-    "measured": [
-      "Coverage, and how defensible the sampling basis is",
-      "Findings that should have been caught by a control that existed on paper",
-      "Whether management can evidence that controls operated",
-      "Repeat findings across periods"
-    ],
-    "leak": "By the time a sample finds it, the money has gone. The finding becomes a recommendation rather than a recovery.",
-    "changes": [
-      "Population testing rather than sampling — every transaction, with the result recorded",
-      "An immutable trail of what was checked, what was found and who released it",
-      "Control adherence as a measured number per step, not an assertion",
-      "Exceptions with evidence attached, so testing them is reading rather than reconstructing"
-    ],
-    "asks": [
-      "Can I test the agent itself?",
-      "Is the trail immutable, and can I read it after the fact?",
-      "Who can override a hold, and is that logged?",
-      "What does it do when it cannot decide?"
-    ],
-    "answer": "Each agent enforces one stated rule, which is what makes it testable — you can put transactions through it and check the result. Overrides are named-user and logged. And a check that cannot decide raises a named question rather than passing quietly, which is the behaviour you would design if you were writing the control yourself."
-  }
+ {
+  "slug": "cfo",
+  "name": "CFO",
+  "accent": "iris",
+  "headline": "You are asked to sign for controls you can only sample.",
+  "lede": "The representation you make is that controls operated. What actually operated is a sample, applied after the money moved, by people who ran out of month before they ran out of invoices.",
+  "measured": [
+   "Cash conversion and outflow discipline",
+   "Clean audit, no material weakness, no surprises in the review",
+   "Statutory exposure — GST credits reversed, TDS shortfalls, MSME interest",
+   "Finance headcount against a growing transaction volume"
+  ],
+  "leak": "Roughly 3% of outflow, spread across six ordinary failures. On $100 million that is $3 million, and none of it appears as a line item — it appears as margin that was always going to be that.",
+  "changes": [
+   "Control adherence becomes a number you can quote, not a hope",
+   "Findings arrive with the invoice attached, before payment, not as a post-mortem",
+   "The statutory clocks — MSME 45 days, GST filing, TDS thresholds — are scheduling constraints rather than year-end discoveries",
+   "Volume grows without the AP team growing with it"
+  ],
+  "asks": [
+   "What can the agent reach, and who decided that?",
+   "What happens when it is wrong?",
+   "Does anything have to move out of my ERP?",
+   "What does it cost me to find out if it works?"
+  ],
+  "answer": "Nothing moves. An agent inherits the signed-in user's scope and cannot exceed it. Ambiguity produces a named question rather than a silent pass. And finding out costs one export."
+ },
+ {
+  "slug": "controller",
+  "name": "Controller",
+  "accent": "mint",
+  "headline": "The close is a cleanup pass because the entries arrived dirty.",
+  "lede": "Most of what makes a close long is not the close. It is correcting entries that should never have been posted the way they were, in a period that is now trying to shut.",
+  "measured": [
+   "Days to close, and how many of them are corrections",
+   "Sub-ledger to control account agreement",
+   "Audit findings and the size of the adjustment list",
+   "Whether the numbers hold up when someone asks about them"
+  ],
+  "leak": "Every entry that posts wrong becomes work twice — once to post, once to find and fix. The second cost is invisible because it is just called the close.",
+  "changes": [
+   "Entries reach the ledger balanced and supported, in the open period",
+   "The sub-ledger agrees to the control account daily rather than monthly",
+   "Intercompany is agreed by both sides before either posts",
+   "The books are reportable on the day the period ends"
+  ],
+  "asks": [
+   "Does this create a second ledger I have to reconcile?",
+   "What does it do to my chart of accounts?",
+   "Can I see why it decided something, months later?",
+   "What happens when it cannot classify an entry?"
+  ],
+  "answer": "No second ledger — your ERP stays authoritative and AiFA posts into it. Every decision leaves an immutable trail of what was checked, what was found and who released it. Unclassifiable entries queue with a reason, they do not guess."
+ },
+ {
+  "slug": "head-of-finance",
+  "name": "Head of Finance",
+  "accent": "sand",
+  "headline": "You own the number and the team that produces it.",
+  "lede": "You are between a CFO who wants assurance and a team that is already at capacity. Adding controls means adding people, until the controls stop being something people do.",
+  "measured": [
+   "Accuracy of the reported number, and how late corrections arrive",
+   "Team capacity against transaction growth",
+   "Working capital — discounts taken, terms honoured, nothing paid early by accident",
+   "How much of the month is spent on exceptions"
+  ],
+  "leak": "The team is choosing what to check. That choice is invisible, undocumented, and made under time pressure by whoever is on the invoice that day.",
+  "changes": [
+   "Every transaction is checked, so nobody is choosing",
+   "Exceptions come with the reason and the evidence, so they are decisions rather than investigations",
+   "The same team handles several times the volume at the same standard",
+   "You can say which controls ran, on what, and when"
+  ],
+  "asks": [
+   "How much of my team's time does this actually take back?",
+   "What do I tell people about what changes for them?",
+   "How long before it is running on real data?",
+   "What if my ERP data is messy?"
+  ],
+  "answer": "The honest framing is throughput, not freed hours — the same people covering far more, at a standard nobody had time for before. Live on your stack in weeks, starting from an export, and messy data is what the checks are for."
+ },
+ {
+  "slug": "ap-lead",
+  "name": "AP Lead",
+  "accent": "rose",
+  "headline": "You know exactly which checks get skipped, and why.",
+  "lede": "It is not carelessness. It is a queue, a deadline, and a bill for $40,000 where opening the contract costs twenty minutes you do not have. Every AP team makes that trade a hundred times a month.",
+  "measured": [
+   "Invoices processed, and how many are still open at cut-off",
+   "Duplicate payments and the recovery conversations that follow",
+   "Vendor escalations about payments that were late or wrong",
+   "How much of the month is spent chasing missing GRNs"
+  ],
+  "leak": "The invoices you did not have time to check are indistinguishable from the ones you did — until one of them turns out to be the second copy of something already paid.",
+  "changes": [
+   "The contract is opened on every line, every time, without costing you twenty minutes",
+   "A second copy is caught on arrival, whichever channel it came through",
+   "Missing GRNs are visible as a queue with an age, rather than a surprise at cut-off",
+   "The exceptions you work are real ones, with the reason already attached"
+  ],
+  "asks": [
+   "Does this mean my job is going away?",
+   "How many false flags am I going to have to clear?",
+   "Do I have to work somewhere new?",
+   "What happens to the vendor relationships I manage?"
+  ],
+  "answer": "The checking goes away, not the judgement — someone still decides what to do about a held invoice, and that someone is you. It runs in the systems you already use. And a vendor told about an overcharge on the day is a better conversation than one asked to refund it six months later."
+ },
+ {
+  "slug": "group-treasurer",
+  "name": "Group Treasurer",
+  "accent": "mint",
+  "headline": "Money leaves on a schedule set by whoever approved last.",
+  "lede": "You manage the cash position. What actually leaves is decided upstream, by approval timing you do not control, and by discounts nobody had time to evaluate against the cost of the cash.",
+  "measured": [
+   "Cash position and forecast accuracy",
+   "Early-payment discounts captured against cost of funds",
+   "Payment run integrity — nothing paid twice, nothing paid to the wrong account",
+   "Statutory payment windows honoured across entities"
+  ],
+  "leak": "A discount that was available and expired is a cost that never appears anywhere. Neither does a payment made earlier than it needed to be.",
+  "changes": [
+   "Every discount is surfaced with its deadline and its value against holding the cash",
+   "The run is built from entries that passed every check, so a stop is not needed after the fact",
+   "Beneficiary accounts are re-verified between approval and payment",
+   "MSME windows are scheduling constraints rather than interest discovered later"
+  ],
+  "asks": [
+   "Does it move money on its own?",
+   "How does it handle multi-entity and multi-currency?",
+   "What stops a compromised vendor bank change getting through?",
+   "Can I override it?"
+  ],
+  "answer": "It does not move money — it surfaces the number and the deadline, and the payment decision stays yours. Bank details are checked against what was approved rather than what is current in the master, which is the specific failure a vendor-impersonation attempt relies on."
+ },
+ {
+  "slug": "internal-audit",
+  "name": "Internal Audit",
+  "accent": "iris",
+  "headline": "Sampling was always a compromise with time.",
+  "lede": "You test a sample to estimate a rate of error. It was never the goal — it was what a human-sized team could do. When the check runs on everything, your job changes from finding instances to designing the control.",
+  "measured": [
+   "Coverage, and how defensible the sampling basis is",
+   "Findings that should have been caught by a control that existed on paper",
+   "Whether management can evidence that controls operated",
+   "Repeat findings across periods"
+  ],
+  "leak": "By the time a sample finds it, the money has gone. The finding becomes a recommendation rather than a recovery.",
+  "changes": [
+   "Population testing rather than sampling — every transaction, with the result recorded",
+   "An immutable trail of what was checked, what was found and who released it",
+   "Control adherence as a measured number per step, not an assertion",
+   "Exceptions with evidence attached, so testing them is reading rather than reconstructing"
+  ],
+  "asks": [
+   "Can I test the agent itself?",
+   "Is the trail immutable, and can I read it after the fact?",
+   "Who can override a hold, and is that logged?",
+   "What does it do when it cannot decide?"
+  ],
+  "answer": "Each agent enforces one stated rule, which is what makes it testable — you can put transactions through it and check the result. Overrides are named-user and logged. And a check that cannot decide raises a named question rather than passing quietly, which is the behaviour you would design if you were writing the control yourself."
+ }
 ]

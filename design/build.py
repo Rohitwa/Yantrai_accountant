@@ -400,6 +400,25 @@ _start = body.rfind('<a ', 0, _i)
 body = body[:_start] + body[_i + len('>Customers</a>'):]
 assert '>Customers</a>' not in body
 
+# ---------------------------------------------------------------- currency
+# The canvas copy is priced in rupees and crore. The claim underneath is 3% of
+# outflow, which is currency-independent, so the example company is restated in
+# dollars at the magnitude the English site targets — and at the same magnitude
+# as the French one, so the two do not describe different companies.
+_CURRENCY = [
+    ('A ₹1,000&nbsp;crore company is saving up to ₹30&nbsp;crore on its outflows — with',
+     'A $100&nbsp;million company is saving up to $3&nbsp;million on its outflows — with'),
+    ("If your company moves over ₹1,000 crore a year, we'll show you where the leak is — on your own data.",
+     "If your company moves over $100 million a year, we'll show you where the leak is — on your own data."),
+]
+for _old, _new in _CURRENCY:
+    assert body.count(_old) == 1, (_old[:40], body.count(_old))
+    body = body.replace(_old, _new)
+# the bare glyph in the CTA chip and the "Recovered" metric
+_SYM = I18N.get('_currency', '$')
+assert body.count('>\u20b9</span>') == 2, body.count('>\u20b9</span>')
+body = body.replace('>\u20b9</span>', '>%s</span>' % _SYM)
+
 # ------------------------------------------------------------ brand lockup
 # AiFA leads; YantrAI becomes the endorsement line. The mark is d4-seal from
 # the brand kit (~/Desktop/memory/aifa_brand), not a redraw.
@@ -605,8 +624,8 @@ NAV = extract_block(body, 'data-nav="1"')
 FOOTER = extract_block(body, 'data-footer="1"')
 
 PAGES = [
-    ('what-it-found', 'What it found — how ₹30 crore comes out of ₹1,000 crore | AiFA',
-     'A ₹1,000 crore company loses about 3% of outflow across six ordinary failures. '
+    ('what-it-found', 'What it found — how $3 million comes out of $100 million | AiFA',
+     'A $100 million company loses about 3% of outflow across six ordinary failures. '
      'Here is the breakdown, and what each one is worth.'),
     ('security', 'Security — the PRISM-ES stack | AiFA',
      'Where your data sits, who can see it, what is retained, and what trains on it. '
@@ -645,7 +664,7 @@ for slug, page_title, description in PAGES:
     if _pm:
         page_title, description = _pm
     content = read_localised('pages', slug + '.html')
-    _calc = I18N.get('_calc') or {'prefix': '\u20b9', 'unit': ' Cr'}
+    _calc = I18N.get('_calc') or {'prefix': '$', 'unit': 'M'}
     extra = (CALC_JS.replace('__CALC_PREFIX__', _calc['prefix'])
                     .replace('__CALC_UNIT__', _calc['unit'])
                     .replace('__CALC_DEC__', ',' if LOCALE != 'en' else '.')
@@ -778,7 +797,7 @@ def render_agent(a):
   <div class="wrap">
     <h2>See what this one finds in your last 90 days.</h2>
     <p>One export. No connector. We come back within a working day.</p>
-    <a class="btn" href="/#book"><span class="rupee">\u20B9</span>Check your savings<span>\u2192</span></a>
+    <a class="btn" href="/#book"><span class="rupee">$</span>Check your savings<span>\u2192</span></a>
     <div class="inline-links">
       %(others)s
       <a href="/agents">All of the team \u2192</a>
@@ -824,7 +843,7 @@ def render_agents_index():
   <div class="masthead">
     <span class="eyebrow iris"><i></i>The AI team</span>
     <h1 class="display">Every agent is one<br>absolute <em class="mark">commitment</em>.</h1>
-    <p class="lede">Not a feature list. Each agent enforces a single rule on every transaction, and hands its result to the next one. These six are the ones behind the \u20B930 crore arithmetic; the rest of the team runs across receivables, treasury and the close.</p>
+    <p class="lede">Not a feature list. Each agent enforces a single rule on every transaction, and hands its result to the next one. These six are the ones behind the $3 million arithmetic; the rest of the team runs across receivables, treasury and the close.</p>
   </div>
 </div>
 
@@ -837,7 +856,7 @@ def render_agents_index():
 <section class="next">
   <div class="wrap">
     <h2>Put the team on your last 90 days.</h2>
-    <a class="btn" href="/#book"><span class="rupee">\u20B9</span>Check your savings<span>\u2192</span></a>
+    <a class="btn" href="/#book"><span class="rupee">$</span>Check your savings<span>\u2192</span></a>
     <div class="inline-links">
       <a href="/what-it-found">What the checks find \u2192</a>
       <a href="/security">How your data is handled \u2192</a>
@@ -938,7 +957,7 @@ def render_workflow(w):
   <div class="wrap">
     <h2>See this step run on your last 90 days.</h2>
     <p>One export. No connector. We come back within a working day.</p>
-    <a class="btn" href="/#book"><span class="rupee">\u20B9</span>Check your savings<span>\u2192</span></a>
+    <a class="btn" href="/#book"><span class="rupee">$</span>Check your savings<span>\u2192</span></a>
     <div class="inline-links">
       %(others)s
       <a href="/agents">The AI team \u2192</a>
@@ -1038,7 +1057,7 @@ def render_integration(x):
   <div class="wrap">
     <h2>Run it on 90 days of your own %(name)s data.</h2>
     <p>One export. No connector, and nothing to install.</p>
-    <a class="btn" href="/#book"><span class="rupee">\u20B9</span>Check your savings<span>\u2192</span></a>
+    <a class="btn" href="/#book"><span class="rupee">$</span>Check your savings<span>\u2192</span></a>
     <div class="inline-links">
       %(others)s
     </div>
@@ -1082,7 +1101,7 @@ def render_integrations_index():
 <section class="next">
   <div class="wrap">
     <h2>Start with the export your team already produces.</h2>
-    <a class="btn" href="/#book"><span class="rupee">\u20B9</span>Check your savings<span>\u2192</span></a>
+    <a class="btn" href="/#book"><span class="rupee">$</span>Check your savings<span>\u2192</span></a>
     <div class="inline-links">
       <a href="/security">How your data is handled \u2192</a>
       <a href="/agents">The AI team \u2192</a>
@@ -1167,7 +1186,7 @@ def render_role(r):
   <div class="wrap">
     <h2>Ninety days of invoices answers this better than a meeting.</h2>
     <p>One export, findings back within a working day, with the invoice attached to each.</p>
-    <a class="btn" href="/#book"><span class="rupee">\u20B9</span>Check your savings<span>\u2192</span></a>
+    <a class="btn" href="/#book"><span class="rupee">$</span>Check your savings<span>\u2192</span></a>
     <div class="inline-links">
       %(others)s
     </div>
@@ -1206,7 +1225,7 @@ def render_roles_index():
 <section class="next">
   <div class="wrap">
     <h2>Whoever you are, it starts the same way.</h2>
-    <a class="btn" href="/#book"><span class="rupee">\u20B9</span>Check your savings<span>\u2192</span></a>
+    <a class="btn" href="/#book"><span class="rupee">$</span>Check your savings<span>\u2192</span></a>
     <div class="inline-links">
       <a href="/what-it-found">What the checks find \u2192</a>
       <a href="/security">How your data is handled \u2192</a>

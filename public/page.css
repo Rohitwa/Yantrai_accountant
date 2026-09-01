@@ -217,7 +217,7 @@ ul.mono li::before { content: ''; position: absolute; left: 0; top: 5px; width: 
   .btn { width: 100%; justify-content: center; box-sizing: border-box; }
 }
 
-/* The ₹30 Cr table: on a phone the numbers matter more than the prose, so the
+/* The $3M table: on a phone the numbers matter more than the prose, so the
    "why" column collapses under the leak name rather than scrolling out of view. */
 .why-m { display: none; }
 @media (max-width: 760px) {

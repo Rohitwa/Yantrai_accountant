@@ -3,23 +3,23 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>What it found — how ₹30 crore comes out of ₹1,000 crore | AiFA</title>
-<meta name="description" content="A ₹1,000 crore company loses about 3% of outflow across six ordinary failures. Here is the breakdown, and what each one is worth.">
+<title>What it found — how $3 million comes out of $100 million | AiFA</title>
+<meta name="description" content="A $100 million company loses about 3% of outflow across six ordinary failures. Here is the breakdown, and what each one is worth.">
 <link rel="canonical" href="https://yantrailabs.com/what-it-found">
 <meta name="theme-color" content="#FFFFFF">
 <meta name="robots" content="index, follow">
 
 <meta property="og:type" content="website">
 <meta property="og:site_name" content="YantrAI">
-<meta property="og:title" content="What it found — how ₹30 crore comes out of ₹1,000 crore | AiFA">
-<meta property="og:description" content="A ₹1,000 crore company loses about 3% of outflow across six ordinary failures. Here is the breakdown, and what each one is worth.">
+<meta property="og:title" content="What it found — how $3 million comes out of $100 million | AiFA">
+<meta property="og:description" content="A $100 million company loses about 3% of outflow across six ordinary failures. Here is the breakdown, and what each one is worth.">
 <meta property="og:url" content="https://yantrailabs.com/what-it-found">
 <meta property="og:image" content="https://yantrailabs.com/assets/og-cover.jpg">
 <meta property="og:image:width" content="1200">
 <meta property="og:image:height" content="630">
 <meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:title" content="AiFA — AI Teams for Finance">
-<meta name="twitter:description" content="A ₹1,000 crore company loses about 3% of outflow across six ordinary failures. Here is the breakdown, and what each one is worth.">
+<meta name="twitter:description" content="A $100 million company loses about 3% of outflow across six ordinary failures. Here is the breakdown, and what each one is worth.">
 <meta name="twitter:image" content="https://yantrailabs.com/assets/og-cover.jpg">
 
 <link rel="icon" href="/assets/favicon.svg" type="image/svg+xml">
@@ -84,7 +84,7 @@ document.addEventListener('DOMContentLoaded', function () {
   function render() {
     var cr = parseFloat(input.value);
     out.textContent = isFinite(cr) && cr >= 0
-      ? '₹' + (cr * 0.03).toFixed(1).replace('.', '.') + ' Cr'
+      ? '$' + (cr * 0.03).toFixed(1).replace('.', '.') + 'M'
       : '—';
   }
   input.addEventListener('input', render);
@@ -119,8 +119,8 @@ document.addEventListener('DOMContentLoaded', function () {
   <div class="crumb"><a href="/">AiFA</a> · What it found</div>
   <div class="masthead">
     <span class="eyebrow sand"><i></i>The arithmetic</span>
-    <h1 class="display">₹30 crore is not one big leak.<br>It's six small ones nobody<br>has time to <em class="mark">check</em>.</h1>
-    <p class="lede">A ₹1,000 crore company loses about 3% of what it pays out. Not to fraud, and not in one place — across six ordinary failures that each look too small to chase on the day they happen.</p>
+    <h1 class="display">$3 million is not one big leak.<br>It's six small ones nobody<br>has time to <em class="mark">check</em>.</h1>
+    <p class="lede">A $100 million company loses about 3% of what it pays out. Not to fraud, and not in one place — across six ordinary failures that each look too small to chase on the day they happen.</p>
   </div>
 </div>
 
@@ -136,58 +136,58 @@ document.addEventListener('DOMContentLoaded', function () {
             <th>What leaks</th>
             <th class="col-why">Why it happens</th>
             <th class="num">% of outflow</th>
-            <th class="num">On ₹1,000 Cr</th>
+            <th class="num">On $100M</th>
             <th class="col-agent">Caught by</th>
           </tr>
         </thead>
         <tbody>
           <tr>
-            <td>Rate above contract<span class="why-m">The contract says one number, the invoice says another. Nobody opens the contract for a ₹4 lakh bill.</span><span class="agent-m"><a href="/agents/pricing-agent">Pricing Agent</a></span></td>
-            <td class="col-why">The contract says one number, the invoice says another. Nobody opens the contract for a ₹4 lakh bill.</td>
+            <td>Rate above contract<span class="why-m">The contract says one number, the invoice says another. Nobody opens the contract for a $40,000 bill.</span><span class="agent-m"><a href="/agents/pricing-agent">Pricing Agent</a></span></td>
+            <td class="col-why">The contract says one number, the invoice says another. Nobody opens the contract for a $40,000 bill.</td>
             <td class="num">1.00%</td>
-            <td class="num">₹10.0 Cr</td>
+            <td class="num">$1.00M</td>
             <td class="col-agent"><a href="/agents/pricing-agent">Pricing Agent</a></td>
           </tr>
           <tr>
             <td>Duplicate bill<span class="why-m">The same invoice arrives twice — once on the portal, once by email — and clears both times.</span><span class="agent-m"><a href="/agents/duplicate-agent">Duplicate Agent</a></span></td>
             <td class="col-why">The same invoice arrives twice — once on the portal, once by email — and clears both times.</td>
             <td class="num">0.65%</td>
-            <td class="num">₹6.5 Cr</td>
+            <td class="num">$0.65M</td>
             <td class="col-agent"><a href="/agents/duplicate-agent">Duplicate Agent</a></td>
           </tr>
           <tr>
             <td>Quantity billed over goods received<span class="why-m">The invoice bills 82 MT, the gate received 78. The GRN is in another system.</span><span class="agent-m"><a href="/agents/3-way-match-agent">3-way match Agent</a></span></td>
             <td class="col-why">The invoice bills 82 MT, the gate received 78. The GRN is in another system.</td>
             <td class="num">0.45%</td>
-            <td class="num">₹4.5 Cr</td>
+            <td class="num">$0.45M</td>
             <td class="col-agent"><a href="/agents/3-way-match-agent">3-way match Agent</a></td>
           </tr>
           <tr>
             <td>Early-payment discount not taken<span class="why-m">2% for paying in ten days, sitting unclaimed because the approval took twelve.</span><span class="agent-m"><a href="/agents/discount-agent">Discount Agent</a></span></td>
             <td class="col-why">2% for paying in ten days, sitting unclaimed because the approval took twelve.</td>
             <td class="num">0.35%</td>
-            <td class="num">₹3.5 Cr</td>
+            <td class="num">$0.35M</td>
             <td class="col-agent"><a href="/agents/discount-agent">Discount Agent</a></td>
           </tr>
           <tr>
             <td>Input tax credit not recovered<span class="why-m">The vendor never filed, so the credit was never claimable — discovered at the annual return.</span><span class="agent-m"><a href="/agents/gst-agent">GST Agent</a></span></td>
             <td class="col-why">The vendor never filed, so the credit was never claimable — discovered at the annual return.</td>
             <td class="num">0.30%</td>
-            <td class="num">₹3.0 Cr</td>
+            <td class="num">$0.30M</td>
             <td class="col-agent"><a href="/agents/gst-agent">GST Agent</a></td>
           </tr>
           <tr>
             <td>TDS deducted at the wrong rate<span class="why-m">Wrong section, or the threshold crossed mid-year and nobody re-rated the vendor.</span><span class="agent-m"><a href="/agents/tds-agent">TDS Agent</a></span></td>
             <td class="col-why">Wrong section, or the threshold crossed mid-year and nobody re-rated the vendor.</td>
             <td class="num">0.25%</td>
-            <td class="num">₹2.5 Cr</td>
+            <td class="num">$0.25M</td>
             <td class="col-agent"><a href="/agents/tds-agent">TDS Agent</a></td>
           </tr>
           <tr class="total">
             <td>Total</td>
             <td></td>
             <td class="num">3.00%</td>
-            <td class="num">₹30.0 Cr</td>
+            <td class="num">$3.00M</td>
             <td></td>
           </tr>
         </tbody>
@@ -196,7 +196,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
     <div class="callout">
       <span class="label">How to read this</span>
-      <p>This is a model, built from the six checks and what they typically recover — not a report of one company's results. It is here so the ₹30 crore figure can be argued with rather than taken on faith.</p>
+      <p>This is a model, built from the six checks and what they typically recover — not a report of one company's results. It is here so the $3 million figure can be argued with rather than taken on faith.</p>
       <p>The savings check replaces every number on this page with your own. Ninety days of your highest-spend vendor invoices, run through the same six checks, with the invoice attached to each finding.</p>
     </div>
   </div>
@@ -207,7 +207,7 @@ document.addEventListener('DOMContentLoaded', function () {
     <h2 class="sec">What one line looks like</h2>
     <p>The reason these leaks survive is that no single instance is worth the argument. Here is one line from one invoice.</p>
 
-    <p class="statement">₹105 billed against ₹100 agreed, on 12,000 units.<span class="after">₹48,000 on one line of one invoice. A 5% variance that no approver would notice and no auditor would sample. The same vendor bills 40 times a year.</span></p>
+    <p class="statement">$105 billed against $100 agreed, on 12,000 units.<span class="after">$60,000 on one line of one invoice. A 5% variance that no approver would notice and no auditor would sample. The same vendor bills 40 times a year.</span></p>
 
     <ul class="checks sand">
       <li><strong>It is not an error anyone made.</strong> The rate moved when the contract was renewed and the master was never updated.</li>
@@ -248,10 +248,10 @@ document.addEventListener('DOMContentLoaded', function () {
     <div class="calc">
       <label for="outflow">Annual outflow</label>
       <div class="row">
-        <input id="outflow" type="number" inputmode="numeric" min="0" step="10" value="1000" aria-describedby="calc-out">
-        <span style="font-size:15px;font-weight:500;color:var(--body)">crore</span>
+        <input id="outflow" type="number" inputmode="numeric" min="0" step="10" value="100" aria-describedby="calc-out">
+        <span style="font-size:15px;font-weight:500;color:var(--body)">million</span>
         <span style="font-size:15px;font-weight:500;color:var(--body)">→</span>
-        <span class="out" id="calc-out">₹30.0 Cr</span>
+        <span class="out" id="calc-out">$3.0M</span>
       </div>
       <p class="note">At 3% of outflow. Your real number depends on how much of your spend is contracted, how many vendors are MSME-registered, and how your GST credits are running — which is what the savings check measures.</p>
     </div>
@@ -262,7 +262,7 @@ document.addEventListener('DOMContentLoaded', function () {
   <div class="wrap">
     <h2>Find out what your own 90 days holds.</h2>
     <p>One export. No connector. We come back within a working day.</p>
-    <a class="btn" href="/#book"><span class="rupee">₹</span>Check your savings<span>→</span></a>
+    <a class="btn" href="/#book"><span class="rupee">$</span>Check your savings<span>→</span></a>
     <div class="inline-links">
       <a href="/agents">The AI team →</a>
       <a href="/security">How your data is handled →</a>
