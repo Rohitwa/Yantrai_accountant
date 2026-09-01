@@ -209,12 +209,12 @@
   "unit": " M€",
   "prefix": ""
  },
- "A $100 million company is saving up to $3 million on its outflows — with": "Une entreprise récupère jusqu'à 3 % de ses décaissements — avec",
- "If your company moves over $100 million a year, we'll show you where the leak is — on your own data.": "Quel que soit votre volume de décaissements annuel, nous vous montrons où se situe la fuite — sur vos propres données.",
  "Under $10 million": "Moins de 10 M€",
  "$10–50 million": "10–50 M€",
  "$50–100 million": "50–100 M€",
  "$100–500 million": "100–500 M€",
  "Over $500 million": "Plus de 500 M€",
- "_currency": "€"
+ "_currency": "€",
+ "A $120 million company is saving up to $3.6 million on its outflows — with": "Une entreprise récupère jusqu'à 3 % de ses décaissements — avec",
+ "If your company moves over $120 million a year, we'll show you where the leak is — on your own data.": "Quel que soit votre volume de décaissements annuel, nous vous montrons où se situe la fuite — sur vos propres données."
 }

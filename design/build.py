@@ -407,9 +407,9 @@ assert '>Customers</a>' not in body
 # as the French one, so the two do not describe different companies.
 _CURRENCY = [
     ('A ₹1,000&nbsp;crore company is saving up to ₹30&nbsp;crore on its outflows — with',
-     'A $100&nbsp;million company is saving up to $3&nbsp;million on its outflows — with'),
+     'A $120&nbsp;million company is saving up to $3.6&nbsp;million on its outflows — with'),
     ("If your company moves over ₹1,000 crore a year, we'll show you where the leak is — on your own data.",
-     "If your company moves over $100 million a year, we'll show you where the leak is — on your own data."),
+     "If your company moves over $120 million a year, we'll show you where the leak is — on your own data."),
 ]
 for _old, _new in _CURRENCY:
     assert body.count(_old) == 1, (_old[:40], body.count(_old))
@@ -624,8 +624,8 @@ NAV = extract_block(body, 'data-nav="1"')
 FOOTER = extract_block(body, 'data-footer="1"')
 
 PAGES = [
-    ('what-it-found', 'What it found — how $3 million comes out of $100 million | AiFA',
-     'A $100 million company loses about 3% of outflow across six ordinary failures. '
+    ('what-it-found', 'What it found — how $3.6 million comes out of $120 million | AiFA',
+     'A $120 million company loses about 3% of outflow across six ordinary failures. '
      'Here is the breakdown, and what each one is worth.'),
     ('security', 'Security — the PRISM-ES stack | AiFA',
      'Where your data sits, who can see it, what is retained, and what trains on it. '
@@ -843,7 +843,7 @@ def render_agents_index():
   <div class="masthead">
     <span class="eyebrow iris"><i></i>The AI team</span>
     <h1 class="display">Every agent is one<br>absolute <em class="mark">commitment</em>.</h1>
-    <p class="lede">Not a feature list. Each agent enforces a single rule on every transaction, and hands its result to the next one. These six are the ones behind the $3 million arithmetic; the rest of the team runs across receivables, treasury and the close.</p>
+    <p class="lede">Not a feature list. Each agent enforces a single rule on every transaction, and hands its result to the next one. These six are the ones behind the $3.6 million arithmetic; the rest of the team runs across receivables, treasury and the close.</p>
   </div>
 </div>
 

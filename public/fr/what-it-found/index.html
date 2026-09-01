@@ -136,7 +136,7 @@ document.addEventListener('DOMContentLoaded', function () {
             <th>Ce qui fuit</th>
             <th class="col-why">Pourquoi</th>
             <th class="num">% des décaissements</th>
-            <th class="num">Sur 100 M€</th>
+            <th class="num">Sur 120 M€</th>
             <th class="col-agent">Détecté par</th>
           </tr>
         </thead>
@@ -145,49 +145,49 @@ document.addEventListener('DOMContentLoaded', function () {
             <td>Prix supérieur au contrat<span class="why-m">Le contrat dit un chiffre, la facture en dit un autre. Personne n'ouvre le contrat pour une facture de 40 000 €.</span><span class="agent-m"><a href="/agents/pricing-agent">Agent Tarification</a></span></td>
             <td class="col-why">Le contrat dit un chiffre, la facture en dit un autre. Personne n'ouvre le contrat pour une facture de 40 000 €.</td>
             <td class="num">1,00 %</td>
-            <td class="num">1,00 M€</td>
+            <td class="num">1,20 M€</td>
             <td class="col-agent"><a href="/agents/pricing-agent">Agent Tarification</a></td>
           </tr>
           <tr>
             <td>Facture en double<span class="why-m">La même facture arrive deux fois — une fois par le portail, une fois par e-mail — et passe les deux fois.</span><span class="agent-m"><a href="/agents/duplicate-agent">Agent Doublons</a></span></td>
             <td class="col-why">La même facture arrive deux fois — une fois par le portail, une fois par e-mail — et passe les deux fois.</td>
             <td class="num">0,65 %</td>
-            <td class="num">0,65 M€</td>
+            <td class="num">0,78 M€</td>
             <td class="col-agent"><a href="/agents/duplicate-agent">Agent Doublons</a></td>
           </tr>
           <tr>
             <td>Quantité facturée supérieure à la quantité reçue<span class="why-m">La facture porte sur 82 tonnes, le quai en a reçu 78. Le bon de réception est dans un autre système.</span><span class="agent-m"><a href="/agents/3-way-match-agent">Agent Rapprochement 3 voies</a></span></td>
             <td class="col-why">La facture porte sur 82 tonnes, le quai en a reçu 78. Le bon de réception est dans un autre système.</td>
             <td class="num">0,45 %</td>
-            <td class="num">0,45 M€</td>
+            <td class="num">0,54 M€</td>
             <td class="col-agent"><a href="/agents/3-way-match-agent">Agent Rapprochement 3 voies</a></td>
           </tr>
           <tr>
             <td>Escompte de règlement non pris<span class="why-m">2 % pour un paiement à dix jours, laissés de côté parce que la validation en a pris douze.</span><span class="agent-m"><a href="/agents/discount-agent">Agent Escomptes</a></span></td>
             <td class="col-why">2 % pour un paiement à dix jours, laissés de côté parce que la validation en a pris douze.</td>
             <td class="num">0,35 %</td>
-            <td class="num">0,35 M€</td>
+            <td class="num">0,42 M€</td>
             <td class="col-agent"><a href="/agents/discount-agent">Agent Escomptes</a></td>
           </tr>
           <tr>
             <td>Crédit de taxe non récupéré<span class="why-m">Le fournisseur n'a jamais déclaré : le crédit n'était donc jamais dû — découvert à la déclaration annuelle.</span><span class="agent-m"><a href="/agents/gst-agent">Agent GST</a></span></td>
             <td class="col-why">Le fournisseur n'a jamais déclaré : le crédit n'était donc jamais dû — découvert à la déclaration annuelle.</td>
             <td class="num">0,30 %</td>
-            <td class="num">0,30 M€</td>
+            <td class="num">0,36 M€</td>
             <td class="col-agent"><a href="/agents/gst-agent">Agent GST</a></td>
           </tr>
           <tr>
             <td>Retenue à la source au mauvais taux<span class="why-m">Mauvais article, ou un seuil franchi en cours d'année sans que le fournisseur soit requalifié.</span><span class="agent-m"><a href="/agents/tds-agent">Agent TDS</a></span></td>
             <td class="col-why">Mauvais article, ou un seuil franchi en cours d'année sans que le fournisseur soit requalifié.</td>
             <td class="num">0,25 %</td>
-            <td class="num">0,25 M€</td>
+            <td class="num">0,30 M€</td>
             <td class="col-agent"><a href="/agents/tds-agent">Agent TDS</a></td>
           </tr>
           <tr class="total">
             <td>Total</td>
             <td class="col-why"></td>
             <td class="num">3,00 %</td>
-            <td class="num">3,00 M€</td>
+            <td class="num">3,60 M€</td>
             <td class="col-agent"></td>
           </tr>
         </tbody>
@@ -249,10 +249,10 @@ document.addEventListener('DOMContentLoaded', function () {
     <div class="calc">
       <label for="outflow">Décaissements annuels</label>
       <div class="row">
-        <input id="outflow" type="number" inputmode="numeric" min="0" step="10" value="100" aria-describedby="calc-out">
+        <input id="outflow" type="number" inputmode="numeric" min="0" step="10" value="120" aria-describedby="calc-out">
         <span style="font-size:15px;font-weight:500;color:var(--body)">M€</span>
         <span style="font-size:15px;font-weight:500;color:var(--body)">→</span>
-        <span class="out" id="calc-out">3,0 M€</span>
+        <span class="out" id="calc-out">3,6 M€</span>
       </div>
       <p class="note">À 3 % des décaissements. Votre chiffre réel dépend de la part de vos dépenses sous contrat, de vos délais de règlement et de la façon dont vos crédits de taxe sont suivis — c'est précisément ce que mesure le diagnostic.</p>
     </div>

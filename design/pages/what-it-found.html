@@ -2,8 +2,8 @@
   <div class="crumb"><a href="/">AiFA</a> · What it found</div>
   <div class="masthead">
     <span class="eyebrow sand"><i></i>The arithmetic</span>
-    <h1 class="display">$3 million is not one big leak.<br>It's six small ones nobody<br>has time to <em class="mark">check</em>.</h1>
-    <p class="lede">A $100 million company loses about 3% of what it pays out. Not to fraud, and not in one place — across six ordinary failures that each look too small to chase on the day they happen.</p>
+    <h1 class="display">$3.6 million is not one big leak.<br>It's six small ones nobody<br>has time to <em class="mark">check</em>.</h1>
+    <p class="lede">A $120 million company loses about 3% of what it pays out. Not to fraud, and not in one place — across six ordinary failures that each look too small to chase on the day they happen.</p>
   </div>
 </div>
 
@@ -19,7 +19,7 @@
             <th>What leaks</th>
             <th class="col-why">Why it happens</th>
             <th class="num">% of outflow</th>
-            <th class="num">On $100M</th>
+            <th class="num">On $120M</th>
             <th class="col-agent">Caught by</th>
           </tr>
         </thead>
@@ -28,49 +28,49 @@
             <td>Rate above contract<span class="why-m">The contract says one number, the invoice says another. Nobody opens the contract for a $40,000 bill.</span><span class="agent-m"><a href="/agents/pricing-agent">Pricing Agent</a></span></td>
             <td class="col-why">The contract says one number, the invoice says another. Nobody opens the contract for a $40,000 bill.</td>
             <td class="num">1.00%</td>
-            <td class="num">$1.00M</td>
+            <td class="num">$1.20M</td>
             <td class="col-agent"><a href="/agents/pricing-agent">Pricing Agent</a></td>
           </tr>
           <tr>
             <td>Duplicate bill<span class="why-m">The same invoice arrives twice — once on the portal, once by email — and clears both times.</span><span class="agent-m"><a href="/agents/duplicate-agent">Duplicate Agent</a></span></td>
             <td class="col-why">The same invoice arrives twice — once on the portal, once by email — and clears both times.</td>
             <td class="num">0.65%</td>
-            <td class="num">$0.65M</td>
+            <td class="num">$0.78M</td>
             <td class="col-agent"><a href="/agents/duplicate-agent">Duplicate Agent</a></td>
           </tr>
           <tr>
             <td>Quantity billed over goods received<span class="why-m">The invoice bills 82 MT, the gate received 78. The GRN is in another system.</span><span class="agent-m"><a href="/agents/3-way-match-agent">3-way match Agent</a></span></td>
             <td class="col-why">The invoice bills 82 MT, the gate received 78. The GRN is in another system.</td>
             <td class="num">0.45%</td>
-            <td class="num">$0.45M</td>
+            <td class="num">$0.54M</td>
             <td class="col-agent"><a href="/agents/3-way-match-agent">3-way match Agent</a></td>
           </tr>
           <tr>
             <td>Early-payment discount not taken<span class="why-m">2% for paying in ten days, sitting unclaimed because the approval took twelve.</span><span class="agent-m"><a href="/agents/discount-agent">Discount Agent</a></span></td>
             <td class="col-why">2% for paying in ten days, sitting unclaimed because the approval took twelve.</td>
             <td class="num">0.35%</td>
-            <td class="num">$0.35M</td>
+            <td class="num">$0.42M</td>
             <td class="col-agent"><a href="/agents/discount-agent">Discount Agent</a></td>
           </tr>
           <tr>
             <td>Input tax credit not recovered<span class="why-m">The vendor never filed, so the credit was never claimable — discovered at the annual return.</span><span class="agent-m"><a href="/agents/gst-agent">GST Agent</a></span></td>
             <td class="col-why">The vendor never filed, so the credit was never claimable — discovered at the annual return.</td>
             <td class="num">0.30%</td>
-            <td class="num">$0.30M</td>
+            <td class="num">$0.36M</td>
             <td class="col-agent"><a href="/agents/gst-agent">GST Agent</a></td>
           </tr>
           <tr>
             <td>TDS deducted at the wrong rate<span class="why-m">Wrong section, or the threshold crossed mid-year and nobody re-rated the vendor.</span><span class="agent-m"><a href="/agents/tds-agent">TDS Agent</a></span></td>
             <td class="col-why">Wrong section, or the threshold crossed mid-year and nobody re-rated the vendor.</td>
             <td class="num">0.25%</td>
-            <td class="num">$0.25M</td>
+            <td class="num">$0.30M</td>
             <td class="col-agent"><a href="/agents/tds-agent">TDS Agent</a></td>
           </tr>
           <tr class="total">
             <td>Total</td>
             <td></td>
             <td class="num">3.00%</td>
-            <td class="num">$3.00M</td>
+            <td class="num">$3.60M</td>
             <td></td>
           </tr>
         </tbody>
@@ -79,7 +79,7 @@
 
     <div class="callout">
       <span class="label">How to read this</span>
-      <p>This is a model, built from the six checks and what they typically recover — not a report of one company's results. It is here so the $3 million figure can be argued with rather than taken on faith.</p>
+      <p>This is a model, built from the six checks and what they typically recover — not a report of one company's results. It is here so the $3.6 million figure can be argued with rather than taken on faith.</p>
       <p>The savings check replaces every number on this page with your own. Ninety days of your highest-spend vendor invoices, run through the same six checks, with the invoice attached to each finding.</p>
     </div>
   </div>
@@ -131,10 +131,10 @@
     <div class="calc">
       <label for="outflow">Annual outflow</label>
       <div class="row">
-        <input id="outflow" type="number" inputmode="numeric" min="0" step="10" value="100" aria-describedby="calc-out">
+        <input id="outflow" type="number" inputmode="numeric" min="0" step="10" value="120" aria-describedby="calc-out">
         <span style="font-size:15px;font-weight:500;color:var(--body)">million</span>
         <span style="font-size:15px;font-weight:500;color:var(--body)">→</span>
-        <span class="out" id="calc-out">$3.0M</span>
+        <span class="out" id="calc-out">$3.6M</span>
       </div>
       <p class="note">At 3% of outflow. Your real number depends on how much of your spend is contracted, how many vendors are MSME-registered, and how your GST credits are running — which is what the savings check measures.</p>
     </div>
