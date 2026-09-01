@@ -10,6 +10,7 @@ Pipeline:
 Re-run after any change to src/head.html, src/site.css or src/app.js.
 Re-capture (see README) only when the canvas design itself changes.
 """
+import html as html_lib
 import os, re, json, html, shutil, sys
 
 ROOT = os.path.dirname(os.path.abspath(__file__))
@@ -19,12 +20,144 @@ SITE_URL = os.environ.get('AIFA_SITE_URL', 'https://yantrailabs.com')
 BASE = os.environ.get('AIFA_BASE', '').strip('/')
 BASE = ('/' + BASE + '/') if BASE else ''
 ROOT_URL = BASE or '/'
+# Assets are referenced absolutely from every page. The homepage used relative
+# refs, which is fine at the root and breaks the moment it is also built at
+# /fr/ — the same file, one directory down.
+ASSET_BASE = BASE or '/'
 # Where the savings-check form posts. Same-origin on App Engine.
 FORM_ENDPOINT = os.environ.get('AIFA_FORM_ENDPOINT', '')
+
+# --- locale -------------------------------------------------------------
+# English builds to the root; every other locale builds to its own subtree.
+# Assets, CSS and JS are shared and always live at the root, so only page
+# links carry the prefix.
+LOCALE = os.environ.get('AIFA_LOCALE', 'en').lower()
+LOCALES = ('en', 'fr')
+assert LOCALE in LOCALES, LOCALE
+PAGE_PREFIX = '' if LOCALE == 'en' else '/' + LOCALE
+OUT = ROOT if LOCALE == 'en' else os.path.join(ROOT, LOCALE)
+SHARED = ('/assets/', '/site.css', '/page.css', '/app.js', '/api/',
+          '/robots.txt', '/sitemap.xml')
+
+LANG_NAMES = {'en': 'English', 'fr': 'Français'}
+
+# Only pages that actually exist in this locale are built and linked. A /fr/
+# URL serving English is worse than no /fr/ URL: the reader gets the wrong
+# language and hreflang advertises a translation that is not one.
+def _translated_paths():
+    if LOCALE == 'en':
+        return None                      # everything
+    done = set()
+    for name in ('index',):
+        if os.path.exists(os.path.join(ROOT, 'pages', 'i18n', LOCALE + '.json')):
+            done.add('')
+    d = os.path.join(ROOT, 'pages', LOCALE)
+    if os.path.isdir(d):
+        for f in os.listdir(d):
+            if f.endswith('.html'):
+                done.add(f[:-5])
+    for src, prefix in (('agents', 'agents'), ('workflows', 'workflows'),
+                        ('integrations', 'integrations'), ('roles', 'for')):
+        f = os.path.join(ROOT, 'pages', src + '.' + LOCALE + '.json')
+        if os.path.exists(f):
+            data = json.loads(open(f, encoding='utf-8').read())
+            items = data['agents'] if src == 'agents' else data
+            done.add(prefix)
+            for it in items:
+                done.add(prefix + '/' + it['slug'])
+    return done
+
+
+TRANSLATED = _translated_paths()
+
+
+def has_translation(slug):
+    return TRANSLATED is None or slug in TRANSLATED
+# marks a link that is already locale-correct, so localise_links leaves it alone
+LANG_HREF = '\x00lang\x00'
+
+
+def out_path(*parts):
+    d = os.path.join(OUT, *parts[:-1]) if len(parts) > 1 else OUT
+    os.makedirs(d, exist_ok=True)
+    return os.path.join(OUT, *parts)
+
+
+def localise_links(html_text):
+    """Prefix internal page links with the locale. Assets stay at the root —
+    they are identical across locales and duplicating them would double the
+    payload for nothing."""
+    if not PAGE_PREFIX:
+        return html_text.replace(LANG_HREF, '')
+
+    def fix(m):
+        attr, url = m.group(1), m.group(2)
+        if url.startswith(SHARED):
+            return m.group(0)
+        if url == '/':
+            return '%s="%s/"' % (attr, PAGE_PREFIX)
+        # a link to a page with no translation goes to the English one
+        target = url.split('#')[0].strip('/')
+        if not has_translation(target):
+            return m.group(0)
+        return '%s="%s%s"' % (attr, PAGE_PREFIX, url)
+
+    html_text = re.sub(r'(href|src)="(/[^"]*)"', fix, html_text)
+    return html_text.replace(LANG_HREF, '')
+
+
+def lang_links(slug):
+    """hreflang alternates plus the switcher, for one page. Slugs are the same
+    in every locale, so the alternate is the same path under a prefix."""
+    path = '/' + slug if slug else '/'
+    alts = []
+    for code in LOCALES:
+        if code != 'en' and not has_translation(slug):
+            continue
+        pre = '' if code == 'en' else '/' + code
+        alts.append('<link rel="alternate" hreflang="%s" href="%s%s%s">'
+                    % (code, SITE_URL.rstrip('/'), pre, path))
+    alts.append('<link rel="alternate" hreflang="x-default" href="%s%s">'
+                % (SITE_URL.rstrip('/'), path))
+    return '\n'.join(alts)
+
+
+def lang_switcher(slug):
+    path = '/' + slug if slug else '/'
+    items = []
+    for code in LOCALES:
+        if code != 'en' and not has_translation(slug):
+            continue
+        pre = '' if code == 'en' else '/' + code
+        if code == LOCALE:
+            items.append('<span aria-current="true">%s</span>' % code.upper())
+        else:
+            items.append('<a href="%s%s%s" hreflang="%s" data-set-lang="%s">%s</a>'
+                         % (LANG_HREF, pre, path, code, code, code.upper()))
+    return ('<span data-lang-switch="1" aria-label="Language">%s</span>'
+            % '<span aria-hidden="true">·</span>'.join(items))
+
+MISSING_TRANSLATIONS = []
+
 
 def read(*p):
     with open(os.path.join(ROOT, *p), encoding='utf-8') as f:
         return f.read()
+
+
+def read_localised(*p):
+    """Prefer the locale's source, fall back to English and record the gap so
+    the build can report exactly what is still untranslated."""
+    if LOCALE != 'en':
+        parts = list(p)
+        if parts[-1].endswith('.json'):
+            cand = parts[:-1] + [parts[-1][:-5] + '.' + LOCALE + '.json']
+        else:
+            cand = parts[:-1] + [LOCALE, parts[-1]]
+        if os.path.exists(os.path.join(ROOT, *cand)):
+            return read(*cand)
+        MISSING_TRANSLATIONS.append('/'.join(p))
+    return read(*p)
 
 body = read('_captures', 'w1440.html')
 helmet_css = read('_captures', 'helmet.css')
@@ -69,7 +202,7 @@ def build_content_page(slug, page_title, description, content, nav, footer, extr
     # shared nav/footer has to become absolute
     def absolutise(frag):
         frag = re.sub(r'href="#([a-z-]+)"', r'href="/#\1"', frag)
-        frag = re.sub(r'(src|href|poster)="(?!/|https?:|mailto:|data:|#)([^"]+)"',
+        frag = re.sub(r'(src|href|poster)="(?!/|https?:|mailto:|data:|#|\x00)([^"]+)"',
                       lambda m: '%s="%s%s"' % (m.group(1), ROOT_URL, m.group(2)), frag)
         return frag
 
@@ -85,9 +218,10 @@ def build_content_page(slug, page_title, description, content, nav, footer, extr
                        lambda m: m.group(1) + page_title + m.group(2), head_page, count=1)
     head_page = re.sub(r'(<meta (?:property="og:description"|name="twitter:description") content=")[^"]*(")',
                        lambda m: m.group(1) + description + m.group(2), head_page)
-    return """<!DOCTYPE html>
-<html lang="en">
+    return localise_links("""<!DOCTYPE html>
+<html lang="%s">
 <head>
+%s
 %s
 <style>
 %s
@@ -107,8 +241,8 @@ def build_content_page(slug, page_title, description, content, nav, footer, extr
 <script src="%sapp.js" defer></script>
 </body>
 </html>
-""" % (head_page.strip(), helmet_css.strip(), hover_css.strip(), ROOT_URL, ROOT_URL,
-       extra_css, nav_abs, content, foot_abs, ROOT_URL)
+""" % (LOCALE, head_page.strip(), lang_links(slug), helmet_css.strip(), hover_css.strip(),
+       ROOT_URL, ROOT_URL, extra_css, nav_abs, content, foot_abs, ROOT_URL))
 
 
 # ---------------------------------------------------------------- hooks ---
@@ -147,8 +281,9 @@ body = body[:m.end()] + 'data-ring-hole="1" ' + body[m.end():]
 
 # --------------------------------------------------------- nav disclosure --
 nav_toggle = (
-    '<button type="button" data-nav-toggle="1" aria-expanded="false" '
-    'aria-controls="nav-links" aria-label="Menu"><span></span></button>'
+    lang_switcher('')      # shared nav; app.js retargets to the current path
+    + '<button type="button" data-nav-toggle="1" aria-expanded="false" '
+      'aria-controls="nav-links" aria-label="Menu"><span></span></button>'
 )
 marker = '<div data-dc-tpl="18" data-nav-cta="1"'
 assert body.count(marker) == 1
@@ -348,6 +483,60 @@ def _bake_anchor(m):
 body = re.sub(r'(<a\b[^>]*href="#"[^>]*>)(.*?)(</a>)', _bake_anchor, body, flags=re.S)
 print('footer links baked: %d   still inert: %s' % (_baked, sorted(set(_left)) or 'none'))
 
+# --------------------------------------------------- homepage translation
+# The homepage copy is baked into the design-canvas snapshot, so it is
+# translated by replacing whole text nodes rather than by a template.
+if os.environ.get('AIFA_DUMP_STRINGS'):
+    _seen, _out = set(), []
+    for _t in re.findall(r'>([^<>]+)<', re.sub(r'<(script|style)\b.*?</\1>', ' ', body, flags=re.S)):
+        _k = html_lib.unescape(_t).strip()
+        if _k and re.search(r'[A-Za-z]{2}', _k) and _k not in _seen:
+            _seen.add(_k); _out.append(_k)
+    with open(os.path.join(ROOT, 'pages', 'i18n', '_en_strings.json'), 'w', encoding='utf-8') as f:
+        json.dump({k: '' for k in _out}, f, indent=1, ensure_ascii=False)
+    print('dumped %d homepage strings' % len(_out))
+
+if LOCALE != 'en':
+    _i18n_file = os.path.join(ROOT, 'pages', 'i18n', LOCALE + '.json')
+    if os.path.exists(_i18n_file):
+        _strings = json.loads(open(_i18n_file, encoding='utf-8').read())
+        _hit = 0
+
+        def _translate_node(m):
+            global _hit
+            raw = m.group(1)
+            key = html_lib.unescape(raw).strip()
+            if key in _strings and _strings[key]:
+                _hit += 1
+                lead = raw[:len(raw) - len(raw.lstrip())]
+                tail = raw[len(raw.rstrip()):]
+                return '>' + lead + html_lib.escape(_strings[key], quote=False) + tail + '<'
+            return m.group(0)
+
+        body = re.sub(r'>([^<>]+)<', _translate_node, body)
+        # the CTA chip is a bare rupee glyph — no word characters, so it never
+        # reaches the string map, and it is the wrong currency outside India
+        # bare currency glyphs carry no word characters, so they never reach the
+        # string map — and the rupee is the wrong currency outside India
+        body = body.replace('>\u20b9</span>', '>\u20ac</span>')
+
+        _meta = _strings.get('_meta') or {}
+        if _meta:
+            head = re.sub(r'<title>[^<]*</title>', '<title>%s</title>' % _meta['title'], head, count=1)
+            for attr, key in ((r'name="description"', 'description'),
+                              (r'property="og:title"', 'og_title'),
+                              (r'name="twitter:title"', 'og_title'),
+                              (r'property="og:description"', 'og_description'),
+                              (r'name="twitter:description"', 'og_description')):
+                head = re.sub(r'(<meta %s content=")[^"]*(")' % attr,
+                              lambda m: m.group(1) + _meta[key].replace('&', '&amp;').replace('"', '&quot;') + m.group(2),
+                              head, count=1)
+            head = head.replace('<link rel="canonical" href="%s/">' % SITE_URL.rstrip('/'),
+                                '<link rel="canonical" href="%s/%s/">' % (SITE_URL.rstrip('/'), LOCALE))
+        print('homepage: %d text nodes translated to %s' % (_hit, LOCALE))
+    else:
+        MISSING_TRANSLATIONS.append('pages/i18n/%s.json' % LOCALE)
+
 # --------------------------------------------------------------- cleanup --
 body = re.sub(r' data-dc-tpl="\d+"', '', body)          # runtime bookkeeping
 body = re.sub(r'<template[^>]*id="__bundler_thumbnail"[^>]*>.*?</template>', '', body, flags=re.S)
@@ -358,19 +547,20 @@ body = re.sub(r'\n[ \t]*\n[ \t]*\n+', '\n\n', body)
 assert 'data-nav="1"' in body and 'data-footer="1"' in body
 
 # ------------------------------------------------------------ path prefix --
+_attr = r'(src|href|poster)="assets/'
+body = re.sub(_attr, r'\1="%sassets/' % ASSET_BASE, body)
+head = re.sub(_attr, r'\1="%sassets/' % ASSET_BASE, head)
 if BASE:
-    _attr = r'(src|href|poster)="assets/'
-    body = re.sub(_attr, r'\1="%sassets/' % BASE, body)
-    head = re.sub(_attr, r'\1="%sassets/' % BASE, head)
     # absolute og:image / twitter:image
     head = head.replace(SITE_URL.rstrip('/') + '/assets/', SITE_URL.rstrip('/') + BASE + 'assets/')
-    app_js = app_js.replace("'assets/aifa-agent-teams-60s.mp4'",
-                            "'%sassets/aifa-agent-teams-60s.mp4'" % BASE)
+app_js = app_js.replace("'assets/aifa-agent-teams-60s.mp4'",
+                        "'%sassets/aifa-agent-teams-60s.mp4'" % ASSET_BASE)
 
 # ------------------------------------------------------------- assemble ---
-page = """<!DOCTYPE html>
-<html lang="en">
+page = localise_links("""<!DOCTYPE html>
+<html lang="%s">
 <head>
+%s
 %s
 <style>
 /* --- from the design canvas (helmet) --- */
@@ -386,9 +576,10 @@ page = """<!DOCTYPE html>
 <script src="%sapp.js" defer></script>
 </body>
 </html>
-""" % (head.strip(), helmet_css.strip(), hover_css.strip(), BASE, body.strip(), BASE)
+""" % (LOCALE, head.strip(), lang_links(''), helmet_css.strip(), hover_css.strip(),
+       ASSET_BASE, body.strip(), ASSET_BASE))
 
-with open(os.path.join(ROOT, 'index.html'), 'w', encoding='utf-8') as f:
+with open(out_path('index.html'), 'w', encoding='utf-8') as f:
     f.write(page)
 
 # ------------------------------------------------------- content pages ----
@@ -432,12 +623,12 @@ document.addEventListener('DOMContentLoaded', function () {
 
 page_count = 0
 for slug, page_title, description in PAGES:
-    content = read('pages', slug + '.html')
+    if not has_translation(slug):
+        continue
+    content = read_localised('pages', slug + '.html')
     extra = CALC_JS if 'id="outflow"' in content else ''
     html_out = build_content_page(slug, page_title, description, content, NAV, FOOTER, extra)
-    out_dir = os.path.join(ROOT, slug)
-    os.makedirs(out_dir, exist_ok=True)
-    with open(os.path.join(out_dir, 'index.html'), 'w', encoding='utf-8') as f:
+    with open(out_path(slug, 'index.html'), 'w', encoding='utf-8') as f:
         f.write(html_out)
     page_count += 1
     print('%-18s %.1f KB' % (slug + '/', len(html_out) / 1024))
@@ -452,7 +643,7 @@ print('site.css   %.1f KB' % (len(site_css) / 1024))
 print('app.js     %.1f KB' % (len(app_js) / 1024))
 
 # --------------------------------------------------- generated agent pages
-AGENT_DATA = json.loads(read('pages', 'agents.json'))
+AGENT_DATA = json.loads(read_localised('pages', 'agents.json'))
 AGENTS = AGENT_DATA['agents']
 WORKFLOWS = AGENT_DATA['workflows']
 BY_SLUG = {a['slug']: a for a in AGENTS}
@@ -634,29 +825,29 @@ def render_agents_index():
 
 
 for a in AGENTS:
+    if not has_translation('agents/' + a['slug']):
+        continue
     html_out = build_content_page(
         'agents/' + a['slug'],
         '%s — %s | AiFA' % (a['name'], a['statement'].rstrip('.')),
         a['statement'] + ' ' + a['mechanism'][:150],
         render_agent(a), NAV, FOOTER)
-    d = os.path.join(ROOT, 'agents', a['slug'])
-    os.makedirs(d, exist_ok=True)
-    with open(os.path.join(d, 'index.html'), 'w', encoding='utf-8') as f:
+    with open(out_path('agents', a['slug'], 'index.html'), 'w', encoding='utf-8') as f:
         f.write(html_out)
     page_count += 1
 
-idx = build_content_page('agents', 'The AI team | AiFA',
+idx = has_translation('agents') and build_content_page('agents', 'The AI team | AiFA',
                          'Every agent is one absolute commitment, enforced on every transaction.',
                          render_agents_index(), NAV, FOOTER)
-os.makedirs(os.path.join(ROOT, 'agents'), exist_ok=True)
-with open(os.path.join(ROOT, 'agents', 'index.html'), 'w', encoding='utf-8') as f:
-    f.write(idx)
-page_count += 1
+if idx:
+    with open(out_path('agents', 'index.html'), 'w', encoding='utf-8') as f:
+        f.write(idx)
+    page_count += 1
 print('%-18s %d agent pages + index' % ('agents/', len(AGENTS)))
 
 
 # ------------------------------------------------ generated workflow pages
-WORKFLOW_PAGES = json.loads(read('pages', 'workflows.json'))
+WORKFLOW_PAGES = json.loads(read_localised('pages', 'workflows.json'))
 
 
 def render_workflow(w):
@@ -747,21 +938,21 @@ def render_workflow(w):
 
 
 for w in WORKFLOW_PAGES:
+    if not has_translation('workflows/' + w['slug']):
+        continue
     html_out = build_content_page(
         'workflows/' + w['slug'],
         '%s — %s | AiFA' % (w['name'], w['headline'].rstrip('.')),
         w['lede'][:200],
         render_workflow(w), NAV, FOOTER)
-    d = os.path.join(ROOT, 'workflows', w['slug'])
-    os.makedirs(d, exist_ok=True)
-    with open(os.path.join(d, 'index.html'), 'w', encoding='utf-8') as f:
+    with open(out_path('workflows', w['slug'], 'index.html'), 'w', encoding='utf-8') as f:
         f.write(html_out)
     page_count += 1
 print('%-18s %d pages' % ('workflows/', len(WORKFLOW_PAGES)))
 
 
 # --------------------------------------------- generated integration pages
-INTEGRATIONS = json.loads(read('pages', 'integrations.json'))
+INTEGRATIONS = json.loads(read_localised('pages', 'integrations.json'))
 
 
 def render_integration(x):
@@ -879,29 +1070,29 @@ def render_integrations_index():
 
 
 for x in INTEGRATIONS:
+    if not has_translation('integrations/' + x['slug']):
+        continue
     html_out = build_content_page(
         'integrations/' + x['slug'],
         '%s + AiFA — %s | AiFA' % (x['name'], x['headline'].rstrip('.')),
         x['lede'][:200], render_integration(x), NAV, FOOTER)
-    d = os.path.join(ROOT, 'integrations', x['slug'])
-    os.makedirs(d, exist_ok=True)
-    with open(os.path.join(d, 'index.html'), 'w', encoding='utf-8') as f:
+    with open(out_path('integrations', x['slug'], 'index.html'), 'w', encoding='utf-8') as f:
         f.write(html_out)
     page_count += 1
 
-_idx = build_content_page('integrations', 'Integrations — your ERP stays the system of record | AiFA',
+_idx = has_translation('integrations') and build_content_page('integrations', 'Integrations — your ERP stays the system of record | AiFA',
                           'AiFA reads from the ERP that already holds your books and posts back into it. '
                           'Tally, SAP, Oracle, NetSuite, Zoho Books, QuickBooks, Sage, Odoo.',
                           render_integrations_index(), NAV, FOOTER)
-os.makedirs(os.path.join(ROOT, 'integrations'), exist_ok=True)
-with open(os.path.join(ROOT, 'integrations', 'index.html'), 'w', encoding='utf-8') as f:
-    f.write(_idx)
-page_count += 1
+if _idx:
+    with open(out_path('integrations', 'index.html'), 'w', encoding='utf-8') as f:
+        f.write(_idx)
+    page_count += 1
 print('%-18s %d pages + index' % ('integrations/', len(INTEGRATIONS)))
 
 
 # ---------------------------------------------------- generated role pages
-ROLES = json.loads(read('pages', 'roles.json'))
+ROLES = json.loads(read_localised('pages', 'roles.json'))
 
 
 def render_role(r):
@@ -1003,23 +1194,29 @@ def render_roles_index():
 
 
 for r in ROLES:
+    if not has_translation('for/' + r['slug']):
+        continue
     html_out = build_content_page(
         'for/' + r['slug'],
         'AiFA for the %s — %s | AiFA' % (r['name'], r['headline'].rstrip('.')),
         r['lede'][:200], render_role(r), NAV, FOOTER)
-    d = os.path.join(ROOT, 'for', r['slug'])
-    os.makedirs(d, exist_ok=True)
-    with open(os.path.join(d, 'index.html'), 'w', encoding='utf-8') as f:
+    with open(out_path('for', r['slug'], 'index.html'), 'w', encoding='utf-8') as f:
         f.write(html_out)
     page_count += 1
 
-_ridx = build_content_page('for', 'AiFA by role — CFO, Controller, AP Lead | AiFA',
+_ridx = has_translation('for') and build_content_page('for', 'AiFA by role — CFO, Controller, AP Lead | AiFA',
                            'Same six leaks, same seventeen agents, different reason to care. '
                            'AiFA for the CFO, controller, head of finance, AP lead, treasurer and internal audit.',
                            render_roles_index(), NAV, FOOTER)
-os.makedirs(os.path.join(ROOT, 'for'), exist_ok=True)
-with open(os.path.join(ROOT, 'for', 'index.html'), 'w', encoding='utf-8') as f:
-    f.write(_ridx)
-page_count += 1
+if _ridx:
+    with open(out_path('for', 'index.html'), 'w', encoding='utf-8') as f:
+        f.write(_ridx)
+    page_count += 1
 print('%-18s %d pages + index' % ('for/', len(ROLES)))
 print('total content pages: %d' % page_count)
+if LOCALE != 'en':
+    if MISSING_TRANSLATIONS:
+        print('UNTRANSLATED (%d, falling back to English): %s'
+              % (len(MISSING_TRANSLATIONS), ', '.join(sorted(set(MISSING_TRANSLATIONS)))))
+    else:
+        print('all sources translated for %s' % LOCALE)

@@ -37,6 +37,32 @@ app.config["MAX_CONTENT_LENGTH"] = MAX_CV_BYTES + (1 << 20)
 # the API on — only the page the user lands on needs to settle on one host.
 CANONICAL_HOST = "yantrailabs.com"
 
+# --- locales ------------------------------------------------------------
+# English is served from the root, French from /fr/. Both are fully built
+# static trees, so a crawler sees real French HTML at a real French URL.
+SUPPORTED_LOCALES = ("en", "fr")
+LANG_COOKIE = "lang"
+# a year: the choice is a preference, not a session
+LANG_COOKIE_MAX_AGE = 60 * 60 * 24 * 365
+# paths that are locale-neutral and must never be redirected
+LOCALE_EXEMPT_PREFIXES = ("/api/", "/assets/")
+LOCALE_EXEMPT_PATHS = ("/site.css", "/page.css", "/app.js",
+                       "/robots.txt", "/sitemap.xml", "/_status", "/favicon.ico")
+
+
+def _path_locale(path):
+    if path == "/fr" or path.startswith("/fr/"):
+        return "fr"
+    return "en"
+
+
+def _locale_path(path, locale):
+    """The same page under another locale. Slugs are identical across locales."""
+    rest = path[3:] if _path_locale(path) == "fr" else path
+    if not rest.startswith("/"):
+        rest = "/" + rest
+    return rest if locale == "en" else "/fr" + (rest if rest != "/" else "/")
+
 
 @app.before_request
 def redirect_to_canonical_host():
@@ -104,6 +130,49 @@ def _send_mail(subject, body, reply_to="", attachment=None):
         return False, "Failed to send email", 502
 
     return True, "", 200
+
+
+@app.before_request
+def offer_preferred_locale():
+    """Send a first-time visitor to the locale their browser asks for.
+
+    Only when they have never expressed a preference. Once the switcher has
+    set the cookie, the URL is taken at face value in both directions — so a
+    shared /fr/ link stays French for an English speaker, and someone who
+    chose English is never bounced out of a page they clicked deliberately.
+    """
+    if request.method not in ("GET", "HEAD"):
+        return None
+    path = request.path
+    if path.startswith(LOCALE_EXEMPT_PREFIXES) or path in LOCALE_EXEMPT_PATHS:
+        return None
+    if request.cookies.get(LANG_COOKIE) in SUPPORTED_LOCALES:
+        return None
+    if _path_locale(path) != "en":
+        return None
+    preferred = request.accept_languages.best_match(SUPPORTED_LOCALES, default="en")
+    if preferred == "en":
+        return None
+    target = _locale_path(path, preferred)
+    if not os.path.isdir(os.path.join(PUBLIC, target.strip("/"))) and target != "/fr/":
+        return None                      # no translated page — leave them here
+    query = request.query_string.decode()
+    return redirect(target + ("?" + query if query else ""), code=302)
+
+
+@app.after_request
+def vary_on_language(response):
+    """Both the cookie and Accept-Language change what this returns, so a shared
+    cache must not hand one visitor's redirect to another."""
+    if request.path.startswith(LOCALE_EXEMPT_PREFIXES) or request.path in LOCALE_EXEMPT_PATHS:
+        return response
+    existing = response.headers.get("Vary")
+    parts = [p.strip() for p in existing.split(",")] if existing else []
+    for h in ("Accept-Language", "Cookie"):
+        if h not in parts:
+            parts.append(h)
+    response.headers["Vary"] = ", ".join(parts)
+    return response
 
 
 @app.get("/")

@@ -582,6 +582,32 @@
     if (a) e.preventDefault();
   });
 
+  /* -------------------------------------------------------------- locale */
+
+  // The nav is shared across every page, so its switcher links point at the
+  // site root. Retarget them at the page actually being read, and record the
+  // choice — the server stops guessing from Accept-Language once it is set.
+  var LOCALES = ['en', 'fr'];
+
+  function pathLocale(p) {
+    return (p === '/fr' || p.indexOf('/fr/') === 0) ? 'fr' : 'en';
+  }
+
+  function pathIn(p, locale) {
+    var rest = pathLocale(p) === 'fr' ? p.slice(3) : p;
+    if (rest.charAt(0) !== '/') rest = '/' + rest;
+    return locale === 'en' ? rest : '/fr' + rest;
+  }
+
+  $$('[data-lang-switch] a[data-set-lang]').forEach(function (a) {
+    var code = a.getAttribute('data-set-lang');
+    if (LOCALES.indexOf(code) === -1) return;
+    a.setAttribute('href', pathIn(location.pathname, code) + location.hash);
+    a.addEventListener('click', function () {
+      document.cookie = 'lang=' + code + ';path=/;max-age=31536000;samesite=lax';
+    });
+  });
+
   /* ----------------------------------------------------------- mobile nav */
 
   var navToggle = $('[data-nav-toggle]');

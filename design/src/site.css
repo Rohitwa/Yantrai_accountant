@@ -591,3 +591,16 @@ img, video { max-width: 100%; }
   [data-research-cta] { align-items: stretch !important; flex-direction: column !important; gap: 14px !important; }
   [data-research-cta] a { justify-content: center; }
 }
+
+/* --- language switcher --- */
+[data-lang-switch] {
+  display: inline-flex; align-items: center; gap: 7px;
+  font-size: 12.5px; font-weight: 600; letter-spacing: 0.02em;
+  color: #9A9A9A; white-space: nowrap;
+}
+[data-lang-switch] a { color: #767676; text-decoration: none; }
+[data-lang-switch] a:hover { color: #151414; }
+[data-lang-switch] [aria-current="true"] { color: #151414; }
+[data-lang-switch] [aria-hidden="true"] { color: #DCE0DA; }
+@media (max-width: 1020px) { [data-lang-switch] { margin-right: 4px; } }
+@media (max-width: 420px) { [data-lang-switch] { display: none; } }
