@@ -44,21 +44,21 @@ LANG_NAMES = {'en': 'English', 'fr': 'Français'}
 # Only pages that actually exist in this locale are built and linked. A /fr/
 # URL serving English is worse than no /fr/ URL: the reader gets the wrong
 # language and hreflang advertises a translation that is not one.
-def _translated_paths():
-    if LOCALE == 'en':
+def _translated_paths(code):
+    """Which page slugs exist in `code`. English is the source, so everything."""
+    if code == 'en':
         return None                      # everything
     done = set()
-    for name in ('index',):
-        if os.path.exists(os.path.join(ROOT, 'pages', 'i18n', LOCALE + '.json')):
-            done.add('')
-    d = os.path.join(ROOT, 'pages', LOCALE)
+    if os.path.exists(os.path.join(ROOT, 'pages', 'i18n', code + '.json')):
+        done.add('')
+    d = os.path.join(ROOT, 'pages', code)
     if os.path.isdir(d):
         for f in os.listdir(d):
             if f.endswith('.html'):
                 done.add(f[:-5])
     for src, prefix in (('agents', 'agents'), ('workflows', 'workflows'),
                         ('integrations', 'integrations'), ('roles', 'for')):
-        f = os.path.join(ROOT, 'pages', src + '.' + LOCALE + '.json')
+        f = os.path.join(ROOT, 'pages', src + '.' + code + '.json')
         if os.path.exists(f):
             data = json.loads(open(f, encoding='utf-8').read())
             items = data['agents'] if src == 'agents' else data
@@ -68,11 +68,14 @@ def _translated_paths():
     return done
 
 
-TRANSLATED = _translated_paths()
+# every locale's coverage, so an English page knows whether a French alternate
+# actually exists before advertising one
+TRANSLATED = {code: _translated_paths(code) for code in LOCALES}
 
 
-def has_translation(slug):
-    return TRANSLATED is None or slug in TRANSLATED
+def has_translation(slug, code=None):
+    known = TRANSLATED[code or LOCALE]
+    return known is None or slug in known
 # marks a link that is already locale-correct, so localise_links leaves it alone
 LANG_HREF = '\x00lang\x00'
 
@@ -112,7 +115,7 @@ def lang_links(slug):
     path = '/' + slug if slug else '/'
     alts = []
     for code in LOCALES:
-        if code != 'en' and not has_translation(slug):
+        if not has_translation(slug, code):
             continue
         pre = '' if code == 'en' else '/' + code
         alts.append('<link rel="alternate" hreflang="%s" href="%s%s%s">'
@@ -126,7 +129,7 @@ def lang_switcher(slug):
     path = '/' + slug if slug else '/'
     items = []
     for code in LOCALES:
-        if code != 'en' and not has_translation(slug):
+        if not has_translation(slug, code):
             continue
         pre = '' if code == 'en' else '/' + code
         if code == LOCALE:
@@ -134,7 +137,12 @@ def lang_switcher(slug):
         else:
             items.append('<a href="%s%s%s" hreflang="%s" data-set-lang="%s">%s</a>'
                          % (LANG_HREF, pre, path, code, code, code.upper()))
-    return ('<span data-lang-switch="1" aria-label="Language">%s</span>'
+    if len(items) < 2:
+        # nothing to switch to on this page; a lone locale label is just noise
+        return '<span data-lang-switch="1" hidden></span><!--/ls-->'
+    # the trailing comment gives the per-page swap an unambiguous end marker,
+    # since the switcher can end in either an <a> or a <span>
+    return ('<span data-lang-switch="1" aria-label="Language">%s</span><!--/ls-->'
             % '<span aria-hidden="true">·</span>'.join(items))
 
 MISSING_TRANSLATIONS = []
@@ -207,6 +215,10 @@ def build_content_page(slug, page_title, description, content, nav, footer, extr
         return frag
 
     nav_abs = absolutise(nav)
+    # the nav fragment is shared; point its switcher at this page
+    nav_abs = re.sub(r'<span data-lang-switch="1".*?<!--/ls-->',
+                     lambda _m: lang_switcher(slug).replace(LANG_HREF, ''),
+                     nav_abs, count=1, flags=re.S)
     foot_abs = absolutise(footer)
     head_page = (absolutise(head)
                  .replace('<title>AiFA — AI Teams for Finance | YantrAI</title>',

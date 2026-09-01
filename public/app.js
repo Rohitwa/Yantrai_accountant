@@ -9,7 +9,7 @@
      Formspree / Basin / Getform, or your own API with CORS enabled.
      Until it is set, the form refuses to submit and tells the visitor to email
      instead, rather than silently swallowing a lead. */
-  var FORM_ENDPOINT = '';
+  var FORM_ENDPOINT = '/api/savings-check';
   var CAREER_ENDPOINT = '/api/careers';
   var FORM_FALLBACK_EMAIL = 'rohit@yantrailabs.com';
   var MAX_CV_BYTES = 10 * 1024 * 1024;
@@ -599,10 +599,12 @@
     return locale === 'en' ? rest : '/fr' + rest;
   }
 
+  // The href is emitted per page by the build, which is the only thing that
+  // knows whether a translation exists — retargeting it here would happily
+  // point at a /fr/ URL that was never generated.
   $$('[data-lang-switch] a[data-set-lang]').forEach(function (a) {
     var code = a.getAttribute('data-set-lang');
     if (LOCALES.indexOf(code) === -1) return;
-    a.setAttribute('href', pathIn(location.pathname, code) + location.hash);
     a.addEventListener('click', function () {
       // must be __session: Firebase Hosting fronts the domain and drops every
       // other cookie before the request reaches the app
