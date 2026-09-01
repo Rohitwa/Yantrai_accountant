@@ -87,11 +87,10 @@
  "anything with an export": "tout système avec un export",
  "See how much outflow you're leaving on the": "Découvrez ce que vos décaissements laissent sur la",
  "table": "table",
- "We'll audit 90 days of your highest-spend vendor invoices and show you what's recoverable — with evidence, not estimates.": "Nous auditons 90 jours de vos factures fournisseurs les plus importantes et vous montrons ce qui est récupérable — pièces à l'appui, pas des estimations.",
- "What to expect in the call": "Ce que contient l'échange",
- "We identify exactly where your outflow is leaking": "Nous identifions précisément où fuient vos décaissements",
- "You watch the agents cross-check contracts and hold overcharges live": "Vous voyez les agents recouper les contrats et bloquer les surfacturations en direct",
- "You get a savings estimate calibrated to your spend and your ERP": "Vous repartez avec une estimation calibrée sur vos dépenses et votre ERP",
+ "We'll run 90 days of your highest-spend vendor invoices through the agents and show you what's recoverable — with evidence, not estimates.": "Nous passons 90 jours de vos factures fournisseurs les plus importantes par les agents et vous montrons ce qui est récupérable — pièces à l'appui, pas des estimations.",
+ "How the savings check works": "Comment se déroule le contrôle des économies",
+ "One export your team already produces — about a minute of your time": "Un export que votre équipe produit déjà — environ une minute de votre temps",
+ "Findings within one working day — with a savings estimate calibrated to your spend and your ERP": "Les constats sous un jour ouvré — avec une estimation calibrée sur vos dépenses et votre ERP",
  "· AI Teams for Finance": "· Des équipes d'IA pour la finance",
  "507, DLF Corporate Green": "507, DLF Corporate Green",
  "Sector 74A, Gurgaon, 122004": "Secteur 74A, Gurgaon, 122004, Inde",
@@ -150,12 +149,12 @@
  "Tell us where the money goes.": "Dites-nous où va l'argent.",
  "We'll show you what's": "Nous vous montrons ce qui est",
  "recoverable": "récupérable",
- "Ninety days of your highest-spend vendor invoices, run through the agents. You get the findings with evidence attached — duplicates, overcharges, credits not claimed, clocks about to breach.": "Quatre-vingt-dix jours de vos factures fournisseurs les plus importantes, passées par les agents. Vous recevez les constats, pièces à l'appui — doublons, surfacturations, crédits non réclamés, délais sur le point d'être dépassés.",
+ "Duplicates, overcharges, credits not claimed, clocks about to breach — every finding with the invoice attached.": "Doublons, surfacturations, crédits non réclamés, délais sur le point d'être dépassés — chaque constat accompagné de sa facture.",
  "No connector and no project to start — an export your team already produces is enough.": "Ni connecteur ni projet pour démarrer — un export que votre équipe produit déjà suffit.",
  "Your data stays yours. Nothing is used to train anything.": "Vos données restent les vôtres. Rien ne sert à entraîner quoi que ce soit.",
  "You see the findings before you decide anything.": "Vous voyez les constats avant de décider quoi que ce soit.",
  "One export. No connector. About a minute.": "Un export. Pas de connecteur. Une minute environ.",
- "We come back within one working day with the findings — duplicates, overcharges, credits not claimed, clocks about to breach — each with the invoice attached.": "Nous revenons sous un jour ouvré avec les constats — doublons, surfacturations, crédits non réclamés, délais sur le point d'être dépassés — chacun accompagné de sa facture.",
+ "We come back within one working day with the findings, each with the invoice attached.": "Nous revenons sous un jour ouvré avec les constats, chacun accompagné de sa facture.",
  "Check your savings": "Estimez vos économies",
  "Name": "Nom",
  "Work email": "E-mail professionnel",
@@ -185,7 +184,7 @@
   "title": "AiFA — Des équipes d'IA pour la finance | YantrAI",
   "description": "AiFA est une équipe d'IA pour la finance. Elle lit, rapproche, contrôle, clôture et paie — dans l'ERP que vous utilisez déjà. 100 % des décaissements contrôlés, jusqu'à 3 % récupérés.",
   "og_title": "AiFA — Des équipes d'IA pour la finance",
-  "og_description": "Une entreprise récupère jusqu'à 3 % de ses décaissements — avec AiFA. Elle lit, rapproche, contrôle, clôture et paie, dans l'ERP que vous utilisez déjà."
+  "og_description": "Une entreprise de 120 M$ de chiffre d'affaires a économisé 3,6 M$ avec AiFA. Elle lit, rapproche, contrôle, clôture et paie, dans l'ERP que vous utilisez déjà."
  },
  "_pages": {
   "what-it-found": [
@@ -215,6 +214,7 @@
  "$100–500 million": "100–500 M€",
  "Over $500 million": "Plus de 500 M€",
  "_currency": "€",
- "A $120 million company is saving up to $3.6 million on its outflows — with": "Une entreprise récupère jusqu'à 3 % de ses décaissements — avec",
- "If your company moves over $120 million a year, we'll show you where the leak is — on your own data.": "Quel que soit votre volume de décaissements annuel, nous vous montrons où se situe la fuite — sur vos propres données."
+ "If your company moves over $120 million a year, we'll show you where the leak is — on your own data.": "Quel que soit votre volume de décaissements annuel, nous vous montrons où se situe la fuite — sur vos propres données.",
+ "A $120M revenue company saved $3.6 million with": "Une entreprise de 120 M$ de chiffre d'affaires a économisé 3,6 M$ avec",
+ "Your 90 days run through the agents — you watch them cross-check contracts and hold overcharges live": "Vos 90 jours passent par les agents — vous les voyez recouper les contrats et bloquer les surfacturations en direct"
 }

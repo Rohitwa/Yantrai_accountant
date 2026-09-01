@@ -2,15 +2,50 @@
   <div class="crumb"><a href="/">AiFA</a> · Research</div>
   <div class="masthead">
     <span class="eyebrow sand"><i></i>Research</span>
-    <h1 class="display">Finance AI isn't stalling<br>on models. It's stalling on<br><em class="mark">governance and data</em>.</h1>
-    <p class="lede">Adoption in finance functions has gone flat. Read the surveys next to each other and the reason is consistent — and it is not that the technology fell short. It is that most finance AI has no answer for who the agent is, what it may reach, and what happens when it is unsure.</p>
+    <h1 class="display">Follow the money.<br>The savings live in the gap between<br>a payment and its <em class="mark">check</em>.</h1>
+    <p class="lede">A $120M revenue company saved $3.6 million with AiFA — 3% of outflow. That number sounds implausible until you follow one invoice from the mailbox to the payment run and watch where money escapes at each step. This is that walk-through: where the leaks open, why the controls you already run miss them, and what changes when every transaction is checked before the money moves.</p>
   </div>
 </div>
 
 <section class="band">
+  <div class="wrap">
+    <h2 class="sec">The flow of money — and the four places it leaks</h2>
+    <p>Money-out is a pipeline: an invoice arrives, gets entered, gets taxed, gets booked, gets paid. Each stage asks questions nobody has time to answer on every invoice. The leak is the sum of the unanswered ones.</p>
+
+    <div class="flow">
+      <div class="step"><div class="n">01</div><div><h3>The invoice arrives — and the first leak opens</h3><p>Have we seen this invoice before? Is the price the price we agreed? Do the PO, the goods receipt and the invoice agree? Duplicates rarely look identical — a re-sent PDF with a new number, the same delivery billed by two group entities. Checking the price means opening three documents, and on invoice 400 of the week nobody opens three documents. The Duplicate, Pricing and 3-way match agents answer all three questions on every invoice, at entry, in under a second — an invoice that fails is held with the documents that prove why.</p></div></div>
+      <div class="step"><div class="n">02</div><div><h3>Tax and compliance — the leak that compounds</h3><p>A credit claimed before the vendor files reverses with interest; one never claimed is cash left with the government. Withholding at the wrong rate is money out the door or a notice later. A small-vendor clock that breaches accrues statutory interest automatically. None of these is a judgment call — they are rule checks against registries and filings that fail in batch processes for one reason: the data changes daily and the check runs monthly. The GST, TDS, PAN and MSME agents verify each entry against live status before it posts.</p></div></div>
+      <div class="step"><div class="n">03</div><div><h3>The books — where errors go to hide</h3><p>Payments go out daily; reviews happen at month-end. So there is, on average, a month between an error and the review that finds it — and by then the money has moved and recovery means emails, debit notes and leverage you no longer have. With AiFA, entries post to the ERP already compliant — checked, matched, inside approval limits — so the book stays clean without a cleanup pass.</p></div></div>
+      <div class="step"><div class="n">04</div><div><h3>The payment run — the last gate, checked twice</h3><p>The run is where every upstream mistake becomes irreversible. It is built from approved entries only, then checked again before it leaves: duplicates across the run, amounts against limits, expiring discounts captured rather than forfeited. Exceptions are not escalated into someone's inbox to age — they are held, with the evidence attached, until a person decides.</p></div></div>
+    </div>
+  </div>
+</section>
+
+<section class="band wash">
+  <div class="wrap">
+    <h2 class="sec">Why the controls you already run miss it</h2>
+    <p>Not because your team is careless — because the volume makes conscious checking impossible. <strong>85% of bills are approved without a conscious check</strong>; approval becomes a keystroke. And the checks that do run, run on a sample, after posting, because matching every line manually doesn't scale.</p>
+
+    <p class="statement">Recovery after payment is pennies on the dollar. Prevention before payment is the whole dollar.<span class="after">That is the entire economic argument for real-time checking. The 3% was never one big leak to find — it is many small ones, each individually invisible, escaping through gaps in timing. Close the timing gap and the money simply never leaves.</span></p>
+
+    <ul class="checks">
+      <li><strong>Every transaction, not a sample.</strong> A sampled control catches the error rate of the sample. A leak spread thin across thousands of invoices needs every one checked to show up at all.</li>
+      <li><strong>Before the money moves, not after.</strong> The same finding is a prevented loss before the run and a collections project after it.</li>
+      <li><strong>Held with evidence, not escalated.</strong> An exception that arrives as an argument gets waved through. One that arrives with the contract, the PO and the earlier invoice attached gets decided.</li>
+      <li><strong>No negotiation required.</strong> Recovering the 3% needs no vendor renegotiation and no headcount change — it was always your money, leaving through timing.</li>
+    </ul>
+
+    <div class="callout">
+      <span class="label">The arithmetic</span>
+      <p>The full breakdown — six ordinary failures, what each is worth on $120 million of outflow, and which agent catches it — is on <a href="/what-it-found">What it found</a>. The short version: duplicates and double payments, contract and PO price variances, credits missed and rates misapplied, discounts forfeited. Individually, rounding errors. Together, $3.6 million.</p>
+    </div>
+  </div>
+</section>
+
+<section class="band">
   <div class="wrap wrap-wide">
-    <h2 class="sec">What the studies say</h2>
-    <p>Three findings, from three independent sources, that point the same way.</p>
+    <h2 class="sec">"Why hasn't software fixed this already?"</h2>
+    <p>Fair question — ERPs have had 3-way match for thirty years. Three independent studies point at the same answer, and none of the blockers they name is a model problem.</p>
 
     <div class="tablewrap">
       <table class="grid">
@@ -22,12 +57,7 @@
             <td>Gartner, Nov 2025 · n=183 CFOs and senior finance leaders</td>
           </tr>
           <tr>
-            <td>The top blockers are data quality and data literacy<span class="why-m">Not model accuracy, not cost. The things that stop finance AI are the things a finance team cannot fix by buying a better model.</span></td>
-            <td class="col-why">Not model accuracy, and not cost. What stops finance AI is what a team cannot fix by buying a better model.</td>
-            <td>Gartner, Nov 2025</td>
-          </tr>
-          <tr>
-            <td>Only about a third of organisations reach maturity level 3+ on agentic governance and controls<span class="why-m">Security and risk is the number one barrier to scaling agents, cited by nearly two-thirds.</span></td>
+            <td>Only about a third of organisations reach maturity on agentic governance and controls<span class="why-m">Security and risk is the number one barrier to scaling agents, cited by nearly two-thirds.</span></td>
             <td class="col-why">Security and risk is the number one barrier to scaling agents, cited by nearly two-thirds of respondents.</td>
             <td>McKinsey, State of AI Trust 2026</td>
           </tr>
@@ -40,71 +70,11 @@
       </table>
     </div>
 
-    <div class="callout">
-      <span class="label">Where the AP number sits</span>
-      <p>In the same Gartner survey, among finance teams actually using AI, accounts payable automation is the second most common use case at <strong>37%</strong>, behind knowledge management at 49% and ahead of anomaly detection at 34%. Money-out is where finance teams go first — and it is where the blockers bite hardest, because it is the one place an agent's mistake moves cash.</p>
-    </div>
+    <p>The savings above only materialise if an agent is allowed to touch every transaction — and that is a governance question, not a model one. It is why AiFA is built as an ecosystem for deploying finance agents rather than an AP tool: permissions resolve before the model runs, the ERP stays the system of record, ambiguity has a defined destination, and the audit trail lives once, underneath every agent. The checks run where the money already lives — SAP, Oracle, NetSuite, Tally, Zoho Books, QuickBooks, Sage, Odoo — starting from an extract your team already produces. How that governance works in practice is on <a href="/security">Security</a>.</p>
   </div>
 </section>
 
 <section class="band wash">
-  <div class="wrap">
-    <h2 class="sec">Read together, they describe one failure</h2>
-    <p>A finance team runs a promising pilot. It works on the sample. Then it meets the three questions that decide whether anything reaches production:</p>
-
-    <div class="flow">
-      <div class="step"><div class="n">01</div><div><h3>Whose permissions does it have?</h3><p>An agent that can read the vendor master can read every vendor's bank details. If the answer to "what can it reach" is "whatever we gave the service account", the risk team is right to stop it.</p></div></div>
-      <div class="step"><div class="n">02</div><div><h3>Where does the data have to move to?</h3><p>Most finance AI assumes a data project first — warehouse, pipelines, a canonical model. That project is where the timeline dies, and it is the reason "data architecture constraints" shows up as a blocker rather than a task.</p></div></div>
-      <div class="step"><div class="n">03</div><div><h3>What happens when it is wrong?</h3><p>A pilot is judged on its hit rate. Production is judged on its failure mode. Without a defined answer for the ambiguous case, every exception becomes an argument, and the control gets switched off.</p></div></div>
-    </div>
-
-    <p>None of those are model problems. They are architecture and governance problems, and no amount of additional model quality resolves them.</p>
-  </div>
-</section>
-
-<section class="band">
-  <div class="wrap">
-    <h2 class="sec">What has to be true instead</h2>
-    <p class="statement">The agent has to be governed like a person, and posted like a clerk.<span class="after">Scoped by the same access control that governs a human, acting through defined tools rather than around them, and writing into the ERP that already holds the books — so nothing has to move for it to start.</span></p>
-
-    <ul class="checks">
-      <li><strong>Permissions resolve before the model runs.</strong> An agent inherits the signed-in user's scope and cannot exceed it. That single ordering answers most of what a risk committee wants to know.</li>
-      <li><strong>The system of record does not change.</strong> Your ERP stays authoritative. Agents read from it and post back to it, which removes the data-architecture project from the critical path entirely.</li>
-      <li><strong>Ambiguity has a defined destination.</strong> Every check that runs on every transaction will meet cases it cannot settle. Naming what happens then is what makes it a control rather than a suggestion.</li>
-      <li><strong>The unit of work is a team, not a tool.</strong> One check is a feature. What changes a finance function is many checks running on every transaction at once, handing findings to each other.</li>
-    </ul>
-  </div>
-</section>
-
-<section class="band wash">
-  <div class="wrap wrap-wide">
-    <h2 class="sec">Why this is an ecosystem question, not a feature one</h2>
-    <p>The reason finance is the function where agents compound is that its work is already a graph. An invoice is not one decision; it is a dozen checks that depend on each other, spread across systems that were never designed to talk.</p>
-
-    <div class="cards">
-      <div>
-        <h3>Each agent is narrow on purpose</h3>
-        <p>One rule, absolutely enforced, is verifiable. "An AI that handles your AP" is not. Narrow scope is what makes each one auditable.</p>
-      </div>
-      <div>
-        <h3>They compound by handing over</h3>
-        <p>A duplicate found at entry becomes context for the payment run. Findings accumulate against the transaction rather than being re-derived by each tool.</p>
-      </div>
-      <div>
-        <h3>The platform is the governance</h3>
-        <p>Access, redaction, guardrails and the audit trail live once, underneath. Adding the nineteenth agent does not mean a nineteenth security review.</p>
-      </div>
-      <div>
-        <h3>Local rules are the moat</h3>
-        <p>GST filing status, TDS sections, MSME clocks. Global finance AI does not model them, and in an Indian company they are where the recoverable money is.</p>
-      </div>
-    </div>
-
-    <p>That is what AiFA is: not an AP tool with AI in it, but a place to deploy finance agents where governance, access and the audit trail are already solved — so the nth control costs a fraction of the first.</p>
-  </div>
-</section>
-
-<section class="band">
   <div class="wrap">
     <h2 class="sec">Sources</h2>
     <ul class="mono">
@@ -114,7 +84,7 @@
     </ul>
     <div class="callout">
       <span class="label">On these numbers</span>
-      <p>The Gartner figures are quoted from CFO Dive's reporting of the survey, with the sample size and date as published. The McKinsey and Deloitte findings are summarised from their published research. We have not restated any figure we could not attribute to a named study — and none of the numbers on this page are ours.</p>
+      <p>The Gartner figures are quoted from CFO Dive's reporting of the survey, with the sample size and date as published. The McKinsey and Deloitte findings are summarised from their published research. The 85%, one-month and 3% figures describe what we observe across AiFA deployments; the savings-check exists so you can test them against your own data rather than take them from us.</p>
     </div>
   </div>
 </section>
@@ -125,9 +95,9 @@
     <p>Ninety days of invoices, one export, findings back within a working day.</p>
     <a class="btn" href="/#book"><span class="rupee">$</span>Check your savings<span>→</span></a>
     <div class="inline-links">
-      <a href="/security">How the governance actually works →</a>
+      <a href="/what-it-found">Where the 3% goes →</a>
       <a href="/agents">The AI team →</a>
-      <a href="/what-it-found">What the checks find →</a>
+      <a href="/security">How the governance works →</a>
     </div>
   </div>
 </section>

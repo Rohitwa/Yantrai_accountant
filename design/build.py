@@ -407,16 +407,17 @@ assert '>Customers</a>' not in body
 # as the French one, so the two do not describe different companies.
 _CURRENCY = [
     ('A ₹1,000&nbsp;crore company is saving up to ₹30&nbsp;crore on its outflows — with',
-     'A $120&nbsp;million company is saving up to $3.6&nbsp;million on its outflows — with'),
+     'A $120M revenue company saved $3.6&nbsp;million with'),
     ("If your company moves over ₹1,000 crore a year, we'll show you where the leak is — on your own data.",
      "If your company moves over $120 million a year, we'll show you where the leak is — on your own data."),
 ]
 for _old, _new in _CURRENCY:
     assert body.count(_old) == 1, (_old[:40], body.count(_old))
     body = body.replace(_old, _new)
-# the bare glyph in the CTA chip and the "Recovered" metric
+# the bare glyph in the CTA chip, the "Recovered" metric, and the two
+# savings-form buttons (form.html carries the glyph literally so it lands here)
 _SYM = I18N.get('_currency', '$')
-assert body.count('>\u20b9</span>') == 2, body.count('>\u20b9</span>')
+assert body.count('>\u20b9</span>') == 4, body.count('>\u20b9</span>')
 body = body.replace('>\u20b9</span>', '>%s</span>' % _SYM)
 
 # ------------------------------------------------------------ brand lockup
@@ -630,9 +631,10 @@ PAGES = [
     ('security', 'Security — the PRISM-ES stack | AiFA',
      'Where your data sits, who can see it, what is retained, and what trains on it. '
      'Seven layers, read bottom-up.'),
-    ('research', 'Finance AI is stalling on governance, not models | AiFA',
-     'Adoption in finance functions has gone flat. Gartner, McKinsey and Deloitte point '
-     'the same way — the blockers are data and governance, not model capability.'),
+    ('research', 'Follow the money — where 3% of outflow leaks, and how it comes back | AiFA',
+     'One invoice, followed from the mailbox to the payment run: where money escapes at '
+     'each step, why batch controls miss it, and what changes when every transaction is '
+     'checked before the money moves.'),
     ('about', 'About YantrAI Labs | AiFA',
      'We build AI teams for the work people can only ever spot-check. Vision, mission, '
      'what we believe, and who we are.'),
