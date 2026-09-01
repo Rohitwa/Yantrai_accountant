@@ -41,7 +41,12 @@ CANONICAL_HOST = "yantrailabs.com"
 # English is served from the root, French from /fr/. Both are fully built
 # static trees, so a crawler sees real French HTML at a real French URL.
 SUPPORTED_LOCALES = ("en", "fr")
-LANG_COOKIE = "lang"
+# Firebase Hosting fronts yantrailabs.com and strips every cookie except
+# __session before forwarding to the backend, so a cookie by any other name
+# reaches the app on run.app and never through the domain. This slot is shared
+# — if anything else ever needs a cookie here, it has to become a structured
+# value rather than a bare locale code.
+LANG_COOKIE = "__session"
 # a year: the choice is a preference, not a session
 LANG_COOKIE_MAX_AGE = 60 * 60 * 24 * 365
 # paths that are locale-neutral and must never be redirected

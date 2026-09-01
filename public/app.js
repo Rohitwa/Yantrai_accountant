@@ -9,7 +9,7 @@
      Formspree / Basin / Getform, or your own API with CORS enabled.
      Until it is set, the form refuses to submit and tells the visitor to email
      instead, rather than silently swallowing a lead. */
-  var FORM_ENDPOINT = '/api/savings-check';
+  var FORM_ENDPOINT = '';
   var CAREER_ENDPOINT = '/api/careers';
   var FORM_FALLBACK_EMAIL = 'rohit@yantrailabs.com';
   var MAX_CV_BYTES = 10 * 1024 * 1024;
@@ -604,7 +604,9 @@
     if (LOCALES.indexOf(code) === -1) return;
     a.setAttribute('href', pathIn(location.pathname, code) + location.hash);
     a.addEventListener('click', function () {
-      document.cookie = 'lang=' + code + ';path=/;max-age=31536000;samesite=lax';
+      // must be __session: Firebase Hosting fronts the domain and drops every
+      // other cookie before the request reaches the app
+      document.cookie = '__session=' + code + ';path=/;max-age=31536000;samesite=lax';
     });
   });
 

@@ -604,7 +604,9 @@
     if (LOCALES.indexOf(code) === -1) return;
     a.setAttribute('href', pathIn(location.pathname, code) + location.hash);
     a.addEventListener('click', function () {
-      document.cookie = 'lang=' + code + ';path=/;max-age=31536000;samesite=lax';
+      // must be __session: Firebase Hosting fronts the domain and drops every
+      // other cookie before the request reaches the app
+      document.cookie = '__session=' + code + ';path=/;max-age=31536000;samesite=lax';
     });
   });
 
