@@ -84,14 +84,14 @@ img, video { max-width: 100%; }
   [data-trust] > div:first-child { padding-left: 20px !important; }
 
   /* Section padding */
-  [data-section="problem"], [data-section="demo"] { padding: 84px 20px !important; }
+  [data-section="problem"] { padding: 84px 20px !important; }
   [data-section="integration"] { padding: 84px 0 0 !important; }
   [data-compare] { padding: 0 16px 84px !important; }
   [data-footer] { padding: 72px 20px 0 !important; }
 
   /* Display headings are sized for a 1440px artboard */
-  #problem h2, #demo h2, #integration h2 { font-size: 32px !important; }
-  #problem p, #demo p, #integration p { font-size: 15.5px !important; }
+  #problem h2, #integration h2 { font-size: 32px !important; }
+  #problem p, #integration p { font-size: 15.5px !important; }
   [data-stat] > span:first-child { font-size: 44px !important; }
   [data-stat-row] { margin-top: 56px !important; }
 }

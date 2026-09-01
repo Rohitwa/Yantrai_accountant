@@ -302,14 +302,15 @@
   var videoEl = $('[data-video]');
   var videoWrap = $('[data-video-wrap]');
   var hintEl = $('[data-video-hint]');
-  var soundBtn = $('[data-sound-btn]');
-  var VIDEO_SRC = 'assets/aifa-agent-teams-60s.mp4';
+  // Written onto the element by the build, one file per locale — this script
+  // is shared across locales, so it must not name the file itself.
+  var VIDEO_SRC = videoEl && videoEl.getAttribute('data-video-src');
 
-  if (videoEl) {
+  if (videoEl && VIDEO_SRC) {
     // Pointer devices play on hover (as designed). Touch devices have no hover,
     // so there the video plays whenever the section is on screen.
     var hoverCapable = window.matchMedia('(hover: hover)').matches;
-    var inView = false, hovering = false, soundOn = false;
+    var inView = false, hovering = false;
 
     videoEl.muted = true;
 
@@ -342,20 +343,6 @@
       videoWrap.addEventListener('mouseleave', function () { hovering = false; sync(); });
     }
     if (!hoverCapable && hintEl) hintEl.style.display = 'none';
-
-    if (soundBtn) {
-      soundBtn.addEventListener('click', function () {
-        soundOn = !soundOn;
-        videoEl.muted = !soundOn;
-        soundBtn.textContent = soundOn ? 'Sound on' : 'Sound off';
-        soundBtn.setAttribute('aria-pressed', String(soundOn));
-        if (soundOn) {
-          if (!videoEl.getAttribute('src')) videoEl.setAttribute('src', VIDEO_SRC);
-          var p = videoEl.play();
-          if (p && p.catch) p.catch(function () {});
-        }
-      });
-    }
   }
 
   /* ---------------------------------------------------------- form wiring */

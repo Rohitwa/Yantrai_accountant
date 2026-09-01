@@ -276,8 +276,18 @@ add_attr(31,  'data-video-section="1"')
 add_attr(73,  'data-section="problem"')
 add_attr(191, 'data-compare="1"')
 add_attr(220, 'data-section="integration"')
-add_attr(752, 'data-section="demo"')
 add_attr(772, 'data-footer="1"')
+
+# ------------------------------------------------------- drop the pitch --
+# The artboard carries two asks: a dark "see how much outflow you are leaving
+# on the table" pitch, and the savings-check form right under it. One ask
+# converts better than two competing ones, so the pitch band goes and every
+# CTA lands on the form (the href rewrite below sends #demo there).
+_i = body.index('<div data-dc-tpl="752"')
+_j = body.index('<div data-dc-tpl="772"')
+assert _i < _j, 'demo/footer order'
+body = body[:_i] + body[_j:]
+assert 'id="demo"' not in body
 
 # The dial's inner white disc and its centre label block have no hook of their
 # own; find them structurally (they are stable positions inside [data-ring]).
@@ -319,11 +329,11 @@ for _sec in ('agents', 'proof'):
     _tag = body[_start:_end]
     assert 'content-visibility: auto; ' in _tag, _sec
     body = body[:_start] + _tag.replace('content-visibility: auto; ', '') + body[_end:]
-assert body.count('content-visibility') == 4   # problem/integration/demo/footer keep it
+assert body.count('content-visibility') == 3   # problem/integration/footer keep it
 
 # ------------------------------------------------- research band (homepage)
-# Sits between the integrations grid and the demo pitch: the case that this is
-# where the category is going, before the ask.
+# Sits between the integrations grid and the ask: the case that this is where
+# the category is going, before we ask for anything.
 RESEARCH_BAND = '''
   <div id="research" data-section="research" style="content-visibility: auto; contain-intrinsic-size: auto 700px; scroll-margin-top: 90px; background: #FFFFFF; border-top: 1px solid #E6EAE4; padding: 128px 56px; display: flex; justify-content: center">
     <div style="width: 100%; max-width: 1160px; display: flex; flex-direction: column">
@@ -359,9 +369,9 @@ RESEARCH_BAND = '''
   </div>
 '''
 
-_demo_i = body.index('id="demo"')
-_demo_start = body.rfind('<div ', 0, _demo_i)
-body = body[:_demo_start] + RESEARCH_BAND.strip() + '\n\n  ' + body[_demo_start:]
+_footer_i = body.index('id="footer"')
+_footer_start = body.rfind('<div ', 0, _footer_i)
+body = body[:_footer_start] + RESEARCH_BAND.strip() + '\n\n  ' + body[_footer_start:]
 
 # ------------------------------------------------------- savings-check form
 # The artboard's "Book a demo" button already points at #book, but the canvas
@@ -371,8 +381,8 @@ assert _i > 0
 _start = body.rfind('<div ', 0, _i)
 body = body[:_start] + form.strip() + '\n\n  ' + body[_start:]
 
-# The hero CTA and the nav "Book a demo" both point at #demo, which is the
-# pitch; the form directly under it is where they actually want to land.
+# The hero CTA and the nav "Book a demo" both point at #demo, which no longer
+# exists — the form is the single ask now, so every one of them lands there.
 body = body.replace('href="#demo"', 'href="#book"')
 # the product login is a live app, unrelated to this page
 body = body.replace('href="#login"', 'href="https://workspace.yantrailabs.com/"')
@@ -401,15 +411,14 @@ body = body[:_start] + body[_i + len('>Customers</a>'):]
 assert '>Customers</a>' not in body
 
 # ---------------------------------------------------------------- currency
-# The canvas copy is priced in rupees and crore. The claim underneath is 3% of
+# The canvas hero is priced in rupees and crore. The claim underneath is 3% of
 # outflow, which is currency-independent, so the example company is restated in
 # dollars at the magnitude the English site targets — and at the same magnitude
-# as the French one, so the two do not describe different companies.
+# as the French one, so the two do not describe different companies. (The
+# matching qualifier now lives in form.html, already in dollars.)
 _CURRENCY = [
     ('A ₹1,000&nbsp;crore company is saving up to ₹30&nbsp;crore on its outflows — with',
      'A $120M revenue company saved $3.6&nbsp;million with'),
-    ("If your company moves over ₹1,000 crore a year, we'll show you where the leak is — on your own data.",
-     "If your company moves over $120 million a year, we'll show you where the leak is — on your own data."),
 ]
 for _old, _new in _CURRENCY:
     assert body.count(_old) == 1, (_old[:40], body.count(_old))
@@ -582,6 +591,35 @@ body = re.sub(r'\n[ \t]*\n[ \t]*\n+', '\n\n', body)
 # semantic landmarks, cheap and safe: nav / main / footer are pure wrappers
 assert 'data-nav="1"' in body and 'data-footer="1"' in body
 
+# ----------------------------------------------------------------- video --
+# The French cut is a separate render, not the same file with subtitles, so
+# each locale gets its own pair. app.js is shared across locales and cannot
+# know which one it is serving, so the build writes the source onto the
+# element and the player reads it from there.
+VIDEO = {
+    'en': ('aifa-pipeline-60s.mp4',    'aifa-pipeline-poster.jpg',    1920, 1080),
+    'fr': ('aifa-pipeline-60s-fr.mp4', 'aifa-pipeline-poster-fr.jpg', 1280, 720),
+}
+_vid, _poster, _vw, _vh = VIDEO[LOCALE]
+_old_video = ('<video data-video="1" '
+              'poster="assets/aifa-video-poster.jpg" preload="none" loop="" '
+              'width="1920" height="1080"')
+assert body.count(_old_video) == 1, 'video tag'
+body = body.replace(_old_video, (
+    '<video data-video="1" data-video-src="assets/%s" '
+    'poster="assets/%s" preload="none" loop="" width="%d" height="%d"'
+    % (_vid, _poster, _vw, _vh)))
+# the poster is preloaded from the shared head
+assert head.count('assets/aifa-video-poster.jpg') == 1
+head = head.replace('assets/aifa-video-poster.jpg', 'assets/' + _poster)
+
+# Neither cut carries an audio track, so the artboard's sound toggle is a
+# control that can never do anything. Drop it until there is sound to toggle.
+_i = body.index('<button type="button" data-sound-btn="1"')
+_j = body.index('</button>', _i) + len('</button>')
+body = body[:_i] + body[_j:]
+assert 'data-sound-btn' not in body
+
 # ------------------------------------------------------------ path prefix --
 _attr = r'(src|href|poster)="assets/'
 body = re.sub(_attr, r'\1="%sassets/' % ASSET_BASE, body)
@@ -589,8 +627,6 @@ head = re.sub(_attr, r'\1="%sassets/' % ASSET_BASE, head)
 if BASE:
     # absolute og:image / twitter:image
     head = head.replace(SITE_URL.rstrip('/') + '/assets/', SITE_URL.rstrip('/') + BASE + 'assets/')
-app_js = app_js.replace("'assets/aifa-agent-teams-60s.mp4'",
-                        "'%sassets/aifa-agent-teams-60s.mp4'" % ASSET_BASE)
 
 # ------------------------------------------------------------- assemble ---
 page = localise_links("""<!DOCTYPE html>
