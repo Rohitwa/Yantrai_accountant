@@ -141,6 +141,31 @@
     <priority>0.8</priority>
   </url>
   <url>
+    <loc>https://yantrailabs.com/fr</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://yantrailabs.com/fr/about</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://yantrailabs.com/fr/careers</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://yantrailabs.com/fr/security</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://yantrailabs.com/fr/what-it-found</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
     <loc>https://yantrailabs.com/integrations</loc>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>

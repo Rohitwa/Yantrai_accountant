@@ -193,5 +193,27 @@
   "description": "AiFA est une équipe d'IA pour la finance. Elle lit, rapproche, contrôle, clôture et paie — dans l'ERP que vous utilisez déjà. 100 % des décaissements contrôlés, jusqu'à 3 % récupérés.",
   "og_title": "AiFA — Des équipes d'IA pour la finance",
   "og_description": "Une entreprise récupère jusqu'à 3 % de ses décaissements — avec AiFA. Elle lit, rapproche, contrôle, clôture et paie, dans l'ERP que vous utilisez déjà."
+ },
+ "_pages": {
+  "what-it-found": [
+   "Ce que les contrôles trouvent — d'où viennent les 3 % | AiFA",
+   "Une entreprise perd environ 3 % de ses décaissements à travers six défaillances ordinaires. Voici le détail, et ce que chacune représente."
+  ],
+  "security": [
+   "Sécurité — la pile PRISM-ES | AiFA",
+   "Où sont hébergées vos données, qui peut les voir, ce qui est conservé et ce qui entraîne un modèle. Sept couches, à lire de bas en haut."
+  ],
+  "about": [
+   "À propos de YantrAI Labs | AiFA",
+   "Nous construisons des équipes d'IA pour le travail que l'on ne peut que sonder par échantillon. Vision, mission, ce que nous croyons, et qui nous sommes."
+  ],
+  "careers": [
+   "Carrières — dites-nous ce que vous construiriez | AiFA",
+   "Pas d'offres publiées. Nous recrutons les gens que nous ne pouvons pas ne pas recruter. Le travail, et un formulaire qui arrive chez un fondateur."
+  ]
+ },
+ "_calc": {
+  "unit": " M€",
+  "prefix": ""
  }
 }

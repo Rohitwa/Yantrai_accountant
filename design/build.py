@@ -146,6 +146,11 @@ def lang_switcher(slug):
             % '<span aria-hidden="true">·</span>'.join(items))
 
 MISSING_TRANSLATIONS = []
+I18N = {}
+_i18n_path = os.path.join(ROOT, 'pages', 'i18n', LOCALE + '.json')
+if LOCALE != 'en' and os.path.exists(_i18n_path):
+    with open(_i18n_path, encoding='utf-8') as _f:
+        I18N = json.load(_f)
 
 
 def read(*p):
@@ -220,9 +225,8 @@ def build_content_page(slug, page_title, description, content, nav, footer, extr
                      lambda _m: lang_switcher(slug).replace(LANG_HREF, ''),
                      nav_abs, count=1, flags=re.S)
     foot_abs = absolutise(footer)
-    head_page = (absolutise(head)
-                 .replace('<title>AiFA — AI Teams for Finance | YantrAI</title>',
-                          '<title>%s</title>' % page_title)
+    head_page = (re.sub(r'<title>[^<]*</title>', lambda _m: '<title>%s</title>' % page_title,
+                        absolutise(head), count=1)
                  .replace(SITE_URL.rstrip('/') + '/">', SITE_URL.rstrip('/') + '/' + slug + '">'))
     head_page = re.sub(r'(<meta name="description" content=")[^"]*(")',
                        lambda m: m.group(1) + description + m.group(2), head_page, count=1)
@@ -625,7 +629,7 @@ document.addEventListener('DOMContentLoaded', function () {
   function render() {
     var cr = parseFloat(input.value);
     out.textContent = isFinite(cr) && cr >= 0
-      ? '\u20B9' + (cr * 0.03).toFixed(1) + ' Cr'
+      ? '__CALC_PREFIX__' + (cr * 0.03).toFixed(1).replace('.', '__CALC_DEC__') + '__CALC_UNIT__'
       : '\u2014';
   }
   input.addEventListener('input', render);
@@ -637,8 +641,15 @@ page_count = 0
 for slug, page_title, description in PAGES:
     if not has_translation(slug):
         continue
+    _pm = (I18N.get('_pages') or {}).get(slug)
+    if _pm:
+        page_title, description = _pm
     content = read_localised('pages', slug + '.html')
-    extra = CALC_JS if 'id="outflow"' in content else ''
+    _calc = I18N.get('_calc') or {'prefix': '\u20b9', 'unit': ' Cr'}
+    extra = (CALC_JS.replace('__CALC_PREFIX__', _calc['prefix'])
+                    .replace('__CALC_UNIT__', _calc['unit'])
+                    .replace('__CALC_DEC__', ',' if LOCALE != 'en' else '.')
+             ) if 'id="outflow"' in content else ''
     html_out = build_content_page(slug, page_title, description, content, NAV, FOOTER, extra)
     with open(out_path(slug, 'index.html'), 'w', encoding='utf-8') as f:
         f.write(html_out)

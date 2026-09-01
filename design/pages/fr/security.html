@@ -1,0 +1,133 @@
+<div class="wrap">
+  <div class="crumb"><a href="/">AiFA</a> · Sécurité</div>
+  <div class="masthead">
+    <span class="eyebrow"><i></i>Sécurité</span>
+    <h1 class="display">Vous nous confiez vos factures<br>fournisseurs. Voici toute la pile,<br><em class="mark">de bas en haut</em>.</h1>
+    <p class="lede">AiFA repose sur PRISM-ES — sept couches, chacune avec une fonction. Il vaut mieux la lire par le bas, parce que le bas est précisément ce que les gens veulent savoir.</p>
+  </div>
+</div>
+
+<section class="band">
+  <div class="wrap">
+    <p class="statement">Un agent ne peut voir et faire que ce que l'utilisateur connecté pourrait voir et faire lui-même.<span class="after">Les droits sont résolus avant que la couche d'intelligence n'agisse. L'IA n'a ni permissions propres, ni identifiant propre, ni accès propre à vos données. Elle hérite des vôtres, et de rien de plus.</span></p>
+  </div>
+</section>
+
+<section class="band wash">
+  <div class="wrap wrap-wide">
+    <h2 class="sec">Les sept couches</h2>
+    <p>À lire de bas en haut. Les données de référence sont le socle ; l'ingénierie et l'évolutivité traversent toutes les couches au-dessus.</p>
+
+    <div class="stack">
+      <div class="layer accent-p">
+        <div class="glyph">P</div>
+        <div>
+          <h3>Plateforme — la couche d'accès</h3>
+          <p>Un seul système accessible depuis tous les appareils que l'équipe utilise, avec les mêmes données, les mêmes validations et les mêmes droits sur chaque canal.</p>
+          <div class="chips"><span class="chip">iOS</span><span class="chip">Android</span><span class="chip">Windows</span><span class="chip">ChromeOS</span></div>
+        </div>
+      </div>
+
+      <div class="layer accent-r">
+        <div class="glyph">R</div>
+        <div>
+          <h3>Rôles et permissions</h3>
+          <p>Chaque utilisateur, chaque validation et chaque vue est cadré par le rôle avant qu'on aille plus loin. Le principe des quatre yeux s'applique ici — saisi, vérifié, validé, comptabilisé — avec journalisation nominative des dérogations, sur les seuils et tolérances que vous définissez.</p>
+          <div class="chips"><span class="chip">OIDC / JWT</span><span class="chip">RBAC</span><span class="chip">MFA</span><span class="chip">Sessions nominatives — aucun compte partagé</span></div>
+        </div>
+      </div>
+
+      <div class="layer accent-i">
+        <div class="glyph">I</div>
+        <div>
+          <h3>Intelligence — l'IA en tandem avec la pile</h3>
+          <p>Les agents raisonnent et agissent <strong>à travers</strong> des outils et des garde-fous définis, jamais en les contournant. Chaque point de contact avec un modèle est défini, encadré et vérifiable : anonymisation des données personnelles et filtrage des injections de prompt avant que quoi que ce soit n'atteigne un modèle, recherche cantonnée à votre espace, réponses sourcées avec citations, et sorties filtrées, validées et expurgées au retour.</p>
+          <div class="chips"><span class="chip">Sécurité en entrée</span><span class="chip">Espace vectoriel par client</span><span class="chip">Garde-fous en sortie</span><span class="chip">Citations</span></div>
+        </div>
+      </div>
+
+      <div class="layer accent-s">
+        <div class="glyph">S</div>
+        <div>
+          <h3>Sécurisation — la couche de confidentialité</h3>
+          <p>Une sécurité au niveau de la ligne isole les comptes de chaque client et vous donne un cloud privé au sein de la plateforme. Elle est appliquée dans la base de données, pas seulement dans le code applicatif : une erreur applicative échoue donc du bon côté. Ce que le système apprend de vos données reste dans votre déploiement — jamais utilisé pour entraîner des modèles partagés.</p>
+          <div class="chips"><span class="chip">Sécurité au niveau ligne</span><span class="chip">Chiffré en transit et au repos</span><span class="chip">Aucun entraînement partagé</span></div>
+        </div>
+      </div>
+
+      <div class="layer accent-m">
+        <div class="glyph">M</div>
+        <div>
+          <h3>Master data — le système de référence</h3>
+          <p>SQL, stockage objet et base vectorielle constituent le socle. <strong>C'est votre ERP qui détient les comptes qui font foi.</strong> AiFA y lit et y réinscrit ; il ne devient pas l'endroit où vit votre comptabilité.</p>
+          <div class="chips"><span class="chip">SQL</span><span class="chip">Stockage objet</span><span class="chip">Base vectorielle</span><span class="chip">Votre ERP reste la référence</span></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="cards">
+      <div>
+        <h3>E · Ingénierie</h3>
+        <p>Une pile moderne et éprouvée de bout en bout — HTML côté navigateur, Node.js et C# sur les services back-end, .NET et Python derrière les traitements et les algorithmes, et des agents Windows qui tournent à côté des systèmes sur site.</p>
+      </div>
+      <div>
+        <h3>S · Évolutivité</h3>
+        <p>Multi-entités et multi-sites dès le premier jour, en s'intégrant aux ERP et CRM déjà en place plutôt qu'en exigeant une migration vers une plateforme unique.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="band">
+  <div class="wrap">
+    <h2 class="sec">Les quatre questions qu'on nous pose vraiment</h2>
+
+    <div class="flow">
+      <div class="step">
+        <div class="n">01</div>
+        <div>
+          <h3>Où sont hébergées les données ?</h3>
+          <p>Dans votre déploiement, isolées au niveau de la ligne dans la base. Chiffrées en transit via TLS et chiffrées au repos. Votre ERP reste l'enregistrement qui fait foi d'un bout à l'autre.</p>
+        </div>
+      </div>
+      <div class="step">
+        <div class="n">02</div>
+        <div>
+          <h3>Qui peut les voir ?</h3>
+          <p>Uniquement vos utilisateurs authentifiés, chacun dans une session nominative cadrée par son rôle. Aucun compte partagé. Les agents héritent du périmètre de l'utilisateur connecté et ne peuvent pas le dépasser.</p>
+        </div>
+      </div>
+      <div class="step">
+        <div class="n">03</div>
+        <div>
+          <h3>Qu'est-ce qui est conservé ?</h3>
+          <p>Ce que vous comptabilisez et ce que les agents écrivent, avec une piste d'audit inaltérable en regard — ce qui a été contrôlé, ce qui a été trouvé, qui a donné son accord. Exportable ou supprimable sur demande.</p>
+        </div>
+      </div>
+      <div class="step">
+        <div class="n">04</div>
+        <div>
+          <h3>Est-ce que cela entraîne un modèle ?</h3>
+          <p>Non. Rien de votre déploiement ne sert à entraîner des modèles partagés. Noms, numéros de compte et identifiants sont expurgés avant tout appel à un modèle, et rien n'est conservé par le modèle une fois la réponse rendue.</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="callout">
+      <span class="label">Pourquoi cet ordre compte</span>
+      <p>La plupart des questions sur l'IA et les données financières sont en réalité des questions de portée : à quoi cette chose peut-elle accéder, et qui en a décidé. Placer les rôles et les permissions <strong>au-dessus</strong> de l'intelligence dans la pile, c'est la réponse : le périmètre est résolu avant qu'un agent ne s'exécute, par le même contrôle d'accès que celui qui régit une personne.</p>
+    </div>
+  </div>
+</section>
+
+<section class="next">
+  <div class="wrap">
+    <h2>Commencez par un export. Aucun connecteur, aucun accès à vos systèmes.</h2>
+    <p>Le diagnostic s'exécute sur un fichier que votre équipe produit déjà. Rien n'a besoin d'être connecté pour savoir si la suite vaut une conversation.</p>
+    <a class="btn" href="/#book"><span class="rupee">€</span>Estimez vos économies<span>→</span></a>
+    <div class="inline-links">
+      <a href="/what-it-found">Ce que les contrôles trouvent →</a>
+      <a href="/agents">L'équipe d'IA →</a>
+    </div>
+  </div>
+</section>
