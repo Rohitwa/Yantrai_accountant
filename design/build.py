@@ -335,77 +335,85 @@ assert body.count('content-visibility') == 3   # problem/integration/footer keep
 # Sits between the integrations grid and the ask, and previews /research: the
 # leak is findable, closing it is the governance problem the studies describe.
 # The 3% is the whole argument of the page, so the evidence band evidences
-# *that*, not the state of finance AI in general. The rows are the same six
-# leaks as /what-it-found, generated here so the two cannot drift, and the
-# arithmetic is asserted at build time rather than trusted.
+# *that*. Same six leaks as /what-it-found, shown the way the explainer video
+# shows them — one ring, biggest arc first — with the numbers direct-labelled
+# beside it. Generated here so the band and that page cannot drift, and the
+# arithmetic is asserted rather than trusted.
+#
+# The ring is a sequential scale (one hue, dark = largest), monotonic in
+# lightness. Adjacent arcs in a six-step single-hue ramp sit close together, so
+# identity never rests on colour: every arc is separated by a gap of surface and
+# named with its own value in the legend.
 LEAKS = [
-    ('Rate above contract',                 1.00, 'Pricing Agent'),
-    ('Duplicate bill',                      0.65, 'Duplicate Agent'),
-    ('Quantity billed over goods received', 0.45, '3-way match Agent'),
-    ('Early-payment discount not taken',    0.35, 'Discount Agent'),
-    ('Input tax credit not recovered',      0.30, 'GST Agent'),
-    ('TDS deducted at the wrong rate',      0.25, 'TDS Agent'),
+    # label,                    % of outflow, agent,               arc colour
+    ('Rate above contract',     1.00, 'Pricing Agent',     '#0F5240'),
+    ('Duplicate bills',         0.65, 'Duplicate Agent',   '#1B7A5E'),
+    ('Over-billed quantity',    0.45, '3-way match Agent', '#2A9B79'),
+    ('Missed discounts',        0.35, 'Discount Agent',    '#4FB795'),
+    ('Unclaimed tax credits',   0.30, 'GST Agent',         '#79CCB2'),
+    ('TDS at the wrong rate',   0.25, 'TDS Agent',         '#A3E0CB'),
 ]
-_TOTAL_PCT = round(sum(p for _, p, _ in LEAKS), 2)
-assert _TOTAL_PCT == 3.00, _TOTAL_PCT          # the headline number, from its parts
-_OUTFLOW_M = 120                                # the example company, in millions
-_WIDEST = max(p for _, p, _ in LEAKS)
+_TOTAL_PCT = round(sum(p for _, p, _, _ in LEAKS), 2)
+assert _TOTAL_PCT == 3.00, _TOTAL_PCT        # the headline number, from its parts
+_OUTFLOW_M = 120                              # the example company, in millions
 
-_TH = ('padding: 14px 18px; font-size: 12px; font-weight: 600; letter-spacing: 0.1em; '
-       'text-transform: uppercase; color: #767676; border-bottom: 1px solid #E6EAE4; ')
-_TD = ('padding: 16px 18px; font-size: 15px; line-height: 1.4; color: #151414; '
-       'border-bottom: 1px solid #F0F2EE; ')
-_NUM = 'font-variant-numeric: tabular-nums; text-align: right; white-space: nowrap; '
-
-_rows = []
-for _name, _pct, _agent in LEAKS:
-    _rows.append(
-        '<tr>'
-        '<td style="%s">%s</td>'
-        '<td style="%s%s">'
-        '<span style="display: inline-flex; align-items: center; gap: 10px; justify-content: flex-end">'
-        '<span aria-hidden="true" style="display: block; width: %dpx; height: 6px; background: #B2EEDC"></span>'
-        '<span>%.2f%%</span>'
+_R, _SW, _GAP = 92, 30, 3                     # ring radius, thickness, arc gap
+_C = 2 * 3.141592653589793 * _R
+_arcs, _legend, _off = [], [], 0.0
+for _label, _pct, _agent, _col in LEAKS:
+    _len = _C * _pct / _TOTAL_PCT
+    _arcs.append(
+        f'<circle cx="130" cy="130" r="{_R}" fill="none" stroke="{_col}" '
+        f'stroke-width="{_SW}" stroke-dasharray="{_len - _GAP:.2f} {_C - _len + _GAP:.2f}" '
+        f'stroke-dashoffset="{-_off:.2f}" transform="rotate(-90 130 130)">'
+        f'<title>{_label}</title>'
+        f'</circle>')
+    _off += _len
+    _legend.append(
+        '<div style="display: flex; align-items: flex-start; gap: 14px; padding: 13px 0; border-bottom: 1px solid #F0F2EE">'
+        f'<span aria-hidden="true" style="flex: 0 0 auto; margin-top: 6px; width: 10px; height: 10px; background: {_col}; display: block"></span>'
+        '<span style="flex: 1; min-width: 0">'
+        f'<span style="display: block; font-size: 15px; line-height: 1.3; color: #151414">{_label}</span>'
+        f'<span style="display: block; margin-top: 3px; font-size: 13px; line-height: 1.3; color: #9A9A9A">{_agent}</span>'
         '</span>'
-        '</td>'
-        '<td style="%s%sfont-weight: 600">$%.2fM</td>'
-        '<td style="%sfont-size: 14px; color: #5A5A5A">%s</td>'
-        '</tr>'
-        % (_TD, _name, _TD, _NUM, round(56 * _pct / _WIDEST), _pct,
-           _TD, _NUM, _OUTFLOW_M * _pct / 100.0, _TD, _agent))
+        f'<span style="flex: 0 0 auto; width: 62px; text-align: right; font-size: 14px; color: #5A5A5A; font-variant-numeric: tabular-nums">{_pct:.2f}%</span>'
+        f'<span style="flex: 0 0 auto; width: 74px; text-align: right; font-size: 15px; font-weight: 600; color: #151414; font-variant-numeric: tabular-nums">${_OUTFLOW_M * _pct / 100:.2f}M</span>'
+        '</div>')
 
-RESEARCH_BAND = ('''
+RESEARCH_BAND = f'''
   <div id="research" data-section="research" style="content-visibility: auto; contain-intrinsic-size: auto 760px; scroll-margin-top: 90px; background: #FFFFFF; border-top: 1px solid #E6EAE4; padding: 128px 56px; display: flex; justify-content: center">
-    <div style="width: 100%%; max-width: 1160px; display: flex; flex-direction: column">
+    <div style="width: 100%; max-width: 1160px; display: flex; flex-direction: column">
       <span style="display: inline-flex; align-items: center; gap: 10px; font-size: 12.5px; font-weight: 600; letter-spacing: 0.12em; text-transform: uppercase; color: #5A5A5A">
         <span style="width: 7px; height: 7px; background: #EADC8F; display: block"></span>The evidence
       </span>
-      <h2 data-research-h2="1" style="margin: 30px 0 0; max-width: 860px; font-family: Newsreader, Georgia, 'Times New Roman', serif; font-weight: 300; font-size: 44px; line-height: 1.08; letter-spacing: -0.03em; color: #151414; text-wrap: balance">The 3%% is not one big leak.<br>It is <span style="font-style: italic; background: linear-gradient(180deg, transparent 82%%, #F9EBA6 82%%, #F9EBA6 96%%, transparent 96%%)">six ordinary failures</span>.</h2>
-      <p style="margin: 26px 0 0; max-width: 640px; font-size: 17px; font-weight: 500; line-height: 1.55; letter-spacing: -0.51px; color: #5A5A5A; text-wrap: pretty">Each row is a check that runs on every invoice, not a sample. The percentages are of total outflow, and every one of them is held before the money moves.</p>
+      <h2 data-research-h2="1" style="margin: 30px 0 0; max-width: 860px; font-family: Newsreader, Georgia, 'Times New Roman', serif; font-weight: 300; font-size: 44px; line-height: 1.08; letter-spacing: -0.03em; color: #151414; text-wrap: balance">Every outflow leaks in the<br><span style="font-style: italic; background: linear-gradient(180deg, transparent 82%, #F9EBA6 82%, #F9EBA6 96%, transparent 96%)">same six places</span>.</h2>
+      <p style="margin: 26px 0 0; max-width: 640px; font-size: 17px; font-weight: 500; line-height: 1.55; letter-spacing: -0.51px; color: #5A5A5A; text-wrap: pretty">Each slice is a check that runs on every invoice, not a sample. Together they are the 3% — and each one is held before the money moves.</p>
 
-      <div data-leak-table="1" style="margin-top: 48px; border: 1px solid #E6EAE4; overflow-x: auto">
-        <table style="width: 100%%; min-width: 680px; border-collapse: collapse; background: #FFFFFF">
-          <thead>
-            <tr>
-              <th style="%(th)stext-align: left">What leaks</th>
-              <th style="%(th)stext-align: right">%% of outflow</th>
-              <th style="%(th)stext-align: right">On $120M</th>
-              <th style="%(th)stext-align: left">Caught by</th>
-            </tr>
-          </thead>
-          <tbody>%(rows)s</tbody>
-          <tfoot>
-            <tr style="background: #FBFCFA">
-              <td style="%(td)sfont-weight: 600; border-bottom: none">Total</td>
-              <td style="%(td)s%(num)sfont-weight: 600; border-bottom: none">3.00%%</td>
-              <td style="%(td)s%(num)sfont-weight: 600; border-bottom: none">$3.60M</td>
-              <td style="%(td)sfont-size: 14px; color: #5A5A5A; border-bottom: none">Every invoice, before it is paid</td>
-            </tr>
-          </tfoot>
-        </table>
+      <div data-leak-chart="1" style="margin-top: 52px; display: flex; align-items: center; gap: 64px; flex-wrap: wrap">
+        <div style="position: relative; flex: 0 0 auto; width: 260px; height: 260px">
+          <svg viewBox="0 0 260 260" width="260" height="260" role="img"><title>Where the 3% of outflow leaks, by share</title>
+            <circle cx="130" cy="130" r="{_R}" fill="none" stroke="#F3F6EA" stroke-width="{_SW}"></circle>
+            {''.join(_arcs)}
+          </svg>
+          <div style="position: absolute; inset: 0; display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center; pointer-events: none">
+            <span style="max-width: 148px; font-size: 10px; font-weight: 600; letter-spacing: 0.12em; line-height: 1.3; text-transform: uppercase; color: #9A9A9A">Money leaking</span>
+            <span style="margin-top: 4px; font-family: Newsreader, Georgia, 'Times New Roman', serif; font-weight: 300; font-size: 46px; line-height: 1; letter-spacing: -1.4px; color: #151414; font-variant-numeric: tabular-nums">3%</span>
+            <span style="max-width: 112px; margin-top: 5px; font-size: 11.5px; font-weight: 500; line-height: 1.25; color: #5A5A5A; text-wrap: balance">of every outflow</span>
+          </div>
+        </div>
+
+        <div style="flex: 1 1 460px; min-width: 320px; max-width: 620px">
+          <span style="display: block; font-size: 11.5px; font-weight: 600; letter-spacing: 0.14em; text-transform: uppercase; color: #9A9A9A; padding-bottom: 8px">Where it leaks</span>
+          {''.join(_legend)}
+          <div style="display: flex; align-items: baseline; gap: 14px; padding: 15px 0 0">
+            <span style="flex: 1; min-width: 0; font-size: 15px; font-weight: 600; color: #151414">Total, on $120M of outflow</span>
+            <span style="flex: 0 0 auto; width: 62px; text-align: right; font-size: 14px; font-weight: 600; color: #151414; font-variant-numeric: tabular-nums">3.00%</span>
+            <span style="flex: 0 0 auto; width: 74px; text-align: right; font-size: 15px; font-weight: 600; color: #151414; font-variant-numeric: tabular-nums">$3.60M</span>
+          </div>
+        </div>
       </div>
 
-      <div data-research-cta="1" style="margin-top: 40px; display: flex; align-items: center; gap: 16px; flex-wrap: wrap">
+      <div data-research-cta="1" style="margin-top: 48px; display: flex; align-items: center; gap: 16px; flex-wrap: wrap">
         <a href="#book" style="display: inline-flex; align-items: center; gap: 10px; background: #151414; border: 1px solid #151414; border-radius: 10px; padding: 16px 24px; font-size: 15px; font-weight: 600; letter-spacing: -0.45px; color: #FFFFFF; text-decoration: none">Check your savings<span>&#8594;</span></a>
         <a href="/what-it-found" style="display: inline-flex; align-items: center; gap: 10px; background: #FFFFFF; border: 1px solid #DCE0DA; border-radius: 10px; padding: 15px 22px; font-size: 15px; font-weight: 600; letter-spacing: -0.45px; color: #151414; text-decoration: none">See the full arithmetic<span>&#8594;</span></a>
         <span style="font-size: 14px; font-weight: 500; letter-spacing: -0.42px; color: #767676">Six leaks, one worked example, and a calculator for your own outflow</span>
@@ -414,7 +422,7 @@ RESEARCH_BAND = ('''
       <p style="margin: 30px 0 0; max-width: 720px; font-size: 14px; font-weight: 500; line-height: 1.5; color: #9A9A9A">Gartner, McKinsey and Deloitte all name the same blocker, and it is not model quality. <a href="/research" style="color: #767676; text-decoration: underline; text-underline-offset: 3px">Follow the money</a></p>
     </div>
   </div>
-''' % {'th': _TH, 'td': _TD, 'num': _NUM, 'rows': ''.join(_rows)})
+'''
 
 _footer_i = body.index('id="footer"')
 _footer_start = body.rfind('<div ', 0, _footer_i)
