@@ -332,16 +332,16 @@ for _sec in ('agents', 'proof'):
 assert body.count('content-visibility') == 3   # problem/integration/footer keep it
 
 # ------------------------------------------------- research band (homepage)
-# Sits between the integrations grid and the ask: the case that this is where
-# the category is going, before we ask for anything.
+# Sits between the integrations grid and the ask, and previews /research: the
+# leak is findable, closing it is the governance problem the studies describe.
 RESEARCH_BAND = '''
   <div id="research" data-section="research" style="content-visibility: auto; contain-intrinsic-size: auto 700px; scroll-margin-top: 90px; background: #FFFFFF; border-top: 1px solid #E6EAE4; padding: 128px 56px; display: flex; justify-content: center">
     <div style="width: 100%; max-width: 1160px; display: flex; flex-direction: column">
       <span style="display: inline-flex; align-items: center; gap: 10px; font-size: 12.5px; font-weight: 600; letter-spacing: 0.12em; text-transform: uppercase; color: #5A5A5A">
         <span style="width: 7px; height: 7px; background: #EADC8F; display: block"></span>The evidence
       </span>
-      <h2 data-research-h2="1" style="margin: 30px 0 0; max-width: 860px; font-family: Newsreader, Georgia, 'Times New Roman', serif; font-weight: 300; font-size: 44px; line-height: 1.08; letter-spacing: -0.03em; color: #151414; text-wrap: balance">Finance AI isn't stalling on models.<br>It's stalling on <span style="font-style: italic; background: linear-gradient(180deg, transparent 82%, #F9EBA6 82%, #F9EBA6 96%, transparent 96%)">governance and data</span>.</h2>
-      <p style="margin: 26px 0 0; max-width: 620px; font-size: 17px; font-weight: 500; line-height: 1.55; letter-spacing: -0.51px; color: #5A5A5A; text-wrap: pretty">Three independent studies point the same way. None of the blockers they name is a model problem — which is why buying a better model has not moved the number.</p>
+      <h2 data-research-h2="1" style="margin: 30px 0 0; max-width: 860px; font-family: Newsreader, Georgia, 'Times New Roman', serif; font-weight: 300; font-size: 44px; line-height: 1.08; letter-spacing: -0.03em; color: #151414; text-wrap: balance">The leak is not the hard part.<br>The hard part is letting an agent touch <span style="font-style: italic; background: linear-gradient(180deg, transparent 82%, #F9EBA6 82%, #F9EBA6 96%, transparent 96%)">every transaction</span>.</h2>
+      <p style="margin: 26px 0 0; max-width: 620px; font-size: 17px; font-weight: 500; line-height: 1.55; letter-spacing: -0.51px; color: #5A5A5A; text-wrap: pretty">Follow one invoice from the mailbox to the payment run and the 3% is easy to find. Recovering it means checking every transaction before the money moves — and three independent studies say what blocks that is governance and data, not model quality.</p>
 
       <div data-research-grid="1" style="margin-top: 56px; display: grid; grid-template-columns: repeat(3, 1fr); gap: 1px; background: #E6EAE4; border: 1px solid #E6EAE4">
         <div style="background: #FFFFFF; padding: 30px 28px; display: flex; flex-direction: column; gap: 12px">
@@ -362,8 +362,8 @@ RESEARCH_BAND = '''
       </div>
 
       <div data-research-cta="1" style="margin-top: 40px; display: flex; align-items: center; gap: 16px; flex-wrap: wrap">
-        <a href="/research" style="display: inline-flex; align-items: center; gap: 10px; background: #FFFFFF; border: 1px solid #DCE0DA; border-radius: 10px; padding: 15px 22px; font-size: 15px; font-weight: 600; letter-spacing: -0.45px; color: #151414; text-decoration: none">Read the full argument<span>&#8594;</span></a>
-        <span style="font-size: 14px; font-weight: 500; letter-spacing: -0.42px; color: #767676">Why AiFA is an ecosystem for deploying finance agents, not an AP tool</span>
+        <a href="/research" style="display: inline-flex; align-items: center; gap: 10px; background: #FFFFFF; border: 1px solid #DCE0DA; border-radius: 10px; padding: 15px 22px; font-size: 15px; font-weight: 600; letter-spacing: -0.45px; color: #151414; text-decoration: none">Follow the money<span>&#8594;</span></a>
+        <span style="font-size: 14px; font-weight: 500; letter-spacing: -0.42px; color: #767676">Where the 3% leaks, which agent closes it, and why batch controls miss it</span>
       </div>
     </div>
   </div>
