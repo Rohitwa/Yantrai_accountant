@@ -2,3 +2,21 @@ __pycache__/
 *.pyc
 .venv*/
 design/_direct.html
+
+# Build output. design/build.py generates these next to its own sources;
+# scripts/build.sh stages them into public/, which is what Cloud Run serves.
+# Committing both copies is what lets them drift, so only public/ is tracked.
+design/index.html
+design/site.css
+design/app.js
+design/page.css
+design/about/
+design/agents/
+design/careers/
+design/for/
+design/fr/
+design/integrations/
+design/research/
+design/security/
+design/what-it-found/
+design/workflows/

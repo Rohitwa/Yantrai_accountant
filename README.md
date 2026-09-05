@@ -32,20 +32,78 @@ Cloud Run service `yantrai-website`, project `gen-lang-client-0024674990`,
 region `asia-south1`. `yantrailabs.com` is mapped to it, so whatever this
 service serves is what the domain serves.
 
-**A push to `main` deploys.** `.github/workflows/deploy.yml` builds the source
-with the Python buildpack and rolls out a new revision. `Run workflow` on the
-Actions tab deploys any other branch by hand.
-
-By hand, from a checkout:
+**Deploy with the script. Do not run `gcloud run deploy` by hand.**
 
 ```bash
-gcloud run deploy yantrai-website --source . \
-  --region asia-south1 --project gen-lang-client-0024674990
+scripts/deploy.sh              # deploy, after the checks below pass
+scripts/deploy.sh --dry-run    # run the checks only; needs no gcloud
 ```
+
+`gcloud run deploy --source .` uploads *the folder you are standing in*. It
+never reads GitHub and it will not warn you that your checkout is stale. That
+is not hypothetical: a deploy once went out from a checkout two commits behind
+`main`, so the new hero and article went live while the explainer video and a
+removed section did not, and nothing anywhere reported a problem. Every check
+in the script exists because of that deploy.
+
+The script refuses to run unless:
+
+| Check | Why |
+|---|---|
+| on `main` | the site is deployed from `main` |
+| working tree clean | otherwise what ships matches no commit |
+| not behind `origin/main` | the stale-checkout failure above |
+| not ahead of `origin/main` | the deployed commit must exist on the remote |
+| `public/` matches `design/` | `public/` is served; a stale build ships old HTML |
+
+Then it deploys, and afterwards compares the homepage the domain returns
+against `public/index.html` in your checkout, so "it deployed" is verified
+rather than assumed.
+
+### Making a push deploy itself
+
+`.github/workflows/deploy.yml` is meant to deploy every push to `main`, and
+would remove the stale-checkout problem entirely. **It has never succeeded** —
+the repo has no GCP credential, so every run dies at the auth step. Until one
+is added, `main` being green says nothing about what the domain is serving.
+
+To fix it, add either:
+
+* **`GCP_SA_KEY`** — the deploy service account's JSON key, under
+  Settings → Secrets and variables → Actions → *New repository secret*; or
+* **`GCP_WORKLOAD_IDENTITY_PROVIDER`** and **`GCP_DEPLOY_SERVICE_ACCOUNT`** —
+  repository *variables*, for keyless auth, which is the better option.
+
+The workflow now fails immediately with an explanation when neither is set,
+instead of failing inside the auth action.
 
 The workflow deliberately passes no `--set-env-vars`. That flag replaces the
 service's entire environment, which would drop the SMTP settings the form
 needs; leaving it off keeps the existing configuration across deploys.
+
+### Line endings
+
+If `git config core.autocrlf` is `true`, the HTML you deploy carries CRLF and
+the served bytes stop matching the repo. Nothing breaks, but it makes "is the
+site on this commit?" harder to answer. `git config core.autocrlf false`
+followed by a fresh checkout keeps them identical. The deploy script warns.
+
+## Changing the site
+
+`design/` is the source; `public/` is what Cloud Run serves. Both are
+committed, which means they can drift — and a drifted `public/` ships old HTML
+without any error. So after **any** change under `design/`:
+
+```bash
+scripts/build.sh          # build en + fr, stage into public/
+git status --short public # review what changed
+```
+
+`scripts/check-build.sh` fails if `public/` is not what `design/` builds. It
+runs in CI on every push, and inside `scripts/deploy.sh` before a deploy.
+
+The build output that lands in `design/` (`design/index.html`, `design/fr/`,
+and so on) is generated and git-ignored; only `public/` is tracked.
 
 ## Domains
 

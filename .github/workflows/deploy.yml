@@ -27,6 +27,27 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
+      # Without this the job dies inside google-github-actions/auth with
+      # "must specify exactly one of workload_identity_provider or
+      # credentials_json", which reads like a workflow bug rather than what it
+      # is: nobody has put a credential in this repo yet. Every run of this
+      # workflow has failed there, which is why deploys happen by hand.
+      - name: Preflight - deploy credentials are configured
+        env:
+          WIF: ${{ vars.GCP_WORKLOAD_IDENTITY_PROVIDER }}
+          SA_KEY: ${{ secrets.GCP_SA_KEY }}
+        run: |
+          if [ -z "$WIF" ] && [ -z "$SA_KEY" ]; then
+            echo "::error title=Deploy is not configured::This repo has no GCP credential, so main cannot deploy itself. Add the service-account JSON as the GCP_SA_KEY secret (Settings -> Secrets and variables -> Actions), or set the GCP_WORKLOAD_IDENTITY_PROVIDER and GCP_DEPLOY_SERVICE_ACCOUNT variables for keyless auth. Until then, deploy from a checkout with scripts/deploy.sh."
+            exit 1
+          fi
+
+      # public/ is what gets served; design/ is what it is built from. A change
+      # to design/ that was never rebuilt would otherwise deploy the old HTML
+      # with nothing failing.
+      - name: Verify public/ matches design/
+        run: scripts/check-build.sh
+
       # Two ways in. Set the GCP_WORKLOAD_IDENTITY_PROVIDER repo variable to use
       # keyless auth; leave it unset and the GCP_SA_KEY secret is used instead.
       - name: Authenticate (Workload Identity Federation)
@@ -64,3 +85,18 @@ jobs:
           gcloud run services describe "$SERVICE" \
             --region "$REGION" --project "$PROJECT_ID" \
             --format='value(status.url)'
+
+      # Assume nothing: compare what the domain returns against the homepage in
+      # this commit. CRLF is stripped from both sides, so a checkout that stores
+      # the file with CRLF does not read as a mismatch.
+      - name: Verify yantrailabs.com is serving this commit
+        run: |
+          sleep 15
+          local_hash=$(tr -d '\r' < public/index.html | sha256sum | cut -d' ' -f1)
+          live_hash=$(curl -fsSL https://yantrailabs.com/ | tr -d '\r' | sha256sum | cut -d' ' -f1)
+          echo "commit  $GITHUB_SHA"
+          echo "local   $local_hash"
+          echo "live    $live_hash"
+          if [ "$local_hash" != "$live_hash" ]; then
+            echo "::warning title=Live site not yet matching::The domain is not serving this commit's homepage. A cache can lag by a minute; re-check before treating it as a failed deploy."
+          fi
