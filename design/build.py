@@ -334,40 +334,87 @@ assert body.count('content-visibility') == 3   # problem/integration/footer keep
 # ------------------------------------------------- research band (homepage)
 # Sits between the integrations grid and the ask, and previews /research: the
 # leak is findable, closing it is the governance problem the studies describe.
-RESEARCH_BAND = '''
-  <div id="research" data-section="research" style="content-visibility: auto; contain-intrinsic-size: auto 700px; scroll-margin-top: 90px; background: #FFFFFF; border-top: 1px solid #E6EAE4; padding: 128px 56px; display: flex; justify-content: center">
-    <div style="width: 100%; max-width: 1160px; display: flex; flex-direction: column">
+# The 3% is the whole argument of the page, so the evidence band evidences
+# *that*, not the state of finance AI in general. The rows are the same six
+# leaks as /what-it-found, generated here so the two cannot drift, and the
+# arithmetic is asserted at build time rather than trusted.
+LEAKS = [
+    ('Rate above contract',                 1.00, 'Pricing Agent'),
+    ('Duplicate bill',                      0.65, 'Duplicate Agent'),
+    ('Quantity billed over goods received', 0.45, '3-way match Agent'),
+    ('Early-payment discount not taken',    0.35, 'Discount Agent'),
+    ('Input tax credit not recovered',      0.30, 'GST Agent'),
+    ('TDS deducted at the wrong rate',      0.25, 'TDS Agent'),
+]
+_TOTAL_PCT = round(sum(p for _, p, _ in LEAKS), 2)
+assert _TOTAL_PCT == 3.00, _TOTAL_PCT          # the headline number, from its parts
+_OUTFLOW_M = 120                                # the example company, in millions
+_WIDEST = max(p for _, p, _ in LEAKS)
+
+_TH = ('padding: 14px 18px; font-size: 12px; font-weight: 600; letter-spacing: 0.1em; '
+       'text-transform: uppercase; color: #767676; border-bottom: 1px solid #E6EAE4; ')
+_TD = ('padding: 16px 18px; font-size: 15px; line-height: 1.4; color: #151414; '
+       'border-bottom: 1px solid #F0F2EE; ')
+_NUM = 'font-variant-numeric: tabular-nums; text-align: right; white-space: nowrap; '
+
+_rows = []
+for _name, _pct, _agent in LEAKS:
+    _rows.append(
+        '<tr>'
+        '<td style="%s">%s</td>'
+        '<td style="%s%s">'
+        '<span style="display: inline-flex; align-items: center; gap: 10px; justify-content: flex-end">'
+        '<span aria-hidden="true" style="display: block; width: %dpx; height: 6px; background: #B2EEDC"></span>'
+        '<span>%.2f%%</span>'
+        '</span>'
+        '</td>'
+        '<td style="%s%sfont-weight: 600">$%.2fM</td>'
+        '<td style="%sfont-size: 14px; color: #5A5A5A">%s</td>'
+        '</tr>'
+        % (_TD, _name, _TD, _NUM, round(56 * _pct / _WIDEST), _pct,
+           _TD, _NUM, _OUTFLOW_M * _pct / 100.0, _TD, _agent))
+
+RESEARCH_BAND = ('''
+  <div id="research" data-section="research" style="content-visibility: auto; contain-intrinsic-size: auto 760px; scroll-margin-top: 90px; background: #FFFFFF; border-top: 1px solid #E6EAE4; padding: 128px 56px; display: flex; justify-content: center">
+    <div style="width: 100%%; max-width: 1160px; display: flex; flex-direction: column">
       <span style="display: inline-flex; align-items: center; gap: 10px; font-size: 12.5px; font-weight: 600; letter-spacing: 0.12em; text-transform: uppercase; color: #5A5A5A">
         <span style="width: 7px; height: 7px; background: #EADC8F; display: block"></span>The evidence
       </span>
-      <h2 data-research-h2="1" style="margin: 30px 0 0; max-width: 860px; font-family: Newsreader, Georgia, 'Times New Roman', serif; font-weight: 300; font-size: 44px; line-height: 1.08; letter-spacing: -0.03em; color: #151414; text-wrap: balance">The leak is not the hard part.<br>The hard part is letting an agent touch <span style="font-style: italic; background: linear-gradient(180deg, transparent 82%, #F9EBA6 82%, #F9EBA6 96%, transparent 96%)">every transaction</span>.</h2>
-      <p style="margin: 26px 0 0; max-width: 620px; font-size: 17px; font-weight: 500; line-height: 1.55; letter-spacing: -0.51px; color: #5A5A5A; text-wrap: pretty">Follow one invoice from the mailbox to the payment run and the 3% is easy to find. Recovering it means checking every transaction before the money moves — and three independent studies say what blocks that is governance and data, not model quality.</p>
+      <h2 data-research-h2="1" style="margin: 30px 0 0; max-width: 860px; font-family: Newsreader, Georgia, 'Times New Roman', serif; font-weight: 300; font-size: 44px; line-height: 1.08; letter-spacing: -0.03em; color: #151414; text-wrap: balance">The 3%% is not one big leak.<br>It is <span style="font-style: italic; background: linear-gradient(180deg, transparent 82%%, #F9EBA6 82%%, #F9EBA6 96%%, transparent 96%%)">six ordinary failures</span>.</h2>
+      <p style="margin: 26px 0 0; max-width: 640px; font-size: 17px; font-weight: 500; line-height: 1.55; letter-spacing: -0.51px; color: #5A5A5A; text-wrap: pretty">Each row is a check that runs on every invoice, not a sample. The percentages are of total outflow, and every one of them is held before the money moves.</p>
 
-      <div data-research-grid="1" style="margin-top: 56px; display: grid; grid-template-columns: repeat(3, 1fr); gap: 1px; background: #E6EAE4; border: 1px solid #E6EAE4">
-        <div style="background: #FFFFFF; padding: 30px 28px; display: flex; flex-direction: column; gap: 12px">
-          <span style="font-family: Newsreader, Georgia, serif; font-weight: 300; font-size: 46px; line-height: 1; letter-spacing: -1.38px; color: #151414; font-variant-numeric: tabular-nums">59%</span>
-          <span style="font-size: 15px; font-weight: 500; line-height: 1.45; letter-spacing: -0.45px; color: #5A5A5A">of finance departments use AI — against 58% a year earlier. A year of attention, one point of movement.</span>
-          <span style="margin-top: auto; padding-top: 8px; font-family: ui-monospace, Menlo, monospace; font-size: 11.5px; letter-spacing: -0.1px; color: #9A9A9A">Gartner · Nov 2025 · n=183</span>
-        </div>
-        <div style="background: #FFFFFF; padding: 30px 28px; display: flex; flex-direction: column; gap: 12px">
-          <span style="font-family: Newsreader, Georgia, serif; font-weight: 300; font-size: 46px; line-height: 1; letter-spacing: -1.38px; color: #151414; font-variant-numeric: tabular-nums">1 in 3</span>
-          <span style="font-size: 15px; font-weight: 500; line-height: 1.45; letter-spacing: -0.45px; color: #5A5A5A">organisations reach maturity on agentic governance and controls. Security and risk is the top barrier to scaling.</span>
-          <span style="margin-top: auto; padding-top: 8px; font-family: ui-monospace, Menlo, monospace; font-size: 11.5px; letter-spacing: -0.1px; color: #9A9A9A">McKinsey · State of AI Trust 2026</span>
-        </div>
-        <div style="background: #FFFFFF; padding: 30px 28px; display: flex; flex-direction: column; gap: 12px">
-          <span style="font-family: Newsreader, Georgia, serif; font-weight: 300; font-size: 46px; line-height: 1; letter-spacing: -1.38px; color: #151414; font-variant-numeric: tabular-nums">3</span>
-          <span style="font-size: 15px; font-weight: 500; line-height: 1.45; letter-spacing: -0.45px; color: #5A5A5A">infrastructure obstacles hold agents back in finance: legacy integration, data architecture, governance frameworks.</span>
-          <span style="margin-top: auto; padding-top: 8px; font-family: ui-monospace, Menlo, monospace; font-size: 11.5px; letter-spacing: -0.1px; color: #9A9A9A">Deloitte · Tech Trends 2026</span>
-        </div>
+      <div data-leak-table="1" style="margin-top: 48px; border: 1px solid #E6EAE4; overflow-x: auto">
+        <table style="width: 100%%; min-width: 680px; border-collapse: collapse; background: #FFFFFF">
+          <thead>
+            <tr>
+              <th style="%(th)stext-align: left">What leaks</th>
+              <th style="%(th)stext-align: right">%% of outflow</th>
+              <th style="%(th)stext-align: right">On $120M</th>
+              <th style="%(th)stext-align: left">Caught by</th>
+            </tr>
+          </thead>
+          <tbody>%(rows)s</tbody>
+          <tfoot>
+            <tr style="background: #FBFCFA">
+              <td style="%(td)sfont-weight: 600; border-bottom: none">Total</td>
+              <td style="%(td)s%(num)sfont-weight: 600; border-bottom: none">3.00%%</td>
+              <td style="%(td)s%(num)sfont-weight: 600; border-bottom: none">$3.60M</td>
+              <td style="%(td)sfont-size: 14px; color: #5A5A5A; border-bottom: none">Every invoice, before it is paid</td>
+            </tr>
+          </tfoot>
+        </table>
       </div>
 
       <div data-research-cta="1" style="margin-top: 40px; display: flex; align-items: center; gap: 16px; flex-wrap: wrap">
-        <a href="/research" style="display: inline-flex; align-items: center; gap: 10px; background: #FFFFFF; border: 1px solid #DCE0DA; border-radius: 10px; padding: 15px 22px; font-size: 15px; font-weight: 600; letter-spacing: -0.45px; color: #151414; text-decoration: none">Follow the money<span>&#8594;</span></a>
-        <span style="font-size: 14px; font-weight: 500; letter-spacing: -0.42px; color: #767676">Where the 3% leaks, which agent closes it, and why batch controls miss it</span>
+        <a href="#book" style="display: inline-flex; align-items: center; gap: 10px; background: #151414; border: 1px solid #151414; border-radius: 10px; padding: 16px 24px; font-size: 15px; font-weight: 600; letter-spacing: -0.45px; color: #FFFFFF; text-decoration: none">Check your savings<span>&#8594;</span></a>
+        <a href="/what-it-found" style="display: inline-flex; align-items: center; gap: 10px; background: #FFFFFF; border: 1px solid #DCE0DA; border-radius: 10px; padding: 15px 22px; font-size: 15px; font-weight: 600; letter-spacing: -0.45px; color: #151414; text-decoration: none">See the full arithmetic<span>&#8594;</span></a>
+        <span style="font-size: 14px; font-weight: 500; letter-spacing: -0.42px; color: #767676">Six leaks, one worked example, and a calculator for your own outflow</span>
       </div>
+
+      <p style="margin: 30px 0 0; max-width: 720px; font-size: 14px; font-weight: 500; line-height: 1.5; color: #9A9A9A">Gartner, McKinsey and Deloitte all name the same blocker, and it is not model quality. <a href="/research" style="color: #767676; text-decoration: underline; text-underline-offset: 3px">Follow the money</a></p>
     </div>
   </div>
-'''
+''' % {'th': _TH, 'td': _TD, 'num': _NUM, 'rows': ''.join(_rows)})
 
 _footer_i = body.index('id="footer"')
 _footer_start = body.rfind('<div ', 0, _footer_i)
