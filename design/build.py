@@ -317,6 +317,16 @@ body = body.replace(marker, nav_toggle + marker, 1)
 body = body.replace('<div data-dc-tpl="12" data-nav-links="1"',
                     '<div id="nav-links" data-dc-tpl="12" data-nav-links="1"', 1)
 
+# Below the disclosure breakpoint the bar cannot hold the brand, the menu
+# button, "Log in" and the demo CTA — in French ("Connexion" + "Demander une
+# démo") that row is wider than a phone and the page scrolls sideways. Log in
+# is the secondary action, so it moves into the menu and the bar keeps the
+# primary one. CSS decides which copy is visible; both are the same link.
+_last_nav_link = '<a data-dc-tpl="17" href="#integration" style="white-space: nowrap;">Integration</a>'
+assert body.count(_last_nav_link) == 1, 'nav integration link'
+body = body.replace(_last_nav_link, _last_nav_link
+    + '<a data-nav-login-m="1" href="#login" style="white-space: nowrap;">Log in</a>', 1)
+
 # `content-visibility: auto` on the two scroll-pinned sections makes Chrome
 # skip painting them when the viewport jumps straight into the middle of the
 # track (deep anchor link, restored scroll position, back/forward). Both are

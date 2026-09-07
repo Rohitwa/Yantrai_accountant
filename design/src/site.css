@@ -604,3 +604,51 @@ img, video { max-width: 100%; }
 [data-lang-switch] [aria-hidden="true"] { color: #DCE0DA; }
 @media (max-width: 1020px) { [data-lang-switch] { margin-right: 4px; } }
 @media (max-width: 420px) { [data-lang-switch] { display: none; } }
+
+/* --- marquee containment ------------------------------------------------ */
+/* Both logo marquees size their own clipping wrapper to the length of the
+   track, so the wrapper is 2,000px wide in the trust band and 1,600px in the
+   integration floor. The document inherits that as its scroll width and the
+   whole page scrolls sideways — worst on a phone, where the track is five
+   times the viewport. Clip to the wrapper so the track slides inside it. */
+[data-trust] > div,
+[data-int-floor] > div {
+  max-width: 100%;
+  overflow-x: hidden;
+}
+
+/* --- nav between the disclosure breakpoint and where it fits ------------- */
+/* The nav is one flex row and the CTA does not shrink, so on a narrow laptop
+   the row is wider than the viewport and the page scrolls sideways. English
+   fits; French does not — "Demander une démo" and "Connexion" are wider than
+   their English counterparts, which is why this only showed on /fr/. Tighten
+   the padding and the gaps over that band rather than collapsing the whole nav
+   into the menu earlier than the design intends. */
+@media (min-width: 1021px) and (max-width: 1400px) {
+  [data-nav] { padding-left: 30px !important; padding-right: 30px !important; gap: 20px !important; }
+  [data-nav-links] { gap: 18px !important; }
+  [data-nav-cta] { gap: 14px !important; }
+}
+
+/* --- touch ergonomics --------------------------------------------------- */
+@media (max-width: 760px) {
+  /* iOS Safari zooms the whole page when a focused control is smaller than
+     16px, and does not zoom back out. On the savings-check form that throws
+     the reader out of the layout halfway through answering. */
+  input, select, textarea { font-size: 16px !important; }
+  /* The calculator's field is already larger; keep its own size. */
+  .calc input { font-size: 17px !important; }
+
+  /* "Log in" and "Book a demo" are 16px-tall text with no padding around
+     them — a small target for a thumb. Grow the hit area, not the type. */
+  [data-nav-cta] a { padding-top: 13px !important; padding-bottom: 13px !important; }
+  [data-nav-toggle] { min-width: 44px !important; min-height: 44px !important; }
+}
+
+/* Log in lives in the bar on desktop and in the menu on small screens, where
+   the bar has no room for it beside the demo CTA. Only one copy ever shows. */
+[data-nav-login-m] { display: none; }
+@media (max-width: 1020px) {
+  [data-nav-login-m] { display: block; }
+  [data-nav-cta] a[href*="workspace"] { display: none !important; }
+}
