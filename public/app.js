@@ -131,14 +131,41 @@
     if (typeof ResizeObserver !== 'undefined') new ResizeObserver(measure).observe(ringEl);
   }
 
+  /* ------------------------------------------------------------- nav size */
+  // The pinned panes have to sit below the sticky nav, and only the browser
+  // knows how tall it is once the fonts have settled. Publish it for the CSS.
+  var navSizeEl = $('[data-nav]');
+  function publishNavHeight() {
+    if (navSizeEl) {
+      document.documentElement.style.setProperty(
+        '--nav-h', Math.round(navSizeEl.getBoundingClientRect().height) + 'px');
+    }
+  }
+  publishNavHeight();
+  if (document.fonts && document.fonts.ready) document.fonts.ready.then(publishNavHeight);
+
   /* ---------------------------------------------------------- progress */
+
+  // A pinned pane runs from its sticky offset to its own height, which is no
+  // longer the full viewport now that it starts below the nav. Deriving the
+  // span from the pane keeps the animation finishing exactly when it unpins.
+  function paneTop(pane) {
+    if (pane.__pinTop === undefined || pane.__pinW !== window.innerWidth) {
+      pane.__pinTop = parseFloat(getComputedStyle(pane).top) || 0;
+      pane.__pinW = window.innerWidth;
+    }
+    return pane.__pinTop;
+  }
 
   function progress(el) {
     if (!el) return 0;
     var r = el.getBoundingClientRect();
-    var span = r.height - (window.innerHeight || 800);
-    if (span <= 0) return r.top <= 0 ? 1 : 0;
-    return clamp(-r.top / span, 0, 1);
+    var pane = el.firstElementChild;
+    var top = pane ? paneTop(pane) : 0;
+    var paneH = pane ? pane.offsetHeight : (window.innerHeight || 800);
+    var span = r.height - paneH;
+    if (span <= 0) return r.top <= top ? 1 : 0;
+    return clamp((top - r.top) / span, 0, 1);
   }
 
   /* ------------------------------------------------------- agents render */
@@ -270,7 +297,8 @@
   }
 
   window.addEventListener('scroll', onScroll, { passive: true });
-  window.addEventListener('resize', onScroll, { passive: true });
+  window.addEventListener('resize', function () { publishNavHeight(); onScroll(); },
+                          { passive: true });
 
   /* ---------------------------------------------------------- trust band */
 
