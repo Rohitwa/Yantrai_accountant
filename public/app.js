@@ -564,7 +564,7 @@
     'payment processing': '/workflows/payment-processing',
     'what it found': '/what-it-found', 'security': '/security',
     // still on-page anchors
-    'how aifa works': '/#how', 'implementation': '/#integration',
+    'how ohm works': '/#how', 'implementation': '/#integration',
     'support': '/#book', 'contact': '/#book',
     'anything with an export': '/#integration',
     'payments': '/agents', 'msme': '/agents',

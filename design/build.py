@@ -36,7 +36,7 @@ LOCALES = ('en', 'fr')
 assert LOCALE in LOCALES, LOCALE
 PAGE_PREFIX = '' if LOCALE == 'en' else '/' + LOCALE
 OUT = ROOT if LOCALE == 'en' else os.path.join(ROOT, LOCALE)
-SHARED = ('/assets/', '/site.css', '/page.css', '/app.js', '/api/',
+SHARED = ('/assets/', '/brand/', '/favicon.ico', '/apple-touch-icon.png', '/site.css', '/page.css', '/app.js', '/api/',
           '/robots.txt', '/sitemap.xml')
 
 LANG_NAMES = {'en': 'English', 'fr': 'Français'}
@@ -495,28 +495,30 @@ assert body.count('>\u20b9</span>') == 4, body.count('>\u20b9</span>')
 body = body.replace('>\u20b9</span>', '>%s</span>' % _SYM)
 
 # ------------------------------------------------------------ brand lockup
-# AiFA leads; YantrAI becomes the endorsement line. The mark is d4-seal from
-# the brand kit (~/Desktop/memory/aifa_brand), not a redraw.
+# OHM leads; YantrAI becomes the endorsement line. The wordmark is
+# public/brand/ohm/ohm-wordmark.svg from the OHM logo kit, used as-is: never
+# retyped, redrawn or recoloured. 33px tall is 97px wide, just over the kit's
+# 96px minimum. Clear space is the H crossbar (~7px at this size); the SVG
+# carries ~2px of it. "by YantrAI" is stacked under the wordmark, right-aligned
+# to the M (the 2px margin cancels the SVG's own right padding); the 5px gap
+# plus the ~3px the SVG keeps under the baseline makes up the clear space.
+# site.css trims the bar's vertical padding so the header keeps its height.
 _nav_logo = re.search(
     r'<img[^>]*src="assets/yantrai_logo\.png"[^>]*height: 22px[^>]*>', body)
 assert _nav_logo, 'nav logo'
 body = body.replace(_nav_logo.group(0), (
-    '<a href="/" data-brand="1" style="display: flex; align-items: center; gap: 11px; '
-    'text-decoration: none;">'
-    '<img src="assets/aifa-mark.svg" alt="" width="30" height="30" '
-    'style="height: 30px; width: 30px; display: block;">'
-    '<span style="display: flex; flex-direction: column; line-height: 1;">'
-    '<span style="font-size: 19px; font-weight: 700; letter-spacing: -0.022em; '
-    'color: #151414;">AiFA</span>'
-    '<span data-brand-by="1" style="margin-top: 3px; font-size: 10.5px; font-weight: 500; '
-    'letter-spacing: 0.02em; color: #9A9A9A;">by YantrAI</span>'
-    '</span></a>'))
+    '<a href="/" data-brand="1" style="display: flex; flex-direction: column; '
+    'align-items: flex-end; gap: 5px; text-decoration: none;">'
+    '<img src="%sbrand/ohm/ohm-wordmark.svg" alt="OHM" width="97" height="33" '
+    'style="height: 33px; width: auto; display: block;">'
+    '<span data-brand-by="1" style="margin-right: 2px; font-size: 10.5px; font-weight: 500; '
+    'letter-spacing: 0.02em; line-height: 1; white-space: nowrap; color: #9A9A9A;">by YantrAI</span>'
+    '</a>') % ASSET_BASE)
 
-# the tagline block carried a duplicate "AiFA"; the lockup owns the name now
-_old_tag = re.search(
-    r'<span[^>]*font-size: 15px; font-weight: 700; letter-spacing: -0\.35px[^>]*>AiFA</span>',
-    body)
-assert _old_tag, 'nav tagline AiFA'
+# the tagline beside the lockup (name + descriptor) is dropped:
+# the header is the OHM wordmark and its endorsement line, nothing else
+_old_tag = re.search(r'<span[^>]*data-nav-tagline="1"[^>]*>.*?</span>\s*</span>', body, re.S)
+assert _old_tag, 'nav tagline'
 body = body.replace(_old_tag.group(0), '')
 
 # the dark tile at the centre of the integrations grid led with YantrAI
@@ -567,7 +569,7 @@ LINK_MAP = {
     'security': '/security',
     'contact': '/#book',
     'support': '/#book',
-    'how aifa works': '/#how',
+    'how ohm works': '/#how',
     'what it found': '/what-it-found',
     'implementation': '/integrations',
 }
@@ -726,20 +728,20 @@ NAV = extract_block(body, 'data-nav="1"')
 FOOTER = extract_block(body, 'data-footer="1"')
 
 PAGES = [
-    ('what-it-found', 'What it found — how $3.6 million comes out of $120 million | AiFA',
+    ('what-it-found', 'What it found — how $3.6 million comes out of $120 million | OHM',
      'A $120 million company loses about 3% of outflow across six ordinary failures. '
      'Here is the breakdown, and what each one is worth.'),
-    ('security', 'Security — the PRISM-ES stack | AiFA',
+    ('security', 'Security — the PRISM-ES stack | OHM',
      'Where your data sits, who can see it, what is retained, and what trains on it. '
      'Seven layers, read bottom-up.'),
-    ('research', 'Follow the money — where 3% of outflow leaks, and how it comes back | AiFA',
+    ('research', 'Follow the money — where 3% of outflow leaks, and how it comes back | OHM',
      'One invoice, followed from the mailbox to the payment run: where money escapes at '
      'each step, why batch controls miss it, and what changes when every transaction is '
      'checked before the money moves.'),
-    ('about', 'About YantrAI Labs | AiFA',
+    ('about', 'About YantrAI Labs | OHM',
      'We build AI teams for the work people can only ever spot-check. Vision, mission, '
      'what we believe, and who we are.'),
-    ('careers', 'Careers — tell us what you\'d build | AiFA',
+    ('careers', 'Careers — tell us what you\'d build | OHM',
      'No posted roles. We hire people we cannot not hire. What the work is like, and a '
      'form that goes straight to a founder.'),
 ]
@@ -839,7 +841,7 @@ def render_agent(a):
 
     others = [x for x in AGENTS if x['slug'] != a['slug']][:3]
     return """<div class="wrap">
-  <div class="crumb"><a href="/">AiFA</a> · <a href="/agents">The AI team</a> · %(name)s</div>
+  <div class="crumb"><a href="/">OHM</a> · <a href="/agents">The AI team</a> · %(name)s</div>
   <div class="masthead">
     <span class="eyebrow %(accent)s"><i></i>%(workflow_name)s</span>
     <h1 class="display">%(name)s</h1>
@@ -942,7 +944,7 @@ def render_agents_index():
             '    <div class="cards">\n      %s\n    </div>' % (wf, label, cards))
 
     return """<div class="wrap">
-  <div class="crumb"><a href="/">AiFA</a> · The AI team</div>
+  <div class="crumb"><a href="/">OHM</a> · The AI team</div>
   <div class="masthead">
     <span class="eyebrow iris"><i></i>The AI team</span>
     <h1 class="display">Every agent is one<br>absolute <em class="mark">commitment</em>.</h1>
@@ -974,14 +976,14 @@ for a in AGENTS:
         continue
     html_out = build_content_page(
         'agents/' + a['slug'],
-        '%s — %s | AiFA' % (a['name'], a['statement'].rstrip('.')),
+        '%s — %s | OHM' % (a['name'], a['statement'].rstrip('.')),
         a['statement'] + ' ' + a['mechanism'][:150],
         render_agent(a), NAV, FOOTER)
     with open(out_path('agents', a['slug'], 'index.html'), 'w', encoding='utf-8') as f:
         f.write(html_out)
     page_count += 1
 
-idx = has_translation('agents') and build_content_page('agents', 'The AI team | AiFA',
+idx = has_translation('agents') and build_content_page('agents', 'The AI team | OHM',
                          'Every agent is one absolute commitment, enforced on every transaction.',
                          render_agents_index(), NAV, FOOTER)
 if idx:
@@ -1001,7 +1003,7 @@ def render_workflow(w):
         rows.append('          <tr><td>%s</td><td>%s</td></tr>' % (agent_link(slug), does))
     others = [x for x in WORKFLOW_PAGES if x['slug'] != w['slug']]
     return """<div class="wrap">
-  <div class="crumb"><a href="/">AiFA</a> · Workflows · %(name)s</div>
+  <div class="crumb"><a href="/">OHM</a> · Workflows · %(name)s</div>
   <div class="masthead">
     <span class="eyebrow %(accent)s"><i></i>%(name)s</span>
     <h1 class="display">%(headline)s</h1>
@@ -1087,7 +1089,7 @@ for w in WORKFLOW_PAGES:
         continue
     html_out = build_content_page(
         'workflows/' + w['slug'],
-        '%s — %s | AiFA' % (w['name'], w['headline'].rstrip('.')),
+        '%s — %s | OHM' % (w['name'], w['headline'].rstrip('.')),
         w['lede'][:200],
         render_workflow(w), NAV, FOOTER)
     with open(out_path('workflows', w['slug'], 'index.html'), 'w', encoding='utf-8') as f:
@@ -1103,7 +1105,7 @@ INTEGRATIONS = json.loads(read_localised('pages', 'integrations.json'))
 def render_integration(x):
     others = [o for o in INTEGRATIONS if o['slug'] != x['slug']][:5]
     return """<div class="wrap">
-  <div class="crumb"><a href="/">AiFA</a> · <a href="/integrations">Integrations</a> · %(name)s</div>
+  <div class="crumb"><a href="/">OHM</a> · <a href="/integrations">Integrations</a> · %(name)s</div>
   <div class="masthead">
     <span class="eyebrow %(accent)s"><i></i>%(name)s</span>
     <h1 class="display">%(headline)s</h1>
@@ -1113,7 +1115,7 @@ def render_integration(x):
 
 <section class="band">
   <div class="wrap wrap-wide">
-    <h2 class="sec">What AiFA reads, what it writes back</h2>
+    <h2 class="sec">What OHM reads, what it writes back</h2>
     <div class="cards">
       <div>
         <h3>Reads from %(name)s</h3>
@@ -1180,11 +1182,11 @@ def render_integrations_index():
         '<div><h3><a href="/integrations/%s" style="color:inherit;text-decoration:none">%s</a></h3>'
         '<p>%s</p></div>' % (x['slug'], x['name'], x['headline']) for x in INTEGRATIONS)
     return """<div class="wrap">
-  <div class="crumb"><a href="/">AiFA</a> · Integrations</div>
+  <div class="crumb"><a href="/">OHM</a> · Integrations</div>
   <div class="masthead">
     <span class="eyebrow"><i></i>Integrations</span>
     <h1 class="display">Your ERP stays<br>the system of <em class="mark">record</em>.</h1>
-    <p class="lede">AiFA reads from the system that already holds your books and posts outcomes back into it. There is no migration, no second ledger, and nothing to reconcile between the two.</p>
+    <p class="lede">OHM reads from the system that already holds your books and posts outcomes back into it. There is no migration, no second ledger, and nothing to reconcile between the two.</p>
   </div>
 </div>
 
@@ -1219,14 +1221,14 @@ for x in INTEGRATIONS:
         continue
     html_out = build_content_page(
         'integrations/' + x['slug'],
-        '%s + AiFA — %s | AiFA' % (x['name'], x['headline'].rstrip('.')),
+        '%s + OHM — %s | OHM' % (x['name'], x['headline'].rstrip('.')),
         x['lede'][:200], render_integration(x), NAV, FOOTER)
     with open(out_path('integrations', x['slug'], 'index.html'), 'w', encoding='utf-8') as f:
         f.write(html_out)
     page_count += 1
 
-_idx = has_translation('integrations') and build_content_page('integrations', 'Integrations — your ERP stays the system of record | AiFA',
-                          'AiFA reads from the ERP that already holds your books and posts back into it. '
+_idx = has_translation('integrations') and build_content_page('integrations', 'Integrations — your ERP stays the system of record | OHM',
+                          'OHM reads from the ERP that already holds your books and posts back into it. '
                           'Tally, SAP, Oracle, NetSuite, Zoho Books, QuickBooks, Sage, Odoo.',
                           render_integrations_index(), NAV, FOOTER)
 if _idx:
@@ -1245,7 +1247,7 @@ def render_role(r):
     asks = '\n'.join('      <div class="step"><div class="n">%02d</div><div><h3>%s</h3></div></div>'
                      % (i + 1, q) for i, q in enumerate(r['asks']))
     return """<div class="wrap">
-  <div class="crumb"><a href="/">AiFA</a> · <a href="/for">Roles</a> · %(name)s</div>
+  <div class="crumb"><a href="/">OHM</a> · <a href="/for">Roles</a> · %(name)s</div>
   <div class="masthead">
     <span class="eyebrow %(accent)s"><i></i>For the %(name)s</span>
     <h1 class="display">%(headline)s</h1>
@@ -1309,7 +1311,7 @@ def render_roles_index():
         '<div><h3><a href="/for/%s" style="color:inherit;text-decoration:none">%s</a></h3>'
         '<p>%s</p></div>' % (r['slug'], r['name'], r['headline']) for r in ROLES)
     return """<div class="wrap">
-  <div class="crumb"><a href="/">AiFA</a> · Roles</div>
+  <div class="crumb"><a href="/">OHM</a> · Roles</div>
   <div class="masthead">
     <span class="eyebrow rose"><i></i>By role</span>
     <h1 class="display">The same product,<br>argued for the person<br>who has to <em class="mark">sign</em>.</h1>
@@ -1343,15 +1345,15 @@ for r in ROLES:
         continue
     html_out = build_content_page(
         'for/' + r['slug'],
-        'AiFA for the %s — %s | AiFA' % (r['name'], r['headline'].rstrip('.')),
+        'OHM for the %s — %s | OHM' % (r['name'], r['headline'].rstrip('.')),
         r['lede'][:200], render_role(r), NAV, FOOTER)
     with open(out_path('for', r['slug'], 'index.html'), 'w', encoding='utf-8') as f:
         f.write(html_out)
     page_count += 1
 
-_ridx = has_translation('for') and build_content_page('for', 'AiFA by role — CFO, Controller, AP Lead | AiFA',
+_ridx = has_translation('for') and build_content_page('for', 'OHM by role — CFO, Controller, AP Lead | OHM',
                            'Same six leaks, same seventeen agents, different reason to care. '
-                           'AiFA for the CFO, controller, head of finance, AP lead, treasurer and internal audit.',
+                           'OHM for the CFO, controller, head of finance, AP lead, treasurer and internal audit.',
                            render_roles_index(), NAV, FOOTER)
 if _ridx:
     with open(out_path('for', 'index.html'), 'w', encoding='utf-8') as f:

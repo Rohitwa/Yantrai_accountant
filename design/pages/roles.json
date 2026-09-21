@@ -51,7 +51,7 @@
    "Can I see why it decided something, months later?",
    "What happens when it cannot classify an entry?"
   ],
-  "answer": "No second ledger — your ERP stays authoritative and AiFA posts into it. Every decision leaves an immutable trail of what was checked, what was found and who released it. Unclassifiable entries queue with a reason, they do not guess."
+  "answer": "No second ledger — your ERP stays authoritative and OHM posts into it. Every decision leaves an immutable trail of what was checked, what was found and who released it. Unclassifiable entries queue with a reason, they do not guess."
  },
  {
   "slug": "head-of-finance",

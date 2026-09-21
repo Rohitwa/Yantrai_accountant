@@ -5,7 +5,7 @@
     "accent": "mint",
     "logo": "logo_tally.png",
     "headline": "The books most of Indian mid-market actually runs on.",
-    "lede": "TallyPrime and Tally.ERP 9 hold the ledger for a very large share of Indian companies — including plenty with a global ERP sitting above them. AiFA reads what Tally already holds and posts back into it, without asking anyone to leave Tally.",
+    "lede": "TallyPrime and Tally.ERP 9 hold the ledger for a very large share of Indian companies — including plenty with a global ERP sitting above them. OHM reads what Tally already holds and posts back into it, without asking anyone to leave Tally.",
     "reads": [
       "Purchase register and the daybook, as XML or Excel export",
       "Ledger vouchers and outstanding payables by party",
@@ -17,7 +17,7 @@
       "TDS and GST detail on the voucher, not as a later adjustment",
       "The check trail against each entry, so the finding stays attached to the voucher"
     ],
-    "never": "Tally stays your system of record. AiFA does not hold your books, does not become a second ledger, and does not need Tally replaced or upgraded to work.",
+    "never": "Tally stays your system of record. OHM does not hold your books, does not become a second ledger, and does not need Tally replaced or upgraded to work.",
     "start": "An export your team already produces — a purchase register for a period is enough to run the savings check. A live connection over Tally's XML interface comes later, when you want it.",
     "note": "Tally is where the India-specific work matters most: GSTIN validity, filing status before credit, TDS section and rate, and MSME clocks all sit against the party ledger, and are exactly what generic finance AI does not model."
   },
@@ -39,7 +39,7 @@
       "Blocks and holds through the same statuses your team already works with",
       "The audit trail, immutable and re-readable months later"
     ],
-    "never": "SAP remains authoritative. AiFA does not re-post your ledger elsewhere, and there is no shadow book to reconcile.",
+    "never": "SAP remains authoritative. OHM does not re-post your ledger elsewhere, and there is no shadow book to reconcile.",
     "start": "Standard extracts from the reports above, for a 90-day window. Nothing needs to be built, and no basis work is required to find out whether there is money in it.",
     "note": "Three-way match tolerance in SAP is configured once and applied uniformly. Most of what leaks sits in what tolerance permits — a rate above contract inside tolerance still clears."
   },
@@ -61,7 +61,7 @@
       "Journal entries balanced and supported",
       "The check history against the transaction"
     ],
-    "never": "Oracle stays the system of record. AiFA reads from it and posts back to it.",
+    "never": "Oracle stays the system of record. OHM reads from it and posts back to it.",
     "start": "A standard AP invoice and PO extract for the last 90 days.",
     "note": "Where a group runs Oracle at the centre and something else at the subsidiaries, the checks run the same way on both — the agents are not tied to one ERP's schema."
   },
@@ -120,7 +120,7 @@
     "writes": ["Findings and holds against the bill", "Balanced entries with support attached", "An audit trail per decision"],
     "never": "QuickBooks stays the system of record.",
     "start": "A bills export for a 90-day window.",
-    "note": "Where a group runs QuickBooks alongside Tally or an Indian ERP, AiFA checks both the same way rather than requiring one to win."
+    "note": "Where a group runs QuickBooks alongside Tally or an Indian ERP, OHM checks both the same way rather than requiring one to win."
   },
   {
     "slug": "sage",

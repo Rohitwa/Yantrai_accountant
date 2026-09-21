@@ -1,17 +1,17 @@
 {
- "AiFA": "AiFA",
- "AI Teams for Finance": "Des équipes d'IA pour la finance",
+ "OHM": "OHM",
+ "Your AI Assistant for Finance": "Votre assistant IA pour la finance",
  "How it works": "Fonctionnement",
  "The problem": "Le problème",
  "The metrics": "Les résultats",
  "Integration": "Intégration",
  "Log in": "Connexion",
  "Book a demo": "Demander une démo",
- "It reads, matches, checks, closes and pays — inside the ERP you already run.": "Elle lit, rapproche, contrôle, clôture et paie — dans l'ERP que vous utilisez déjà.",
+ "It reads, matches, checks, closes and pays — inside the ERP you already run.": "Il lit, rapproche, contrôle, clôture et paie — dans l'ERP que vous utilisez déjà.",
  "Check your savings now": "Estimez vos économies",
- "AiFA — AI Teams for Finance": "AiFA — Des équipes d'IA pour la finance",
- "How AiFA works": "Comment fonctionne AiFA",
- "AiFA · AI Team for Finance": "AiFA · Équipe d'IA pour la finance",
+ "OHM — Your AI Assistant for Finance": "OHM — Votre assistant IA pour la finance",
+ "How OHM works": "Comment fonctionne OHM",
+ "OHM · Your AI Assistant for Finance": "OHM · Votre assistant IA pour la finance",
  "Hover to play": "Survolez pour lancer",
  "Sound off": "Son coupé",
  "Trusted by large, complex companies.": "La confiance de grands groupes complexes.",
@@ -82,7 +82,7 @@
  "Works where your data already lives. Live on your stack in": "Fonctionne là où vivent déjà vos données. En production sur votre socle en",
  "weeks": "quelques semaines",
  "— not quarters.": "— pas en trimestres.",
- "AiFA reads from the systems your team already uses — the ERP, the ledger, the mailbox invoices arrive in — and posts outcomes back to the books finance trusts.": "AiFA lit dans les systèmes que votre équipe utilise déjà — l'ERP, le grand livre, la boîte mail où arrivent les factures — et réinscrit les résultats dans les comptes auxquels la finance se fie.",
+ "OHM reads from the systems your team already uses — the ERP, the ledger, the mailbox invoices arrive in — and posts outcomes back to the books finance trusts.": "OHM lit dans les systèmes que votre équipe utilise déjà — l'ERP, le grand livre, la boîte mail où arrivent les factures — et réinscrit les résultats dans les comptes auxquels la finance se fie.",
  "Start with an extract your team already produces. No connector, no project. Connect live when you are ready.": "Commencez par un export que votre équipe produit déjà. Sans connecteur, sans projet. La connexion en direct viendra quand vous le voudrez.",
  "anything with an export": "tout système avec un export",
  "See how much outflow you're leaving on the": "Découvrez ce que vos décaissements laissent sur la",
@@ -91,7 +91,7 @@
  "How the savings check works": "Comment se déroule le contrôle des économies",
  "One export your team already produces — about a minute of your time": "Un export que votre équipe produit déjà — environ une minute de votre temps",
  "Findings within one working day — with a savings estimate calibrated to your spend and your ERP": "Les constats sous un jour ouvré — avec une estimation calibrée sur vos dépenses et votre ERP",
- "· AI Teams for Finance": "· Des équipes d'IA pour la finance",
+ "· Your AI Assistant for Finance": "· Votre assistant IA pour la finance",
  "507, DLF Corporate Green": "507, DLF Corporate Green",
  "Sector 74A, Gurgaon, 122004": "Secteur 74A, Gurgaon, 122004, Inde",
  "rohit@yantrailabs.com": "rohit@yantrailabs.com",
@@ -169,26 +169,26 @@
  "TDS Agent": "Agent TDS",
  "MSME Agent": "Agent MSME",
  "_meta": {
-  "title": "AiFA — Des équipes d'IA pour la finance | YantrAI",
-  "description": "AiFA est une équipe d'IA pour la finance. Elle lit, rapproche, contrôle, clôture et paie — dans l'ERP que vous utilisez déjà. 100 % des décaissements contrôlés, jusqu'à 3 % récupérés.",
-  "og_title": "AiFA — Des équipes d'IA pour la finance",
-  "og_description": "Une entreprise de 120 M$ de chiffre d'affaires a économisé 3,6 M$ avec AiFA. Elle lit, rapproche, contrôle, clôture et paie, dans l'ERP que vous utilisez déjà."
+  "title": "OHM — Votre assistant IA pour la finance | YantrAI",
+  "description": "OHM est votre assistant IA pour la finance. Il lit, rapproche, contrôle, clôture et paie — dans l'ERP que vous utilisez déjà. 100 % des décaissements contrôlés, jusqu'à 3 % récupérés.",
+  "og_title": "OHM — Votre assistant IA pour la finance",
+  "og_description": "Une entreprise de 120 M$ de chiffre d'affaires a économisé 3,6 M$ avec OHM. Il lit, rapproche, contrôle, clôture et paie, dans l'ERP que vous utilisez déjà."
  },
  "_pages": {
   "what-it-found": [
-   "Ce que les contrôles trouvent — d'où viennent les 3 % | AiFA",
+   "Ce que les contrôles trouvent — d'où viennent les 3 % | OHM",
    "Une entreprise perd environ 3 % de ses décaissements à travers six défaillances ordinaires. Voici le détail, et ce que chacune représente."
   ],
   "security": [
-   "Sécurité — la pile PRISM-ES | AiFA",
+   "Sécurité — la pile PRISM-ES | OHM",
    "Où sont hébergées vos données, qui peut les voir, ce qui est conservé et ce qui entraîne un modèle. Sept couches, à lire de bas en haut."
   ],
   "about": [
-   "À propos de YantrAI Labs | AiFA",
+   "À propos de YantrAI Labs | OHM",
    "Nous construisons des équipes d'IA pour le travail que l'on ne peut que sonder par échantillon. Vision, mission, ce que nous croyons, et qui nous sommes."
   ],
   "careers": [
-   "Carrières — dites-nous ce que vous construiriez | AiFA",
+   "Carrières — dites-nous ce que vous construiriez | OHM",
    "Pas d'offres publiées. Nous recrutons les gens que nous ne pouvons pas ne pas recruter. Le travail, et un formulaire qui arrive chez un fondateur."
   ]
  },

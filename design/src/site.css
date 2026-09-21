@@ -35,11 +35,20 @@ img, video { max-width: 100%; }
 
 /* --- Layer 2: small screens --------------------------------------------- */
 
+/* Nav: the OHM lockup (wordmark with "by YantrAI" under it) is 48.5px tall,
+   against 33px for the old one. Trimming the bar's vertical padding keeps the
+   header the height it was at every width: 65.8px here, ~69px below 1020px. */
+[data-nav] { padding-top: 8px !important; padding-bottom: 8px !important; }
+
 /* Nav: below 1020px the design hides the link row. Give it a disclosure. */
 [data-nav-toggle] { display: none; }
 
 @media (max-width: 1020px) {
-  [data-nav] { padding: 14px 20px !important; gap: 12px !important; }
+  [data-nav] { padding: 10px 20px !important; gap: 12px !important; }
+  /* The menu button sits at the far right, after the demo CTA: the brand
+     takes the free space, so everything after it packs to the right. */
+  [data-nav] > :first-child { margin-right: auto; }
+  [data-nav-toggle] { order: 1; }
   [data-nav-toggle] {
     display: inline-flex; align-items: center; justify-content: center;
     width: 40px; height: 40px; padding: 0;
@@ -68,7 +77,7 @@ img, video { max-width: 100%; }
 }
 
 @media (max-width: 760px) {
-  [data-nav] { padding: 12px 16px !important; }
+  [data-nav] { padding: 10px 16px !important; }
   [data-nav-cta] { gap: 14px !important; }
 
   /* Hero */

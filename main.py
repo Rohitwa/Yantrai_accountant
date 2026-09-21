@@ -50,9 +50,9 @@ LANG_COOKIE = "__session"
 # a year: the choice is a preference, not a session
 LANG_COOKIE_MAX_AGE = 60 * 60 * 24 * 365
 # paths that are locale-neutral and must never be redirected
-LOCALE_EXEMPT_PREFIXES = ("/api/", "/assets/")
+LOCALE_EXEMPT_PREFIXES = ("/api/", "/assets/", "/brand/")
 LOCALE_EXEMPT_PATHS = ("/site.css", "/page.css", "/app.js",
-                       "/robots.txt", "/sitemap.xml", "/_status", "/favicon.ico")
+                       "/robots.txt", "/sitemap.xml", "/_status", "/favicon.ico", "/apple-touch-icon.png")
 
 
 def _path_locale(path):
