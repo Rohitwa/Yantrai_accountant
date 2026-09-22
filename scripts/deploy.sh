@@ -65,18 +65,20 @@ echo
 
 if $DRY_RUN; then
   echo "--dry-run: checks passed. Would run:"
-  echo "  gcloud run deploy $SERVICE --source . --region $REGION --project $PROJECT --platform managed --allow-unauthenticated --quiet"
+  echo "  gcloud run deploy $SERVICE --source . --region $REGION --project $PROJECT --platform managed --allow-unauthenticated --update-env-vars GIT_COMMIT=${SHA:0:7} --quiet"
   exit 0
 fi
 
 # No --set-env-vars on purpose: that flag replaces the service's whole
-# environment and would drop the SMTP settings the savings-check form needs.
+# environment and would drop the SMTP and intake settings. --update-env-vars
+# changes only GIT_COMMIT, which /_status and the footer report.
 gcloud run deploy "$SERVICE" \
   --source . \
   --region "$REGION" \
   --project "$PROJECT" \
   --platform managed \
   --allow-unauthenticated \
+  --update-env-vars "GIT_COMMIT=${SHA:0:7}" \
   --quiet
 
 # 6. prove the live site is serving this commit, rather than assuming it
@@ -87,6 +89,11 @@ sha_cmd() { if command -v sha256sum >/dev/null; then sha256sum; else shasum -a 2
 # and that would otherwise differ from the repo byte-for-byte for no reason.
 local_hash=$(tr -d '\r' < public/index.html | sha_cmd | cut -d' ' -f1)
 live_hash=$(curl -fsSL "$SITE" | tr -d '\r' | sha_cmd | cut -d' ' -f1)
+
+live_commit=$(curl -fsSL "${SITE%/}/_status" | grep -o '"commit":"[0-9a-f]*"' | cut -d'"' -f4)
+if [ "$live_commit" != "${SHA:0:7}" ]; then
+  echo "warning: /_status reports commit '${live_commit:-none}', not ${SHA:0:7}." >&2
+fi
 
 if [ "$local_hash" = "$live_hash" ]; then
   echo "OK — $SITE is serving commit $SHA"

@@ -4,6 +4,7 @@ Everything served to the browser lives in public/. This file only routes and
 handles the form; nothing else in the repo is reachable over HTTP.
 """
 import os
+import re
 import smtplib
 import threading
 from email.message import EmailMessage
@@ -464,7 +465,18 @@ def status():
         "mail": bool(os.getenv("SMTP_PASS")),
         "db": intake.configured(),
         "intake_forms": sorted(intake.forms()) if intake.configured() else [],
+        "version": _version(),
     })
+
+
+def _version():
+    """What is running: the commit scripts/deploy.sh recorded (GIT_COMMIT) and
+    the Cloud Run revision (K_REVISION, set by Cloud Run). The footer shows it."""
+    commit = (os.getenv("GIT_COMMIT") or "").strip().lower()
+    return {
+        "commit": commit if re.fullmatch(r"[0-9a-f]{7,40}", commit) else None,
+        "revision": (os.getenv("K_REVISION") or "").strip()[:100] or None,
+    }
 
 
 if __name__ == "__main__":

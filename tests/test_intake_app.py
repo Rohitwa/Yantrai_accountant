@@ -657,9 +657,31 @@ def test_cv_uploads_wait_for_a_free_slot(client, mail, db, env, monkeypatch):
 
 # --- status --------------------------------------------------------------------------------------------
 def test_status_reports_configuration_only(client, env):
-    assert client.get("/_status").get_json() == {"ok": True, "mail": False, "db": False, "intake_forms": []}
+    assert client.get("/_status").get_json() == {"ok": True, "mail": False, "db": False, "intake_forms": [],
+                                                 "version": {"commit": None, "revision": None}}
     env.setenv("WEBSITE_DB_URL", DSN)
     assert client.get("/_status").get_json()["intake_forms"] == ["savings_check"]
+
+
+def test_status_reports_the_running_version(client, env):
+    env.setenv("GIT_COMMIT", "43E2F07")
+    env.setenv("K_REVISION", "yantrai-website-00026-6gz")
+    assert client.get("/_status").get_json()["version"] == {"commit": "43e2f07",
+                                                           "revision": "yantrai-website-00026-6gz"}
+    env.setenv("GIT_COMMIT", "<script>")                   # only a hex commit is ever reported
+    assert client.get("/_status").get_json()["version"]["commit"] is None
+
+
+def test_every_page_has_the_version_slot_in_its_footer():
+    pages = []
+    for base, _, files in os.walk(os.path.join(ROOT, "public")):
+        pages += [os.path.join(base, f) for f in files if f == "index.html"]
+    assert len(pages) > 10
+    for page in pages:
+        html = open(page, encoding="utf-8").read()
+        assert html.count('<span data-site-version="1" hidden></span></span>') == 1, page
+    app_js = open(os.path.join(ROOT, "public", "app.js"), encoding="utf-8").read()
+    assert "fetch('/_status'" in app_js and "data-site-version" in app_js
 
 
 # --- the code agrees with the table ------------------------------------------------------------------

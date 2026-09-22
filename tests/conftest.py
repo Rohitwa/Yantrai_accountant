@@ -10,7 +10,7 @@ if ROOT not in sys.path:
 # everything that changes how the forms behave: cleared for every test, so a
 # developer's shell (a real SMTP_PASS, say) never changes a result
 FORM_ENV = ("WEBSITE_DB_URL", "WEBSITE_DB_SSLROOTCERT", "INTAKE_FORMS", "NOTIFY_EMAIL", "IP_HASH_SALT",
-            "TRUSTED_XFF_HOPS", "INTAKE_IP_LIMIT", "K_REVISION",
+            "TRUSTED_XFF_HOPS", "INTAKE_IP_LIMIT", "K_REVISION", "GIT_COMMIT",
             "SMTP_HOST", "SMTP_PORT", "SMTP_USER", "SMTP_PASS", "DEMO_TO_EMAIL", "DEMO_FROM_EMAIL")
 
 

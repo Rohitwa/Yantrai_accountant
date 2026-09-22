@@ -658,6 +658,15 @@ body = re.sub(r'\n[ \t]*\n[ \t]*\n+', '\n\n', body)
 # semantic landmarks, cheap and safe: nav / main / footer are pure wrappers
 assert 'data-nav="1"' in body and 'data-footer="1"' in body
 
+# ------------------------------------------------ live version (OPS-08) --
+# An empty slot inside the footer's copyright line. app.js fills it from
+# /_status with the commit and Cloud Run revision that served the page, so it
+# always shows what is live, and the built pages do not change with every
+# commit. The footer is copied into every content page below.
+body, _n = re.subn(r'(>\u00a9[^<]*)(</span>)', r'\1<span data-site-version="1" hidden></span>\2', body)
+assert _n == 1, 'copyright line in the footer'
+
+
 # ----------------------------------------------------------------- video --
 # The French cut is a separate render, not the same file with subtitles, so
 # each locale gets its own pair. app.js is shared across locales and cannot

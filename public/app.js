@@ -644,6 +644,25 @@
     });
   }
 
+  /* ------------------------------------------------------ live version */
+  /* The footer shows which commit and Cloud Run revision served this page,
+     read from the running service (OPS-08). Anything missing or failing
+     leaves the slot hidden. */
+  var versionEl = $('[data-site-version]');
+  if (versionEl && window.fetch) {
+    fetch('/_status', { cache: 'no-store' })
+      .then(function (r) { return r.ok ? r.json() : null; })
+      .then(function (s) {
+        var v = s && s.version;
+        if (!v || !/^[0-9a-f]{7,40}$/.test(v.commit || '')) { return; }
+        var rev = /-(\d+)-[a-z0-9]+$/.exec(v.revision || '');
+        versionEl.textContent = ' \u00b7 v' + v.commit.slice(0, 7) +
+          (rev ? ' \u00b7 rev ' + parseInt(rev[1], 10) : '');
+        versionEl.hidden = false;
+      })
+      .catch(function () {});
+  }
+
   /* ------------------------------------------------------------- kick off */
 
   renderAgents(0, true);

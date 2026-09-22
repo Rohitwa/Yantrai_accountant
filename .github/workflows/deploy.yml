@@ -68,8 +68,8 @@ jobs:
       - uses: google-github-actions/setup-gcloud@v2
 
       # No --set-env-vars here on purpose: that flag replaces the service's
-      # whole environment, which would drop the SMTP settings the form needs.
-      # Deploying without it leaves the existing config untouched.
+      # whole environment, which would drop the SMTP and intake settings.
+      # --update-env-vars changes only GIT_COMMIT, which the footer shows.
       - name: Deploy
         run: |
           gcloud run deploy "$SERVICE" \
@@ -78,6 +78,7 @@ jobs:
             --project "$PROJECT_ID" \
             --platform managed \
             --allow-unauthenticated \
+            --update-env-vars "GIT_COMMIT=${GITHUB_SHA::7}" \
             --quiet
 
       - name: Show the serving URL
