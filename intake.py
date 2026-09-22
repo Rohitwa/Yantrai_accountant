@@ -47,6 +47,7 @@ import ssl
 import sys
 import threading
 import time
+import unicodedata
 import uuid
 from collections import deque
 from urllib.parse import parse_qs, unquote, urlsplit
@@ -133,15 +134,19 @@ REPLAY_MARKER = "REPLAY-JSON:"
 
 def normalise_email(value):
     """What people paste around an address, removed until nothing changes:
-    quotes, brackets and parentheses (paired or not), a mailto: and anything
-    from its '?', and trailing separators or a full stop (Outlook adds ';', a
-    sentence adds '.')."""
+    brackets, parentheses and double quotes (paired or not), single quotes
+    only when they wrap the whole address (one may start a real local part,
+    as in 't Hart), a mailto: and anything from its '?', and trailing
+    separators or a full stop (Outlook adds ';', a sentence adds '.')."""
     value = (value or "").strip()
     while True:
         before = value
         if value[:7].lower() == "mailto:":
             value = value[7:].split("?", 1)[0]
-        value = value.strip().lstrip("<([\"'").rstrip(">)]\"',;:.").strip()
+        value = value.strip().rstrip(",;:.").strip()
+        if len(value) > 1 and value[0] == value[-1] == "'":
+            value = value[1:-1]
+        value = value.lstrip("<([\"").rstrip(">)]\"',;:.").strip()
         if value == before:
             return value
 
@@ -153,7 +158,14 @@ def header_address(value):
     if not looks_like_email(value):
         return ""
     local, domain = value.rsplit("@", 1)
-    if not _DOT_ATOM.fullmatch(local) or _IDNA_DEVIATIONS & set(domain):
+    # "=?" would be decoded as an RFC 2047 encoded word on the way out
+    if "=?" in local or not _DOT_ATOM.fullmatch(local):
+        return ""
+    # IDNA 2003 knows only Unicode 3.2: anything newer (a capital sharp s, say)
+    # or one of its deviations would be encoded as a different domain
+    folded = domain + domain.lower()
+    if _IDNA_DEVIATIONS & set(folded) or any(
+            unicodedata.ucd_3_2_0.category(ch) == "Cn" for ch in folded):
         return ""
     try:
         domain = domain.encode("idna").decode("ascii")

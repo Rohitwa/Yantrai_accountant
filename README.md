@@ -272,7 +272,7 @@ up to 9 under the login's 10-connection limit).
 **One-time database setup** (the project owner, as `postgres` over the session
 pooler; review the SQL first). `001` is idempotent and safe to run again, and it
 re-asserts its own state: it clears `website_app`'s stored settings in every
-database (and stops with an error if a superuser stored one, which only a
+database (and stops with an error naming any a superuser stored, which only a
 superuser can clear); it revokes any rights granted since on the schema, both
 tables and the flood guard to PUBLIC, `anon`, `authenticated`, `service_role`
 and `website_app`; and it replaces the flood guard. Grant anything new (the
@@ -362,10 +362,12 @@ Each notification mail's subject ends in `[#<first 8 characters of the id>]`.
 
 **Replaying** a `[NOT SAVED]` mail (saved as .eml, or its text with the
 `REPLAY-JSON:` line) or the `intake_unstored` log entries. Each row keeps its
-id, so replaying twice is harmless. UTF-8 files (with or without a BOM) and
-Windows PowerShell's `>` and `Out-File` (UTF-16) are read; any other encoding
-(`Set-Content`'s ANSI, say) is refused, so re-save it as UTF-8, or make exports
-in Git Bash or Cloud Shell. A JSON-lines file must hold nothing but JSON: one
+id, so replaying twice is harmless. Make log exports in Git Bash (with
+`PYTHONUTF8=1`) or Cloud Shell, never in Windows PowerShell 5.1: its `>` and `|`
+re-decode gcloud's output with the console code page, so non-English names are
+already garbled in the file, and a replayed row cannot be corrected afterwards.
+UTF-8 files (with or without a BOM) and UTF-16 files are read; any other
+encoding (`Set-Content`'s ANSI, say) is refused. A JSON-lines file must hold nothing but JSON: one
 line of other text and nothing in it is replayed. The flood guard counts replayed
 rows with live ones, so replay at most about 250 savings checks or 90 careers
 applications an hour, preferably when the site is quiet.
@@ -405,17 +407,20 @@ What a leaked `website_app` password can still do:
   (gone at disconnect) and large objects (kept until deleted; check 31 fails if
   `website_app` owns one).
 
-After any suspicion:
+After any suspicion, in this order (an open session can change the password
+itself, so it must be shut out before the password changes):
 
-1. Set a new password: `\password website_app`.
-2. End its open sessions, which survive a password change:
+1. Stop new logins: `ALTER ROLE website_app NOLOGIN;` (leads fall back to
+   `[NOT SAVED]` until step 5).
+2. End its open sessions:
    `SELECT pg_terminate_backend(pid) FROM pg_stat_activity WHERE usename = 'website_app';`
    (if `postgres` is refused, restarting the project from the Supabase
    dashboard ends every session).
-3. Re-run 001 and the verify script.
-4. Store the new URL as a `website-db-url` version and point the service at it
-   (`--update-secrets WEBSITE_DB_URL=website-db-url:<new version>`); until
-   then every insert fails and leads fall back to `[NOT SAVED]`.
+3. Set a new password: `\password website_app`.
+4. Re-run 001, which turns logins back on, and the verify script.
+5. Store the new URL as a `website-db-url` version, prove it with
+   `replay_intake.py --check`, and point the service at it
+   (`--update-secrets WEBSITE_DB_URL=website-db-url:<new version>`).
 
 Keep a disk-usage alert on the Supabase project. Closing TEMP or large objects
 is a platform decision (it affects every login); both are listed right after

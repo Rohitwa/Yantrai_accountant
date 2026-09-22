@@ -1,4 +1,4 @@
--- website_intake: where yantrailabs.com keeps every form submission.
+-- website_intake: where yantrailabs.com keeps its form submissions.
 --
 -- It lives in the platform Supabase (project vxnflumpectzqdamjqsc) but is closed
 -- to everything else on it. The website connects as website_app, a login that
@@ -64,14 +64,22 @@ ALTER ROLE website_app SET search_path = '';
 -- postgres cannot reset a setting only a superuser may store: fail here, loudly,
 -- rather than leave it for the verify script to find
 DO $$
+DECLARE
+  leftovers text;
 BEGIN
-  IF EXISTS (SELECT 1 FROM pg_catalog.pg_db_role_setting s
-              WHERE s.setrole = 'website_app'::regrole AND s.setdatabase <> 0)
-     OR (SELECT count(*) FROM pg_catalog.pg_db_role_setting s
-                CROSS JOIN LATERAL unnest(s.setconfig) c
-          WHERE s.setrole = 'website_app'::regrole AND s.setdatabase = 0) <> 3 THEN
-    RAISE EXCEPTION 'website_app keeps settings this file could not reset (stored by a superuser); '
-      'have a superuser run ALTER ROLE website_app RESET ALL, then run this file again';
+  SELECT string_agg(CASE WHEN s.setdatabase = 0 THEN 'role-wide'
+                         ELSE 'IN DATABASE ' || quote_ident(d.datname) END
+                    || ': ' || array_to_string(s.setconfig, ', '), '; ')
+    INTO leftovers
+    FROM pg_catalog.pg_db_role_setting s
+    LEFT JOIN pg_catalog.pg_database d ON d.oid = s.setdatabase
+   WHERE s.setrole = 'website_app'::regrole
+     AND (s.setdatabase <> 0 OR cardinality(s.setconfig) <> 3);
+  IF leftovers IS NOT NULL THEN
+    RAISE EXCEPTION 'website_app keeps settings this file could not reset (stored by a superuser): %', leftovers
+      USING HINT = 'A superuser must run ALTER ROLE website_app RESET ALL, and '
+                   'ALTER ROLE website_app IN DATABASE <name> RESET ALL for each database named '
+                   'above; then run this file again.';
   END IF;
 END
 $$;

@@ -91,6 +91,7 @@ def pg():
             "admin": lambda: _connect(a.username, a.password, dbname, host, port),
             "app": lambda: _connect("website_app", app_pw, dbname, host, port),
             "dsn": f"postgresql://website_app:{app_pw}@{host}:{port}/{dbname}?sslmode=disable",
+            "app_pw": app_pw,
         }
     finally:
         # leave no stored website_app settings behind for the next run (re-applying 001 clears them)
@@ -167,6 +168,13 @@ def test_verify_script_passes_through_psql(pg):
     ("GRANT TRIGGER ON public.leaky TO website_app", "website_app has no rights on any public table"),
     ("GRANT TRUNCATE ON website_intake.submissions TO service_role",
      "anon, authenticated and service_role hold no table rights"),
+    ("GRANT MAINTAIN ON public.leaky TO website_app", "website_app has no rights on any public table"),
+    ("GRANT MAINTAIN ON website_intake.submissions TO service_role",
+     "anon, authenticated and service_role hold no table rights"),
+    ("GRANT MAINTAIN ON website_intake.submissions TO website_app",
+     "website_app cannot read, change or delete submissions"),
+    ("GRANT TRIGGER ON website_intake.notify_events TO website_app",
+     "website_app cannot read, change or delete notify_events"),
 ])
 def test_verify_script_catches_each_mistake(pg, mistake, check):
     sim = pg["sim"]
@@ -380,19 +388,55 @@ def test_rerunning_001_takes_back_a_schema_grant(pg):
     assert verify(sim)["website_app cannot create objects in any schema"] is True
 
 
-def test_001_fails_loudly_on_a_setting_only_a_superuser_can_clear(pg):
+@pytest.mark.parametrize("stored, where", [
+    ("ALTER ROLE website_app SET log_min_duration_statement = 0", "role-wide"),
+    ("ALTER ROLE website_app IN DATABASE template1 SET log_statement = 'all'", "IN DATABASE template1"),
+])
+def test_001_fails_loudly_on_a_setting_only_a_superuser_can_clear(pg, stored, where):
     admin = pg["admin"]()
     try:
-        admin.run("ALTER ROLE website_app SET log_min_duration_statement = 0")
+        admin.run(stored)
         done = pg["psql"]("-q", "-f", pg["sql_001"])
         assert done.returncode != 0 and "could not reset" in done.stderr
+        assert where in done.stderr and "IN DATABASE <name> RESET ALL" in done.stderr
     finally:
-        admin.run("ALTER ROLE website_app RESET log_min_duration_statement")
+        admin.run("ALTER ROLE website_app RESET ALL")
+        admin.run("ALTER ROLE website_app IN DATABASE template1 RESET ALL")
         admin.close()
     done = pg["psql"]("-q", "-f", pg["sql_001"])
     assert done.returncode == 0, done.stderr
     checks = verify(pg["sim"])
     assert all(checks.values()), [name for name, ok in checks.items() if not ok]
+
+
+def test_the_leak_recovery_steps_shut_out_a_connected_session(pg):
+    """README 'After any suspicion', step by step, while the leaked login keeps a
+    session open: it must not be able to keep or retake the login."""
+    sim, admin = pg["sim"], pg["admin"]()
+    attacker = pg["app"]()
+    new_pw = secrets.token_hex(12)
+    try:
+        sim.run("ALTER ROLE website_app NOLOGIN")                                   # 1
+        admin.run("SELECT pg_terminate_backend(pid) FROM pg_stat_activity "
+                  "WHERE usename = 'website_app'")                                  # 2
+        with pytest.raises(Exception):                                               # its session is gone
+            attacker.run("ALTER ROLE website_app PASSWORD 'kept-by-attacker'")
+        sim.run(f"ALTER ROLE website_app PASSWORD '{new_pw}'")                      # 3
+        with pytest.raises(Exception):                                               # no login until 001
+            _connect("website_app", new_pw, pg["db"], pg["host"], pg["port"])
+        done = pg["psql"]("-q", "-f", pg["sql_001"])                               # 4: LOGIN again
+        assert done.returncode == 0, done.stderr
+        _connect("website_app", new_pw, pg["db"], pg["host"], pg["port"]).close()
+        with pytest.raises(Exception):
+            _connect("website_app", "kept-by-attacker", pg["db"], pg["host"], pg["port"])
+    finally:
+        try:
+            attacker.close()
+        except Exception:
+            pass
+        sim.run("ALTER ROLE website_app LOGIN")
+        sim.run(f"ALTER ROLE website_app PASSWORD '{pg['app_pw']}'")
+        admin.close()
 
 
 def test_rerunning_001_clears_per_database_overrides(pg):

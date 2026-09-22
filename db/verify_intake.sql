@@ -54,12 +54,22 @@ SELECT check_name, ok FROM (
             NOT (has_any_column_privilege('website_app', 'website_intake.submissions', 'SELECT')
                  OR has_any_column_privilege('website_app', 'website_intake.submissions', 'UPDATE')
                  OR has_table_privilege('website_app', 'website_intake.submissions', 'DELETE')
-                 OR has_table_privilege('website_app', 'website_intake.submissions', 'TRUNCATE'))
+                 OR has_table_privilege('website_app', 'website_intake.submissions', 'TRUNCATE')
+                 OR has_table_privilege('website_app', 'website_intake.submissions', 'TRIGGER')
+                 OR has_any_column_privilege('website_app', 'website_intake.submissions', 'REFERENCES')
+                 OR CASE WHEN current_setting('server_version_num')::int >= 170000
+                         THEN has_table_privilege('website_app', 'website_intake.submissions', 'MAINTAIN')
+                         ELSE false END)
   UNION ALL SELECT 14, 'website_app cannot read, change or delete notify_events',
             NOT (has_any_column_privilege('website_app', 'website_intake.notify_events', 'SELECT')
                  OR has_any_column_privilege('website_app', 'website_intake.notify_events', 'UPDATE')
                  OR has_table_privilege('website_app', 'website_intake.notify_events', 'DELETE')
-                 OR has_table_privilege('website_app', 'website_intake.notify_events', 'TRUNCATE'))
+                 OR has_table_privilege('website_app', 'website_intake.notify_events', 'TRUNCATE')
+                 OR has_table_privilege('website_app', 'website_intake.notify_events', 'TRIGGER')
+                 OR has_any_column_privilege('website_app', 'website_intake.notify_events', 'REFERENCES')
+                 OR CASE WHEN current_setting('server_version_num')::int >= 170000
+                         THEN has_table_privilege('website_app', 'website_intake.notify_events', 'MAINTAIN')
+                         ELSE false END)
   UNION ALL SELECT 15, 'website_app cannot set received_at, status or triage columns',
             NOT (has_column_privilege('website_app', 'website_intake.submissions', 'received_at', 'INSERT')
                  OR has_column_privilege('website_app', 'website_intake.submissions', 'status', 'INSERT')
@@ -76,7 +86,10 @@ SELECT check_name, ok FROM (
                             OR has_any_column_privilege('website_app', p.oid, 'REFERENCES')
                             OR has_table_privilege('website_app', p.oid, 'DELETE')
                             OR has_table_privilege('website_app', p.oid, 'TRUNCATE')
-                            OR has_table_privilege('website_app', p.oid, 'TRIGGER'))
+                            OR has_table_privilege('website_app', p.oid, 'TRIGGER')
+                            OR CASE WHEN current_setting('server_version_num')::int >= 170000
+                                    THEN has_table_privilege('website_app', p.oid, 'MAINTAIN')
+                                    ELSE false END)
   -- nobody else gets in
   UNION ALL SELECT 17, 'anon, authenticated and service_role cannot use the schema',
             NOT EXISTS (SELECT 1 FROM api_roles WHERE has_schema_privilege(r, 'website_intake', 'USAGE'))
@@ -88,7 +101,10 @@ SELECT check_name, ok FROM (
                             OR has_any_column_privilege(a.r, t.oid, 'REFERENCES')
                             OR has_table_privilege(a.r, t.oid, 'DELETE')
                             OR has_table_privilege(a.r, t.oid, 'TRUNCATE')
-                            OR has_table_privilege(a.r, t.oid, 'TRIGGER'))
+                            OR has_table_privilege(a.r, t.oid, 'TRIGGER')
+                            OR CASE WHEN current_setting('server_version_num')::int >= 170000
+                                    THEN has_table_privilege(a.r, t.oid, 'MAINTAIN')
+                                    ELSE false END)
   UNION ALL SELECT 19, 'PUBLIC holds nothing on the schema',
             NOT EXISTS (SELECT 1 FROM pg_catalog.pg_namespace n, aclexplode(n.nspacl) a
                          WHERE n.nspname = 'website_intake' AND a.grantee = 0)

@@ -169,6 +169,11 @@ def test_real_mailer_normalises_the_subject(monkeypatch, closed_smtp):
     ("asha@x\uff1ay.com", "u@x.co"), ("asha@stra\u00dfe.de", "u@x.co"),     # IDNA 2003 would say strasse.de
     ("firstname.middlename.lastname@finance-department.subsidiary-company-name.example.co.in.", "u@x.co"),
     ("a\x01b@example.com", "u@x.co"), ("a\x7fb@example.com", "u@x.co"),
+    ("=?utf-8?q?asha=40evil.example=2C?=@example.com", "u@x.co"),   # an encoded word, decoded on output
+    ("asha@STRA\u1e9eE.DE", "u@x.co"),                                # capital sharp s: newer than IDNA 2003
+    ("a@ex\u2090mple.com", "u@x.co"),                                  # subscript a (Unicode 4.1): IDNA 2008 says 'a'
+    ("o'brien@example.ie", "o'brien@example.ie"), ("a@m\u00fcnchen.de", "a@xn--mnchen-3ya.de"),
+    ("a@\u043f\u0440\u0438\u043c\u0435\u0440.\u0440\u0444", "a@xn--e1afmkfd.xn--p1ai"),
 ])
 def test_real_mailer_survives_a_reply_to_the_header_parser_rejects(monkeypatch, closed_smtp, reply_to, expected):
     """The mail-only path does not validate the address; the mail must still go."""
@@ -460,12 +465,19 @@ def test_an_address_a_mail_header_cannot_hold_is_refused(client, mail, db, env, 
                                     '"asha@example.com"', "(asha@example.com)", "asha@example.com>",
                                     "<asha@example.com", "<mailto:asha@example.com>", "asha@example.com:",
                                     "asha@example.com]", "mailto:asha@example.com?subject=Hi",
-                                    "asha@example.com.", "'asha@example.com'"])
+                                    "asha@example.com.", "'asha@example.com'", "'asha@example.com';"])
 def test_a_pasted_address_is_cleaned_not_refused(client, mail, db, env, pasted):
     env.setenv("WEBSITE_DB_URL", DSN)
     assert post(client, dict(GOOD, email=pasted)).status_code == 200
     assert db["rows"][0]["email"] == "asha@example.com"
     assert mail["sent"][0]["reply_to"] == "asha@example.com"
+
+
+@pytest.mark.parametrize("typed", ["'thart@example.nl", "o'brien@example.ie", "d'angelo+news@example.it"])
+def test_a_real_apostrophe_is_kept(client, mail, db, env, typed):
+    env.setenv("WEBSITE_DB_URL", DSN)
+    assert post(client, dict(GOOD, email=typed)).status_code == 200
+    assert db["rows"][0]["email"] == typed
 
 
 def test_pasted_extras_do_not_count_against_the_address_length(client, mail, db, env):
