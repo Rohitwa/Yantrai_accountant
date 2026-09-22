@@ -146,9 +146,11 @@ def normalise_email(value):
         value = value.strip().rstrip(",;:.").strip()
         if len(value) > 1 and value[0] == value[-1] == "'":
             value = value[1:-1]
-        value = value.lstrip("<([\"").rstrip(">)]\"',;:.").strip()
+        value = value.lstrip("<([\"").rstrip(">)]\",;:.").strip()
         if value == before:
-            return value
+            # a lone trailing quote can only be paste debris; a leading one may
+            # be part of the address
+            return value if value.startswith("'") else value.rstrip("'")
 
 
 def header_address(value):
@@ -161,11 +163,7 @@ def header_address(value):
     # "=?" would be decoded as an RFC 2047 encoded word on the way out
     if "=?" in local or not _DOT_ATOM.fullmatch(local):
         return ""
-    # IDNA 2003 knows only Unicode 3.2: anything newer (a capital sharp s, say)
-    # or one of its deviations would be encoded as a different domain
-    folded = domain + domain.lower()
-    if _IDNA_DEVIATIONS & set(folded) or any(
-            unicodedata.ucd_3_2_0.category(ch) == "Cn" for ch in folded):
+    if _idna2003_differs(domain):
         return ""
     try:
         domain = domain.encode("idna").decode("ascii")
@@ -175,6 +173,27 @@ def header_address(value):
     if not _LDH_DOMAIN.fullmatch(domain):
         return ""
     return local + "@" + domain
+
+
+def _idna2003_differs(domain):
+    """True when Python's IDNA 2003 codec (Unicode 3.2) could encode `domain`
+    differently from the IDNA 2008 / UTS46 that registries and mail use: one
+    of its deviations (sharp s, final sigma, ZWJ, ZWNJ), or a newer character
+    that is not a plain letter, mark or digit, or that case-folds or
+    normalises to something else (a capital sharp s, a subscript letter)."""
+    per_char = "".join(c.lower() for c in domain)       # not str.lower(): no final-sigma rule
+    folded = domain + per_char
+    if _IDNA_DEVIATIONS & set(folded):
+        return True
+    for ch in folded:
+        if unicodedata.ucd_3_2_0.category(ch) != "Cn":
+            continue
+        cat, cp = unicodedata.category(ch), ord(ch)
+        if (cat[0] not in "LM" and cat != "Nd") or 0x180B <= cp <= 0x180F \
+                or 0xFE00 <= cp <= 0xFE0F or 0xE0100 <= cp <= 0xE01EF \
+                or unicodedata.normalize("NFKC", unicodedata.normalize("NFKC", ch).casefold()) != ch:
+            return True
+    return unicodedata.normalize("NFKC", per_char) != unicodedata.ucd_3_2_0.normalize("NFKC", per_char)
 
 
 def defuse_markers(text):

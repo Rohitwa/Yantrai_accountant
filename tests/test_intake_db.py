@@ -400,6 +400,7 @@ def test_001_fails_loudly_on_a_setting_only_a_superuser_can_clear(pg, stored, wh
         done = pg["psql"]("-q", "-f", pg["sql_001"])
         assert done.returncode != 0 and "could not reset" in done.stderr
         assert where in done.stderr and "IN DATABASE <name> RESET ALL" in done.stderr
+        assert "statement_timeout=5s" not in done.stderr        # only the leftovers are named
     finally:
         admin.run("ALTER ROLE website_app RESET ALL")
         admin.run("ALTER ROLE website_app IN DATABASE template1 RESET ALL")
@@ -418,10 +419,17 @@ def test_the_leak_recovery_steps_shut_out_a_connected_session(pg):
     new_pw = secrets.token_hex(12)
     try:
         sim.run("ALTER ROLE website_app NOLOGIN")                                   # 1
+        # the open session acts between steps 1 and 2: it may change its own
+        # password and settings, but it cannot turn logins back on
+        attacker.run("ALTER ROLE website_app PASSWORD 'kept-by-attacker'")
+        attacker.run("ALTER ROLE website_app SET statement_timeout = 0")
+        with pytest.raises(Exception) as refused:
+            attacker.run("ALTER ROLE website_app LOGIN")
+        assert sqlstate(refused.value) == "42501"
         admin.run("SELECT pg_terminate_backend(pid) FROM pg_stat_activity "
                   "WHERE usename = 'website_app'")                                  # 2
-        with pytest.raises(Exception):                                               # its session is gone
-            attacker.run("ALTER ROLE website_app PASSWORD 'kept-by-attacker'")
+        with pytest.raises(Exception):
+            _connect("website_app", "kept-by-attacker", pg["db"], pg["host"], pg["port"])
         sim.run(f"ALTER ROLE website_app PASSWORD '{new_pw}'")                      # 3
         with pytest.raises(Exception):                                               # no login until 001
             _connect("website_app", new_pw, pg["db"], pg["host"], pg["port"])
@@ -430,6 +438,8 @@ def test_the_leak_recovery_steps_shut_out_a_connected_session(pg):
         _connect("website_app", new_pw, pg["db"], pg["host"], pg["port"]).close()
         with pytest.raises(Exception):
             _connect("website_app", "kept-by-attacker", pg["db"], pg["host"], pg["port"])
+        checks = verify(sim)                                  # the stored setting is gone too
+        assert all(checks.values()), [name for name, ok in checks.items() if not ok]
     finally:
         try:
             attacker.close()

@@ -67,9 +67,16 @@ DO $$
 DECLARE
   leftovers text;
 BEGIN
+  -- name only the leftovers, not the three settings set just above
   SELECT string_agg(CASE WHEN s.setdatabase = 0 THEN 'role-wide'
                          ELSE 'IN DATABASE ' || quote_ident(d.datname) END
-                    || ': ' || array_to_string(s.setconfig, ', '), '; ')
+                    || ': ' || array_to_string(
+                         CASE WHEN s.setdatabase = 0
+                              THEN ARRAY(SELECT unnest(s.setconfig)
+                                         EXCEPT SELECT unnest(ARRAY['statement_timeout=5s',
+                                                                    'idle_in_transaction_session_timeout=10s',
+                                                                    'search_path=""', 'search_path=']))
+                              ELSE s.setconfig END, ', '), '; ')
     INTO leftovers
     FROM pg_catalog.pg_db_role_setting s
     LEFT JOIN pg_catalog.pg_database d ON d.oid = s.setdatabase

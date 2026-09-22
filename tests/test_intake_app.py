@@ -172,8 +172,16 @@ def test_real_mailer_normalises_the_subject(monkeypatch, closed_smtp):
     ("=?utf-8?q?asha=40evil.example=2C?=@example.com", "u@x.co"),   # an encoded word, decoded on output
     ("asha@STRA\u1e9eE.DE", "u@x.co"),                                # capital sharp s: newer than IDNA 2003
     ("a@ex\u2090mple.com", "u@x.co"),                                  # subscript a (Unicode 4.1): IDNA 2008 says 'a'
+    ("a@\u2c00\u2c01.com", "u@x.co"),              # a newer capital letter: IDNA 2003 would not lower-case it
     ("o'brien@example.ie", "o'brien@example.ie"), ("a@m\u00fcnchen.de", "a@xn--mnchen-3ya.de"),
     ("a@\u043f\u0440\u0438\u043c\u0435\u0440.\u0440\u0444", "a@xn--e1afmkfd.xn--p1ai"),
+    # newer than Unicode 3.2 but encoded the same by IDNA 2003 and 2008: kept
+    ("a@\u09ac\u09bf\u09a6\u09cd\u09af\u09c1\u09ce.\u09ac\u09be\u0982\u09b2\u09be",
+     "a@xn--65blk6dm4ej.xn--54b7fta0cc"),                                     # Bengali khanda ta
+    ("a@\u0d07\u0d28\u0d4d\u0d24\u0d4d\u0d2f\u0d7b.\u0d2d\u0d3e\u0d30\u0d24\u0d02",
+     "a@xn--wvc2dl3a1lb73a.xn--rvc1e0am3e"),                                  # Malayalam chillu
+    ("a@example.\u1019\u103c\u1014\u103a\u1019\u102c", "a@example.xn--7idjb0f4ck"),   # Burmese
+    ("a@\u03a3\u0399\u03a4\u039f\u03a3-\u0391\u0395.gr", "a@xn----zlbmn4awcg.gr"),    # sigma before a hyphen
 ])
 def test_real_mailer_survives_a_reply_to_the_header_parser_rejects(monkeypatch, closed_smtp, reply_to, expected):
     """The mail-only path does not validate the address; the mail must still go."""
@@ -465,7 +473,10 @@ def test_an_address_a_mail_header_cannot_hold_is_refused(client, mail, db, env, 
                                     '"asha@example.com"', "(asha@example.com)", "asha@example.com>",
                                     "<asha@example.com", "<mailto:asha@example.com>", "asha@example.com:",
                                     "asha@example.com]", "mailto:asha@example.com?subject=Hi",
-                                    "asha@example.com.", "'asha@example.com'", "'asha@example.com';"])
+                                    "asha@example.com.", "'asha@example.com'", "'asha@example.com';",
+                                    "<'asha@example.com'>", "('asha@example.com')", "['asha@example.com']",
+                                    "\"'asha@example.com'\"", "<mailto:'asha@example.com'>",
+                                    "''asha@example.com''", "'asha@example.com'>", "asha@example.com'"])
 def test_a_pasted_address_is_cleaned_not_refused(client, mail, db, env, pasted):
     env.setenv("WEBSITE_DB_URL", DSN)
     assert post(client, dict(GOOD, email=pasted)).status_code == 200
@@ -473,11 +484,12 @@ def test_a_pasted_address_is_cleaned_not_refused(client, mail, db, env, pasted):
     assert mail["sent"][0]["reply_to"] == "asha@example.com"
 
 
-@pytest.mark.parametrize("typed", ["'thart@example.nl", "o'brien@example.ie", "d'angelo+news@example.it"])
+@pytest.mark.parametrize("typed", ["'thart@example.nl", "o'brien@example.ie", "d'angelo+news@example.it",
+                                   "<'thart@example.nl>"])
 def test_a_real_apostrophe_is_kept(client, mail, db, env, typed):
     env.setenv("WEBSITE_DB_URL", DSN)
     assert post(client, dict(GOOD, email=typed)).status_code == 200
-    assert db["rows"][0]["email"] == typed
+    assert db["rows"][0]["email"] == typed.strip("<>")
 
 
 def test_pasted_extras_do_not_count_against_the_address_length(client, mail, db, env):
