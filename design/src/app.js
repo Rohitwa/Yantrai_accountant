@@ -333,6 +333,17 @@
   // Written onto the element by the build, one file per locale — this script
   // is shared across locales, so it must not name the file itself.
   var VIDEO_SRC = videoEl && videoEl.getAttribute('data-video-src');
+  // A phone held upright gets the 9:16 cut in a tall frame, when the locale
+  // has one (the same media query the build uses for the poster preload).
+  var portraitSrc = videoEl && videoEl.getAttribute('data-video-portrait-src');
+  if (portraitSrc && window.matchMedia('(max-width: 760px) and (orientation: portrait)').matches) {
+    VIDEO_SRC = portraitSrc;
+    var portraitPoster = videoEl.getAttribute('data-video-portrait-poster');
+    if (portraitPoster) videoEl.setAttribute('poster', portraitPoster);
+    videoEl.setAttribute('width', '1080');
+    videoEl.setAttribute('height', '1920');
+    if (videoWrap) videoWrap.setAttribute('data-portrait', '1');
+  }
 
   if (videoEl && VIDEO_SRC) {
     // Pointer devices play on hover (as designed). Touch devices have no hover,
@@ -371,6 +382,25 @@
       videoWrap.addEventListener('mouseleave', function () { hovering = false; sync(); });
     }
     if (!hoverCapable && hintEl) hintEl.style.display = 'none';
+
+    // Sound: the video always starts muted (browsers only autoplay muted);
+    // this button, where the build kept it, turns the soundtrack on and off.
+    var soundBtn = $('[data-sound-btn]');
+    if (soundBtn) {
+      var soundLabel = soundBtn.querySelector('span') || soundBtn;
+      soundBtn.addEventListener('click', function (e) {
+        e.stopPropagation();
+        var on = videoEl.muted;
+        videoEl.muted = !on;
+        soundLabel.textContent = on ? 'Sound on' : 'Sound off';
+        soundBtn.setAttribute('aria-pressed', on ? 'true' : 'false');
+        if (on && videoEl.paused && inView) {
+          if (!videoEl.getAttribute('src')) videoEl.setAttribute('src', VIDEO_SRC);
+          var p = videoEl.play();
+          if (p && p.catch) p.catch(function () {});
+        }
+      });
+    }
   }
 
   /* ---------------------------------------------------------- form wiring */

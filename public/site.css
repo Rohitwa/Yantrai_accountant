@@ -732,3 +732,6 @@ img, video { max-width: 100%; }
     justify-content: flex-start !important;
   }
 }
+
+/* a phone held upright plays the 9:16 cut (app.js marks the frame) */
+[data-video-wrap][data-portrait] { aspect-ratio: 9 / 16 !important; }

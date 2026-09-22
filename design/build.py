@@ -668,33 +668,59 @@ assert _n == 1, 'copyright line in the footer'
 
 
 # ----------------------------------------------------------------- video --
-# The French cut is a separate render, not the same file with subtitles, so
-# each locale gets its own pair. app.js is shared across locales and cannot
-# know which one it is serving, so the build writes the source onto the
-# element and the player reads it from there.
+# Each locale has its own cut. app.js is shared across locales and cannot
+# know which one it is serving, so the build writes the sources onto the
+# element and the player reads them from there.
+#   en: the OHM explainer (video 3, v28, 113 s, with music), 16:9 and a 9:16
+#       cut for phones held upright; web encodes of the renders in
+#       ohm_home/ohm_video/video_3/renders (x264 CRF 30, AAC 96k, faststart)
+#   fr: the earlier silent French cut, until a French OHM version exists
 VIDEO = {
-    'en': ('aifa-pipeline-60s.mp4',    'aifa-pipeline-poster.jpg',    1920, 1080),
-    'fr': ('aifa-pipeline-60s-fr.mp4', 'aifa-pipeline-poster-fr.jpg', 1280, 720),
+    'en': dict(src='ohm-explainer.mp4', poster='ohm-explainer-poster.jpg', w=1920, h=1080,
+               portrait=('ohm-explainer-9x16.mp4', 'ohm-explainer-poster-9x16.jpg'), audio=True),
+    'fr': dict(src='aifa-pipeline-60s-fr.mp4', poster='aifa-pipeline-poster-fr.jpg', w=1280, h=720,
+               portrait=None, audio=False),
 }
-_vid, _poster, _vw, _vh = VIDEO[LOCALE]
+# a phone held upright: the site's phone breakpoint, in portrait
+PORTRAIT_MEDIA = '(max-width: 760px) and (orientation: portrait)'
+_v = VIDEO[LOCALE]
 _old_video = ('<video data-video="1" '
               'poster="assets/aifa-video-poster.jpg" preload="none" loop="" '
               'width="1920" height="1080"')
 assert body.count(_old_video) == 1, 'video tag'
+# attribute names end in src / poster, so the path-prefix step below rewrites them
+_portrait = ('data-video-portrait-src="assets/%s" data-video-portrait-poster="assets/%s" '
+             % _v['portrait']) if _v['portrait'] else ''
 body = body.replace(_old_video, (
-    '<video data-video="1" data-video-src="assets/%s" '
+    '<video data-video="1" data-video-src="assets/%s" %s'
     'poster="assets/%s" preload="none" loop="" width="%d" height="%d"'
-    % (_vid, _poster, _vw, _vh)))
-# the poster is preloaded from the shared head
-assert head.count('assets/aifa-video-poster.jpg') == 1
-head = head.replace('assets/aifa-video-poster.jpg', 'assets/' + _poster)
+    % (_v['src'], _portrait, _v['poster'], _v['w'], _v['h'])))
+# the poster is preloaded from the shared head; with a portrait cut, each
+# screen shape preloads only the poster it will show
+_old_preload = '<link rel="preload" as="image" href="assets/aifa-video-poster.jpg">'
+assert head.count(_old_preload) == 1
+if _v['portrait']:
+    head = head.replace(_old_preload, (
+        '<link rel="preload" as="image" href="assets/%s" media="not all and %s">\n'
+        '<link rel="preload" as="image" href="assets/%s" media="%s">'
+        % (_v['poster'], PORTRAIT_MEDIA, _v['portrait'][1], PORTRAIT_MEDIA)))
+else:
+    head = head.replace(_old_preload,
+                        '<link rel="preload" as="image" href="assets/%s">' % _v['poster'])
 
-# Neither cut carries an audio track, so the artboard's sound toggle is a
-# control that can never do anything. Drop it until there is sound to toggle.
+# The artboard's sound toggle: kept where the cut has a soundtrack (app.js
+# wires it; the video always starts muted, as browsers require), dropped
+# where it would be a control that can never do anything.
 _i = body.index('<button type="button" data-sound-btn="1"')
 _j = body.index('</button>', _i) + len('</button>')
-body = body[:_i] + body[_j:]
-assert 'data-sound-btn' not in body
+if _v['audio']:
+    _btn = body[_i:_j]
+    assert '>Sound off<' in _btn, 'sound button label'
+    body = body[:_i] + _btn.replace('data-sound-btn="1"', 'data-sound-btn="1" aria-pressed="false"', 1) + body[_j:]
+    assert body.count('data-sound-btn') == 1
+else:
+    body = body[:_i] + body[_j:]
+    assert 'data-sound-btn' not in body
 
 # ------------------------------------------------------------ path prefix --
 _attr = r'(src|href|poster)="assets/'
