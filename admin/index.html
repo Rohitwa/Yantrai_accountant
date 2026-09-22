@@ -1,0 +1,111 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex, nofollow">
+<meta name="referrer" content="no-referrer">
+<meta name="yw-platform" content="__PLATFORM_URL__">
+<title>YantrAI Web</title>
+<link rel="stylesheet" href="/admin/inbox.css">
+<script src="/admin/inbox.js" defer></script>
+</head>
+<body>
+<header class="bar">
+  <svg class="bar-icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3c2.6 2.6 3.9 5.6 3.9 9s-1.3 6.4-3.9 9c-2.6-2.6-3.9-5.6-3.9-9S9.4 5.6 12 3z"/></svg>
+  <h1 class="bar-title">YantrAI Web</h1>
+  <span class="pill pill-muted">Platform admins only</span>
+  <span class="bar-spacer"></span>
+  <span class="bar-user" data-user hidden></span>
+  <button type="button" class="btn" data-export hidden>Export CSV</button>
+  <a class="btn btn-quiet" data-home target="_top" rel="noopener" href="#">Home</a>
+  <button type="button" class="btn btn-quiet" data-signout hidden>Sign out</button>
+</header>
+
+<p class="notice" data-notice role="status" aria-live="polite" hidden></p>
+
+<section class="gate" data-gate>
+  <h2 data-gate-title>Opening your inbox…</h2>
+  <p data-gate-text></p>
+  <p><a class="btn" data-gate-link target="_top" rel="noopener" href="#" hidden>Open YantrAI Web on the platform</a></p>
+</section>
+
+<main class="inbox" data-inbox hidden>
+  <h2 class="sr-only">Website leads</h2>
+  <div class="stats" data-stats>
+    <div class="stat"><span class="stat-label">New</span><span class="stat-value" data-count="new">–</span></div>
+    <div class="stat"><span class="stat-label">This week</span><span class="stat-value" data-count="week">–</span></div>
+    <div class="stat"><span class="stat-label">Qualified</span><span class="stat-value" data-count="qualified">–</span></div>
+    <div class="stat"><span class="stat-label">All leads</span><span class="stat-value" data-count="all">–</span></div>
+  </div>
+
+  <form class="filters" data-filters role="search">
+    <label class="sr-only" for="yw-q">Search leads</label>
+    <input id="yw-q" type="search" name="q" maxlength="100" autocomplete="off" placeholder="Search name, company or email">
+    <label class="sr-only" for="yw-status">Status</label>
+    <select id="yw-status" name="status">
+      <option value="">All statuses</option>
+      <option value="new">New</option>
+      <option value="contacted">Contacted</option>
+      <option value="qualified">Qualified</option>
+      <option value="closed">Closed</option>
+      <option value="spam">Spam</option>
+    </select>
+    <label class="sr-only" for="yw-form">Form</label>
+    <select id="yw-form" name="form">
+      <option value="">All forms</option>
+      <option value="savings_check">Demo request</option>
+      <option value="careers">Careers</option>
+    </select>
+  </form>
+
+  <div class="panes">
+    <section class="list" aria-label="Leads">
+      <div class="list-head" aria-hidden="true"><span>Name</span><span>Company</span><span>Received</span><span>Status</span></div>
+      <ul class="list-items" data-list></ul>
+      <p class="list-empty" data-empty hidden>No leads match.</p>
+      <button type="button" class="btn btn-block" data-more hidden>Load more</button>
+    </section>
+
+    <section class="detail" data-detail aria-live="polite">
+      <p class="detail-empty" data-detail-empty>Select a lead to see everything they sent.</p>
+      <div data-detail-body hidden>
+        <button type="button" class="btn btn-quiet detail-back" data-back>← All leads</button>
+        <div class="detail-head">
+          <h3 class="detail-name" data-d-name></h3>
+          <span data-d-status></span>
+        </div>
+        <dl class="fields" data-d-fields></dl>
+        <div class="note" data-d-note-wrap hidden>
+          <h4 class="k" data-d-note-label>Note</h4>
+          <p class="note-text" data-d-note></p>
+        </div>
+        <p class="reply"><a class="btn" data-d-reply hidden>Reply by email</a></p>
+
+        <form class="triage" data-triage>
+          <h4 class="k">Status</h4>
+          <div class="triage-row">
+            <label class="sr-only" for="yw-set-status">New status</label>
+            <select id="yw-set-status" name="status">
+              <option value="new">New</option>
+              <option value="contacted">Contacted</option>
+              <option value="qualified">Qualified</option>
+              <option value="closed">Closed</option>
+              <option value="spam">Spam</option>
+            </select>
+            <button type="submit" class="btn btn-primary">Save</button>
+          </div>
+          <label class="k" for="yw-status-note">Note for the team (optional)</label>
+          <textarea id="yw-status-note" name="note" rows="3" maxlength="2000"></textarea>
+        </form>
+
+        <div class="history">
+          <h4 class="k">History</h4>
+          <ul class="history-items" data-d-history></ul>
+        </div>
+      </div>
+    </section>
+  </div>
+</main>
+</body>
+</html>

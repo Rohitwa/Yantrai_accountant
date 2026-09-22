@@ -658,6 +658,7 @@ def test_cv_uploads_wait_for_a_free_slot(client, mail, db, env, monkeypatch):
 # --- status --------------------------------------------------------------------------------------------
 def test_status_reports_configuration_only(client, env):
     assert client.get("/_status").get_json() == {"ok": True, "mail": False, "db": False, "intake_forms": [],
+                                                 "inbox": False,
                                                  "version": {"commit": None, "revision": None}}
     env.setenv("WEBSITE_DB_URL", DSN)
     assert client.get("/_status").get_json()["intake_forms"] == ["savings_check"]

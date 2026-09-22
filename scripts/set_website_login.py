@@ -1,25 +1,34 @@
 #!/usr/bin/env python3
-"""Give website_app a new password and store its connection URL in Secret
-Manager, without the password ever being shown, typed, written or logged.
+"""Give one of the website's two database logins a new password and store its
+connection URL in Secret Manager, without the password ever being shown, typed,
+written or logged.
 
-  python scripts/set_website_login.py --owner-env-file <.env holding DB_URL>
+  python scripts/set_website_login.py --role website_app   --owner-env-file <.env holding DB_URL>
+  python scripts/set_website_login.py --role website_admin --owner-env-file <.env holding DB_URL>
   (or set PLATFORM_OWNER_DB_URL to the project's postgres session-pooler URL)
+
+The two logins (the role is required, so a run never changes the wrong one):
+  website_app    the forms' INSERT-only login (db/001_intake.sql)
+                 secret website-db-url, service setting WEBSITE_DB_URL
+  website_admin  YantrAI Web's inbox login: reads leads (db/002_inbox.sql)
+                 secret website-admin-db-url, service setting INBOX_DB_URL
 
 What it does, in order:
   1. makes a random password in memory;
-  2. sets it on website_app as a SCRAM-SHA-256 verifier, as psql's \\password
+  2. sets it on the login as a SCRAM-SHA-256 verifier, as psql's \\password
      does, so the password itself never reaches the server or its logs;
-  3. proves the login works (connects as website_app) and that it still cannot
-     read a lead;
-  4. adds the URL as a new version of the website-db-url secret (creating the
-     secret if needed) through gcloud's stdin, and lets the Cloud Run service
-     account read it;
-  5. prints the new version number, to pin with
-     --update-secrets WEBSITE_DB_URL=website-db-url:<version>.
+  3. proves the login works and has exactly its rights: website_app still
+     cannot read a lead; website_admin can read one but cannot change or
+     delete any directly;
+  4. adds the URL as a new version of the login's secret (creating the secret
+     if needed) through gcloud's stdin, and lets the Cloud Run service account
+     read it;
+  5. prints the new version number, to pin with --update-secrets.
 
 It prints neither the password nor the URL. Every run sets a NEW password:
-a site already using website-db-url keeps the old one until it is pointed at
-the new version. If it fails while logging in, wait two minutes before running
+the live site keeps using the old one, and so FAILS to log in, until it is
+pointed at the new version. For website_app that means the forms stop saving
+leads until the printed --update-secrets line is run: run the two back to back. If it fails while logging in, wait two minutes before running
 it again (the pooler blocks an address after repeated failed logins). If a
 leak is suspected, do the README's first steps (NOLOGIN, end the sessions)
 before running this. Only the SCRAM verifier, never the password, can appear
@@ -41,9 +50,12 @@ import time
 from urllib.parse import quote, unquote, urlsplit, urlunsplit
 
 PROJECT = "gen-lang-client-0024674990"
-SECRET = "website-db-url"
 RUNTIME_SA = "916641724782-compute@developer.gserviceaccount.com"
-ROLE = "website_app"
+# each login: its secret, the service setting that holds it, the file that sets it up
+ROLES = {
+    "website_app": {"secret": "website-db-url", "env": "WEBSITE_DB_URL", "sql": "db/001_intake.sql"},
+    "website_admin": {"secret": "website-admin-db-url", "env": "INBOX_DB_URL", "sql": "db/002_inbox.sql"},
+}
 _VERIFIER = re.compile(r"SCRAM-SHA-256\$\d+:[A-Za-z0-9+/=]+\$[A-Za-z0-9+/=]+:[A-Za-z0-9+/=]+")
 
 
@@ -60,8 +72,8 @@ def scram_verifier(password, iterations=4096, salt=None):
     return f"SCRAM-SHA-256${iterations}:{b64(salt)}${b64(stored_key)}:{b64(server_key)}"
 
 
-def app_url(owner_url, password):
-    """The website_app URL on the same host, port and database as the owner's.
+def app_url(owner_url, password, role="website_app"):
+    """The login's URL on the same host, port and database as the owner's.
     On Supabase the pooler needs the project ref after the role name. Only
     sslmode=require is carried, never the owner's other parameters (a laptop's
     sslrootcert path, sslmode=disable)."""
@@ -73,7 +85,7 @@ def app_url(owner_url, password):
                          "in its password") from None
     if not owner or not host:
         raise ValueError("the owner URL has no user or host")
-    user = ROLE + (owner[owner.index("."):] if "." in owner else "")
+    user = role + (owner[owner.index("."):] if "." in owner else "")
     netloc = f"{quote(user, safe='')}:{quote(password, safe='')}@{host}" + (f":{port}" if port else "")
     query = "" if host in ("localhost", "127.0.0.1", "::1") else "sslmode=require"
     return urlunsplit(("postgresql", netloc, parts.path or "/postgres", query, ""))
@@ -190,14 +202,29 @@ def _gcloud(args, *cmd, data=None):
 
 
 def main(argv=None):
-    ap = argparse.ArgumentParser(description=__doc__.splitlines()[0])
+    ap = argparse.ArgumentParser(description=" ".join(__doc__.split("\n\n")[0].split()))
+    ap.add_argument("--role", required=True, choices=sorted(ROLES),
+                    help="which login: website_app (the forms) or website_admin (the inbox)")
     ap.add_argument("--owner-env-file", help="a .env file holding the owner connection URL")
     ap.add_argument("--owner-env-key", default="DB_URL", help="its key (default DB_URL)")
     ap.add_argument("--project", default=PROJECT)
-    ap.add_argument("--secret", default=SECRET)
+    ap.add_argument("--secret", help="default: the role's own secret")
     ap.add_argument("--service-account", default=RUNTIME_SA)
     ap.add_argument("--no-secret", action="store_true", help="set and prove the password only (tests)")
     args = ap.parse_args(argv)
+    role = args.role
+    spec = ROLES[role]
+    args.secret = args.secret or spec["secret"]
+    # the inbox's URL in the forms' secret would hand the public form path a login
+    # that reads leads; the forms' URL in the inbox's would break the inbox
+    others = {r["secret"] for name, r in ROLES.items() if name != role}
+    if args.secret in others:
+        print(f"FAILED before changing anything: {args.secret} holds another login's URL")
+        return 1
+    print(f"Changing the password of {role}; the new URL goes to secret {args.secret}.")
+    if role == "website_app" and not args.no_secret:
+        print("   The live forms stop saving leads until the service is pointed at the new version:")
+        print("   run the --update-secrets line printed at the end straight away.")
 
     owner_url = _owner_url(args)
     try:
@@ -206,7 +233,7 @@ def main(argv=None):
         owner_secret = ""
     password = secrets.token_urlsafe(32)
     try:
-        url = app_url(owner_url, password)
+        url = app_url(owner_url, password, role)
     except ValueError as exc:
         print(f"FAILED before changing anything: {exc}")
         return 1
@@ -224,27 +251,28 @@ def main(argv=None):
     owner = None
     try:
         owner = _Db(owner_url)
-        exists = owner.run(f"SELECT count(*) FROM pg_catalog.pg_roles WHERE rolname = '{ROLE}'")[0][0]
+        # role comes from the fixed ROLES choices, so it is safe to put in the SQL
+        exists = owner.run(f"SELECT count(*) FROM pg_catalog.pg_roles WHERE rolname = '{role}'")[0][0]
         if not exists:
-            print(f"FAILED: role {ROLE} does not exist; apply db/001_intake.sql first")
+            print(f"FAILED: role {role} does not exist; apply {spec['sql']} first")
             return 1
-        owner.run(f"ALTER ROLE {ROLE} PASSWORD '{verifier}'")
-        print(f"1. {ROLE} has a new password (stored as a SCRAM verifier only)")
+        owner.run(f"ALTER ROLE {role} PASSWORD '{verifier}'")
+        print(f"1. {role} has a new password (stored as a SCRAM verifier only)")
         # after a suspected leak the README turns logins off first; the new
         # password is in place now, so they can come back on
-        if not owner.run(f"SELECT rolcanlogin FROM pg_catalog.pg_roles WHERE rolname = '{ROLE}'")[0][0]:
-            owner.run(f"ALTER ROLE {ROLE} LOGIN")
+        if not owner.run(f"SELECT rolcanlogin FROM pg_catalog.pg_roles WHERE rolname = '{role}'")[0][0]:
+            owner.run(f"ALTER ROLE {role} LOGIN")
             print("   logins were off; turned back on now that the password is new")
         # settings the login stored on itself (after a leak, say) survive a new
-        # password: only db/001_intake.sql clears them
+        # password: only its SQL file clears them
         stored = owner.run("SELECT s.setdatabase, s.setconfig FROM pg_catalog.pg_db_role_setting s "
-                           f"WHERE s.setrole = '{ROLE}'::regrole")
+                           f"WHERE s.setrole = '{role}'::regrole")
         expected = {"statement_timeout=5s", "idle_in_transaction_session_timeout=10s"}
         for db, config in stored or []:
             extra = set(config) - expected - {'search_path=""', "search_path="}
             if db != 0 or extra or not expected <= set(config):
-                print(f"   warning: {ROLE} has stored settings db/001_intake.sql did not set; "
-                      "run 001 now, then this tool again if the next step fails")
+                print(f"   warning: {role} has stored settings {spec['sql']} did not set; "
+                      f"run {spec['sql'].split('/')[-1][:3]} now, then this tool again if the next step fails")
                 break
     except Exception as exc:
         _say_error("setting the password", exc, *hide)
@@ -264,22 +292,25 @@ def main(argv=None):
                     raise
                 time.sleep(5)
         who = app.run("SELECT current_user")[0][0]
-        if who != ROLE:
-            print(f"FAILED: logged in as {who}, not {ROLE}")
+        if who != role:
+            print(f"FAILED: logged in as {who}, not {role}")
             return 1
-        try:
-            app.run("SELECT 1 FROM website_intake.submissions LIMIT 1")
-            print(f"FAILED: {who} can read leads; run db/verify_intake.sql")
-            return 1
-        except Exception as exc:                  # only "permission denied" is the right answer
-            arg = exc.args[0] if exc.args else None
-            code = getattr(exc, "pgcode", None) or (arg.get("C") if isinstance(arg, dict) else None)
-            if code != "42501":
-                _say_error("checking that leads cannot be read", exc, *hide)
+        if role == "website_app":
+            if not _refused(app, "SELECT 1 FROM website_intake.submissions LIMIT 1", "reading leads", hide):
                 return 1
-        print(f"2. logged in as {who}; reading leads is refused, as it should be")
+            print(f"2. logged in as {who}; reading leads is refused, as it should be")
+        else:
+            app.run("SELECT 1 FROM website_intake.submissions LIMIT 1")
+            for sql, what in (("UPDATE website_intake.submissions SET status = status WHERE false",
+                               "changing a lead directly"),
+                              ("DELETE FROM website_intake.submissions WHERE false", "deleting a lead"),
+                              ("INSERT INTO website_intake.submissions (id) VALUES (NULL)", "adding a lead")):
+                if not _refused(app, sql, what, hide):
+                    return 1
+            print(f"2. logged in as {who}; it can read leads, and changing, deleting or adding "
+                  "one directly is refused, as it should be")
     except Exception as exc:
-        _say_error("logging in as " + ROLE, exc, *hide)
+        _say_error("logging in as " + role, exc, *hide)
         return 1
     finally:
         if app is not None:
@@ -325,8 +356,23 @@ def main(argv=None):
     print("   the Cloud Run service account may read it")
     if not version:
         return 1
-    print(f"   switch the website on with: --update-secrets WEBSITE_DB_URL={args.secret}:{version}")
+    print(f"   point the website at it with: --update-secrets {spec['env']}={args.secret}:{version}")
     return 0
+
+
+def _refused(con, sql, what, hide):
+    """True when the statement is refused for lack of rights (and only that)."""
+    try:
+        con.run(sql)
+    except Exception as exc:
+        arg = exc.args[0] if exc.args else None
+        code = getattr(exc, "pgcode", None) or (arg.get("C") if isinstance(arg, dict) else None)
+        if code == "42501":
+            return True
+        _say_error(f"checking that {what} is refused", exc, *hide)
+        return False
+    print(f"FAILED: {what} is allowed for this login; run the db/verify_*.sql scripts")
+    return False
 
 
 if __name__ == "__main__":

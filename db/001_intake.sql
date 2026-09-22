@@ -26,6 +26,11 @@
 --   * everything runs in one transaction: it applies completely or not at all.
 
 BEGIN;
+-- Changing a table's row-level rules briefly locks it against the website's own
+-- inserts. If something else is holding the table (a backup, an open editor
+-- transaction), give up after 3 s rather than stall the live form behind the
+-- wait; everything rolls back. Run the file again a minute later.
+SET LOCAL lock_timeout = '3s';
 
 -- 1. The runtime login ---------------------------------------------------------
 -- Created with only the attributes a CREATEROLE (non-superuser) login may set,

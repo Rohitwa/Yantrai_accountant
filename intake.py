@@ -25,7 +25,8 @@ Everything is switched on by configuration, not code:
   IP_HASH_SALT      optional; when set, rows carry an HMAC of the visitor's IP for abuse triage.
   TRUSTED_XFF_HOPS  how many proxies append to X-Forwarded-For in front of the app (default 1).
                     Above 1 the run.app address becomes spoofable: raise it only once that
-                    address is closed or told apart (the logs carry `host`).
+                    address is closed or told apart (the logs carry `host`). Closing it turns
+                    the inbox off: its tile opens the run.app address (README).
   INTAKE_IP_LIMIT   "log" (default) only logs a visitor sending more than 5 submissions in
                     10 minutes; "enforce" answers them 429. In "log" mode one busy client
                     can fill this instance's window (60 admitted in 10 minutes) and can
@@ -415,16 +416,22 @@ def log_unstored(row, reason, detail=""):
 
 # --- the database --------------------------------------------------------------------------
 def _connect_args():
-    url = os.getenv("WEBSITE_DB_URL", "").strip()
+    return connect_args_for("WEBSITE_DB_URL", "yantrai-website-intake")
+
+
+def connect_args_for(env_name, application_name):
+    """pg8000 connection arguments from the postgresql:// URL in `env_name`. Shared
+    with the inbox (inbox.py), which connects as its own login from its own URL."""
+    url = os.getenv(env_name, "").strip()
     if not url:
         raise IntakeError("unconfigured")
     try:
         parts = urlsplit(url)
         port = parts.port or 5432
     except ValueError:
-        raise IntakeError("unconfigured", "WEBSITE_DB_URL could not be parsed") from None
+        raise IntakeError("unconfigured", f"{env_name} could not be parsed") from None
     if parts.scheme not in ("postgres", "postgresql") or not parts.hostname:
-        raise IntakeError("unconfigured", "WEBSITE_DB_URL is not a postgresql:// URL")
+        raise IntakeError("unconfigured", f"{env_name} is not a postgresql:// URL")
     query = parse_qs(parts.query)
     sslmode = (query.get("sslmode") or ["require"])[0]
     rootcert = os.getenv("WEBSITE_DB_SSLROOTCERT") or (query.get("sslrootcert") or [None])[0]
@@ -448,7 +455,7 @@ def _connect_args():
         "database": (parts.path or "/postgres").lstrip("/") or "postgres",
         "ssl_context": ctx,
         "timeout": SOCKET_TIMEOUT,
-        "application_name": "yantrai-website-intake",
+        "application_name": application_name,
     }
 
 

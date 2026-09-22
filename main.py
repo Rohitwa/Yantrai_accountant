@@ -1,7 +1,9 @@
 """yantrailabs.com — AiFA, AI Teams for Finance.
 
 Everything served to the browser lives in public/. This file only routes and
-handles the form; nothing else in the repo is reachable over HTTP.
+handles the form; nothing else in the repo is reachable over HTTP, except the
+lead inbox the YantrAI platform opens at /admin (inbox.py, admin/), which answers
+404 until it is configured and then only to a platform admin.
 """
 import os
 import re
@@ -12,6 +14,7 @@ from email.message import EmailMessage
 from flask import Flask, jsonify, redirect, request, send_from_directory
 from werkzeug.utils import secure_filename
 
+import inbox
 import intake
 
 # static_folder is off on purpose — Flask's built-in static route would be
@@ -62,8 +65,8 @@ LANG_COOKIE = "__session"
 # a year: the choice is a preference, not a session
 LANG_COOKIE_MAX_AGE = 60 * 60 * 24 * 365
 # paths that are locale-neutral and must never be redirected
-LOCALE_EXEMPT_PREFIXES = ("/api/", "/assets/", "/brand/")
-LOCALE_EXEMPT_PATHS = ("/site.css", "/page.css", "/app.js",
+LOCALE_EXEMPT_PREFIXES = ("/api/", "/assets/", "/brand/", "/admin/")
+LOCALE_EXEMPT_PATHS = ("/site.css", "/page.css", "/app.js", "/admin",
                        "/robots.txt", "/sitemap.xml", "/_status", "/favicon.ico", "/apple-touch-icon.png")
 
 
@@ -210,6 +213,12 @@ def vary_on_language(response):
             parts.append(h)
     response.headers["Vary"] = ", ".join(parts)
     return response
+
+
+# the lead inbox (YantrAI Web): its page and API under /admin, their headers, and
+# JSON errors under /admin/api/. Registered before the catch-all below is used,
+# though Flask would prefer its fixed paths anyway.
+inbox.register(app)
 
 
 @app.get("/")
@@ -458,13 +467,14 @@ def _careers():
 # request reaches the container
 @app.get("/_status")
 def status():
-    # "mail" and "db" say whether each is configured, not that it works: a live
-    # check here would let anyone open database connections at will
+    # "mail", "db" and "inbox" say whether each is configured, not that it works:
+    # a live check here would let anyone open database connections at will
     return jsonify({
         "ok": True,
         "mail": bool(os.getenv("SMTP_PASS")),
         "db": intake.configured(),
         "intake_forms": sorted(intake.forms()) if intake.configured() else [],
+        "inbox": inbox.configured(),
         "version": _version(),
     })
 

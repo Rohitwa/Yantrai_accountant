@@ -1,124 +1,27 @@
 """db/001_intake.sql and intake.py against a real, throwaway, LOCAL Postgres 17.
 
-Skipped unless both are set:
-  INTAKE_TEST_PG_ADMIN  superuser URL of a disposable local cluster, e.g.
-                        postgresql://pgsuper:<pw>@127.0.0.1:55432/postgres
-  INTAKE_TEST_PSQL      path to psql (the migration is applied with psql, as in production)
-
-The fixture makes a Supabase-like setup: a non-superuser `postgres` login with
-CREATEROLE/CREATEDB/BYPASSRLS, the anon/authenticated/service_role/authenticator
-roles, and a public table open to anon. It refuses to run against anything that
-is not localhost. Never point it at the platform database.
+The database is tests/pgsim.py's: Supabase-like, with db/001_intake.sql AND
+db/002_inbox.sql applied (so every check here also proves 002 leaves website_app
+exactly as 001 set it). Skipped unless INTAKE_TEST_PG_ADMIN and INTAKE_TEST_PSQL
+are set; see pgsim.py. Never point it at the platform database.
 """
-import json
 import os
 import secrets
-import subprocess
 import uuid
-from urllib.parse import urlsplit
 
 import pytest
 
 import intake
+from pgsim import ROOT, SKIP, _connect, a_row, pg, sqlstate  # noqa: F401  (pg is a fixture)
 
-ADMIN = os.getenv("INTAKE_TEST_PG_ADMIN")
-PSQL = os.getenv("INTAKE_TEST_PSQL")
-pytestmark = pytest.mark.skipif(
-    not (ADMIN and PSQL),
-    reason="set INTAKE_TEST_PG_ADMIN and INTAKE_TEST_PSQL to run against a throwaway local Postgres")
-
-ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-SQL_001 = os.path.join(ROOT, "db", "001_intake.sql")
+pytestmark = SKIP
 SQL_VERIFY = os.path.join(ROOT, "db", "verify_intake.sql")
-
-
-def _connect(user, password, database, host, port):
-    import pg8000.native
-    return pg8000.native.Connection(user=user, password=password, database=database,
-                                    host=host, port=port)
-
-
-@pytest.fixture(scope="module")
-def pg():
-    a = urlsplit(ADMIN)
-    assert a.hostname in ("127.0.0.1", "localhost", "::1"), \
-        "integration tests only run against a local throwaway Postgres"
-    assert a.username != "postgres", \
-        "connect as the throwaway cluster's own superuser, not a role named postgres"
-    host, port = a.hostname, a.port or 5432
-    sim_pw, app_pw = secrets.token_hex(12), secrets.token_hex(12)
-    dbname = "intake_it_" + secrets.token_hex(4)
-
-    admin = _connect(a.username, a.password, (a.path or "/postgres").lstrip("/") or "postgres", host, port)
-    # postgres and website_app are cluster-wide: two runs at once would reset each
-    # other's passwords and settings, so runs take turns (released at teardown)
-    lock = _connect(a.username, a.password, "postgres", host, port)     # one lock per cluster
-    lock.run("SELECT pg_advisory_lock(815301)")
-    admin.run("""DO $$ BEGIN
-      IF NOT EXISTS (SELECT 1 FROM pg_roles WHERE rolname='anon') THEN CREATE ROLE anon NOLOGIN NOINHERIT; END IF;
-      IF NOT EXISTS (SELECT 1 FROM pg_roles WHERE rolname='authenticated') THEN CREATE ROLE authenticated NOLOGIN NOINHERIT; END IF;
-      IF NOT EXISTS (SELECT 1 FROM pg_roles WHERE rolname='service_role') THEN CREATE ROLE service_role NOLOGIN NOINHERIT BYPASSRLS; END IF;
-      IF NOT EXISTS (SELECT 1 FROM pg_roles WHERE rolname='authenticator') THEN CREATE ROLE authenticator LOGIN NOINHERIT; END IF;
-      IF NOT EXISTS (SELECT 1 FROM pg_roles WHERE rolname='postgres') THEN CREATE ROLE postgres LOGIN CREATEROLE CREATEDB BYPASSRLS; END IF;
-    END $$""")
-    # the stand-in must look like Supabase's: not a superuser, but CREATEROLE + BYPASSRLS.
-    # Checked before its password is touched, so a real `postgres` superuser is never changed.
-    assert admin.run("SELECT rolsuper, rolcreaterole, rolbypassrls FROM pg_roles "
-                     "WHERE rolname = 'postgres'") == [[False, True, True]]
-    admin.run(f"ALTER ROLE postgres PASSWORD '{sim_pw}'")
-    admin.run(f"CREATE DATABASE {dbname} OWNER postgres")
-    admin.close()
-
-    sim = _connect("postgres", sim_pw, dbname, host, port)
-    sim.run("CREATE TABLE public.leaky (x int)")
-    sim.run("GRANT ALL ON public.leaky TO anon, authenticated, service_role")
-
-    env = dict(os.environ, PGPASSWORD=sim_pw)
-
-    def psql(*args):
-        return subprocess.run([PSQL, "-h", host, "-p", str(port), "-U", "postgres", "-d", dbname,
-                               "-v", "ON_ERROR_STOP=1", *args],
-                              env=env, capture_output=True, text=True, encoding="utf-8")
-
-    for _ in range(2):                          # applying twice proves it is re-runnable
-        done = psql("-q", "-f", SQL_001)
-        assert done.returncode == 0, done.stderr
-    sim.run(f"ALTER ROLE website_app PASSWORD '{app_pw}'")
-
-    try:
-        yield {
-            "host": host, "port": port, "db": dbname, "sim": sim, "psql": psql, "sql_001": SQL_001,
-            "admin": lambda: _connect(a.username, a.password, dbname, host, port),
-            "app": lambda: _connect("website_app", app_pw, dbname, host, port),
-            "dsn": f"postgresql://website_app:{app_pw}@{host}:{port}/{dbname}?sslmode=disable",
-            "app_pw": app_pw,
-            "owner_url": f"postgresql://postgres:{sim_pw}@{host}:{port}/{dbname}",
-        }
-    finally:
-        # leave no stored website_app settings behind for the next run (re-applying 001 clears them)
-        pg_psql = psql("-q", "-f", SQL_001)
-        assert pg_psql.returncode == 0, pg_psql.stderr
-        sim.close()
-        lock.run("SELECT pg_advisory_unlock(815301)")
-        lock.close()
 
 
 @pytest.fixture
 def as_app(pg, env):
     env.setenv("WEBSITE_DB_URL", pg["dsn"])
     return pg
-
-
-def a_row(form="savings_check", **extra):
-    row = {c: None for c in intake.COLUMNS}
-    row.update(id=str(uuid.uuid4()), form=form, locale="en", name="Asha Rao",
-               email="asha@example.com", company="Acme Pvt Ltd" if form == "savings_check" else None)
-    row.update(extra)
-    return row
-
-
-def sqlstate(exc):
-    return exc.args[0].get("C") if exc.args and isinstance(exc.args[0], dict) else None
 
 
 def verify(conn):
@@ -458,7 +361,7 @@ def test_set_website_login_sets_a_password_nobody_sees(pg, env, monkeypatch, cap
     monkeypatch.setattr(tool.secrets, "token_urlsafe", lambda n: known)
     env.setenv("PLATFORM_OWNER_DB_URL", pg["owner_url"])
     try:
-        assert tool.main(["--no-secret"]) == 0
+        assert tool.main(["--role", "website_app", "--no-secret"]) == 0
         out = capsys.readouterr().out
         assert "logged in as website_app" in out and "refused" in out
         assert known not in out and "SCRAM-SHA-256$" not in out
@@ -477,7 +380,7 @@ def test_set_website_login_sets_a_password_nobody_sees(pg, env, monkeypatch, cap
         # back on only once the new password is in place
         pg["sim"].run("ALTER ROLE website_app NOLOGIN")
         monkeypatch.setattr(tool.secrets, "token_urlsafe", lambda n: known + "-2")
-        assert tool.main(["--no-secret"]) == 0
+        assert tool.main(["--role", "website_app", "--no-secret"]) == 0
         assert "turned back on" in capsys.readouterr().out
         _connect("website_app", known + "-2", pg["db"], pg["host"], pg["port"]).close()
         with pytest.raises(Exception):
@@ -518,7 +421,7 @@ def test_set_website_login_stores_the_secret(pg, env, monkeypatch, capsys, answe
     monkeypatch.setattr(tool, "_gcloud", fake)
     env.setenv("PLATFORM_OWNER_DB_URL", pg["owner_url"])
     try:
-        assert tool.main([]) == code
+        assert tool.main(["--role", "website_app"]) == code
         out = capsys.readouterr().out
         assert printed in out and known not in out
         stored = [data for cmd, data in fake.calls if data]
@@ -539,7 +442,7 @@ def test_set_website_login_checks_gcloud_before_changing_anything(pg, env, monke
     else:
         monkeypatch.setattr(tool, "_gcloud", _FakeGcloud({"secrets describe website-db-url": describe}))
     env.setenv("PLATFORM_OWNER_DB_URL", pg["owner_url"])
-    assert tool.main([]) == 1
+    assert tool.main(["--role", "website_app"]) == 1
     assert "FAILED before changing anything" in capsys.readouterr().out
     _connect("website_app", pg["app_pw"], pg["db"], pg["host"], pg["port"]).close()   # untouched
 
@@ -549,7 +452,7 @@ def test_set_website_login_warns_about_settings_the_login_stored(pg, env, monkey
     env.setenv("PLATFORM_OWNER_DB_URL", pg["owner_url"])
     pg["sim"].run("ALTER ROLE website_app SET statement_timeout = '1ms'")
     try:
-        tool.main(["--no-secret"])
+        tool.main(["--role", "website_app", "--no-secret"])
         assert "run 001 now" in capsys.readouterr().out
     finally:
         done = pg["psql"]("-q", "-f", pg["sql_001"])

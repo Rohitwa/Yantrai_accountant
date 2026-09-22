@@ -8,6 +8,11 @@ endpoint; everything the browser can reach lives in `public/`.
 ```
 public/          the site — index.html, site.css, app.js, assets/, robots.txt, sitemap.xml
 main.py          routing + POST /api/savings-check
+intake.py        storing form submissions (website_intake)
+inbox.py         YantrAI Web, the lead inbox at /admin; inbox_auth.py decides who gets in
+admin/           the inbox's page, script and styles (outside public/ on purpose)
+db/              the database setup (001 forms, 002 inbox) and their verify scripts
+scripts/         build, deploy, and the owner's credential tools
 design/          the pipeline that generates public/ (see design/README.md)
 Procfile         entrypoint the Cloud Run Python buildpack runs
 app.yaml         the same entrypoint, kept for App Engine builds
@@ -204,8 +209,10 @@ these set **on the Cloud Run service** — `app.yaml` env vars do nothing here:
 | `DEMO_TO_EMAIL` | `rohit@yantrailabs.com` |
 | `SMTP_PASS` | from the `smtp-pass` secret |
 
-`SMTP_PASS` is mounted with `--set-secrets SMTP_PASS=smtp-pass:latest`. That
-requires the runtime service account
+`SMTP_PASS` is mounted with `--update-secrets SMTP_PASS=smtp-pass:latest`.
+Never use `--set-secrets` (or `--set-env-vars`): they replace EVERY secret (or
+setting) on the service, which would silently unplug the form's database login
+and the inbox. That requires the runtime service account
 (`916641724782-compute@developer.gserviceaccount.com`) to hold
 `roles/secretmanager.secretAccessor` on the secret — `roles/editor` does **not**
 cover Secret Manager, which is deliberate on Google's part. Granting it needs a
@@ -255,7 +262,7 @@ and `service_role`. Never add it to the Data API's exposed schemas.
 | `INTAKE_FORMS` | forms to store, default `savings_check`. Add `careers` only once applicant retention and consent are decided |
 | `NOTIFY_EMAIL` | `1` (default) mails each stored lead; `0` stores it silently. A careers CV is always mailed |
 | `IP_HASH_SALT` | optional; rows then carry an HMAC of the visitor's IP |
-| `TRUSTED_XFF_HOPS` | proxies that append to `X-Forwarded-For` (default `1`); set it from the `host` and `xff_depth` the logs report. Above `1` the run.app address becomes spoofable, so first close it (`--no-default-url`) or restrict its ingress |
+| `TRUSTED_XFF_HOPS` | proxies that append to `X-Forwarded-For` (default `1`); set it from the `host` and `xff_depth` the logs report. Above `1` the run.app address becomes spoofable, so first close it (`--no-default-url`) or restrict its ingress. But closing run.app or restricting its ingress turns the inbox off: the tile opens the run.app address and there is no other address for it yet (moving it to yantrailabs.com needs a Firebase Hosting rewrite and a tool change) |
 | `INTAKE_IP_LIMIT` | `log` (default) or `enforce` the 5-per-10-minutes per-visitor limit. In `log` mode one busy client can fill an instance's window (60 admitted in 10 minutes) and also use up the database's 300-an-hour savings guard, which then throttles every instance; other visitors are not stored until those drain (a few go out as `[NOT SAVED]`, the rest get 429). Switch to `enforce` once the logs show real visitor addresses |
 
 **Limits.** Per visitor: 5 submissions in 10 minutes (logged, or refused with
@@ -298,8 +305,13 @@ again: the pooler blocks an address after repeated failed logins. Give it the
 owner URL through a `.env` file (key `DB_URL`) or `PLATFORM_OWNER_DB_URL`:
 
 ```bash
-python scripts/set_website_login.py --owner-env-file <path to the platform .env>
+python scripts/set_website_login.py --role website_app --owner-env-file <path to the platform .env>
 ```
+
+`--role` is required (`website_app` for the forms, `website_admin` for the
+inbox), so a run never changes the wrong login. For `website_app`, the live forms
+stop saving leads from the moment the password changes until the printed
+`--update-secrets` line is run: run the two back to back.
 
 Doing it by hand instead:
 
@@ -375,7 +387,7 @@ gcloud run services update yantrai-website --region asia-south1 --project gen-la
 configured, not that the database answers; a live check there would let anyone
 open connections.
 
-**Reading leads** before the inbox tile exists: the Supabase table editor, or as
+**Reading leads**: in YantrAI Web (below), or the Supabase table editor, or as
 `postgres`: `SELECT * FROM website_intake.submissions ORDER BY received_at DESC;`
 Each notification mail's subject ends in `[#<first 8 characters of the id>]`.
 
@@ -435,7 +447,7 @@ itself, so it must be shut out before the password changes):
    `SELECT pg_terminate_backend(pid) FROM pg_stat_activity WHERE usename = 'website_app';`
    (if `postgres` is refused, restarting the project from the Supabase
    dashboard ends every session).
-3. Set a new password and store it: `scripts/set_website_login.py`, which turns
+3. Set a new password and store it: `scripts/set_website_login.py --role website_app`, which turns
    logins back on only once the new password is in place, proves the login and
    prints the new secret version. If it warns about stored settings, or fails
    while checking the login, do step 4 and then run it again. By hand: `\password website_app`, then
@@ -449,6 +461,118 @@ Keep a disk-usage alert on the Supabase project. Closing TEMP or large objects
 is a platform decision (it affects every login); both are listed right after
 the checks in the verify output.
 
+### The lead inbox (YantrAI Web)
+
+YantrAI Web is the website's lead inbox, shown by the YantrAI platform as a tile
+to its **platform admins** (on the platform: every account whose role is
+`super_admin`, which is what adding someone to the platform workspace makes
+them). They open it inside the platform; nobody else can. It lists the stored
+leads (search, filter by status and form), shows one lead, lets an admin set its
+status (new, contacted, qualified, closed, spam) with a note, and exports a CSV
+(the newest 5000 matching leads at a time; past that the page says how many it
+left out, so a file never silently looks complete). Every sign-in, lead opened,
+status change and export is recorded in `website_intake.inbox_events`; paging
+through the list itself is not (those requests appear only in Cloud Run's
+request log). Forwarding leads by email comes later.
+
+How it works: the platform opens `<the website's run.app address>/admin` in an
+iframe with a one-time sign-in token it signs with this app's key
+(`store_agents` row `yantrai-web`). The website checks it itself
+(`inbox_auth.py`): signed with its key, its client id, fresh, and **`su` exactly
+true**. Nothing else in the token counts: a customer's own group admin can grant
+the app to themselves on the platform, and the platform's own gates fail open
+when its database errs, so this check is the one that matters. The token is
+swapped once for a 2-hour inbox session kept in the page's memory (no cookies:
+they would be third-party cookies in the platform's frame), then removed from the
+address bar. The inbox reads the leads as `website_admin` (`db/002_inbox.sql`):
+it can read them, changes one only through `website_intake.set_status()` (which
+logs the change in the same transaction) and can delete nothing. Everything under
+`/admin` answers 404 until all of its settings are present.
+
+| Setting | From |
+|---|---|
+| `INBOX_DB_URL` | secret `website-admin-db-url` (`set_website_login.py --role website_admin`) |
+| `INBOX_SIGNING_KEY` | secret `website-inbox-key` (`register_inbox_app.py`; the same value as the app's `store_agents.signing_key`) |
+| `INBOX_SESSION_KEY` | secret `website-inbox-session-key` (`register_inbox_app.py`; a new version signs everyone out) |
+| `INBOX_CLIENT_ID` | the app's client id, printed by `register_inbox_app.py` (not secret) |
+| `INBOX_PLATFORM_ORIGIN` | optional; the only page allowed to frame the inbox. Default `https://workspace.yantrailabs.com` |
+
+**Rollout** (the owner runs each step; each needs its own yes; stop at the first
+failure):
+
+1. Tests pass with the database tests included: set `INTAKE_TEST_PG_ADMIN` and
+   `INTAKE_TEST_PSQL` as below plus `INTAKE_TEST_REQUIRE_DB=1` (so a missing
+   setting is an error, not a skip), run `python -m pytest tests`, and check the
+   summary says nothing was skipped.
+2. Deploy the website as usual. The inbox is dormant: `/_status` says
+   `"inbox": false` and `/admin` is a 404. Check that the forms still store
+   leads (`"db": true`, and an `intake_stored` log line for a test lead).
+3. Apply `db/002_inbox.sql` as `postgres` and run `db/verify_inbox.sql` (every row
+   `t`) and `db/verify_intake.sql` again (every row `t`). Use psql: the Supabase
+   SQL editor shows only the last result.
+4. `python scripts/set_website_login.py --role website_admin --owner-env-file <platform .env>`
+   (makes `website-admin-db-url`; the forms are not touched).
+5. `python scripts/register_inbox_app.py --owner-env-file <platform .env>`: registers
+   `yantrai-web` (visibility `sadmin`, no owner org, first-party), installs it in
+   the platform org **switched off**, stores both inbox secrets, and prints one
+   `gcloud run services update ...` command.
+6. Run that command. `/_status` now says `"inbox": true`.
+7. `python scripts/register_inbox_app.py --owner-env-file <platform .env> --enable`
+   (it refuses unless `/_status` says `"inbox": true`). Open the tile as a
+   platform admin.
+
+**Off switches**, fastest first: `register_inbox_app.py --disable` hides the tile
+everywhere (it needs neither gcloud nor the website; by hand, as `postgres`:
+`UPDATE org_agent_installs SET enabled = FALSE WHERE agent_slug = 'yantrai-web';`);
+`gcloud run services update yantrai-website ... --remove-secrets INBOX_SIGNING_KEY`
+makes every `/admin` path a 404 at once; `register_inbox_app.py --new-session-key`
+plus its printed command (it changes only the session secret) signs everyone
+out; `ALTER ROLE website_admin NOLOGIN;`
+cuts the inbox's database login (re-running 002 or the login tool turns it back
+on). A bad website revision: `gcloud run services update-traffic yantrai-website
+--region asia-south1 --project gen-lang-client-0024674990 --to-revisions=<previous>=100`
+(the next good deploy then needs `--to-latest`).
+
+Re-running `register_inbox_app.py` is safe: it keeps the app's client id and
+signing key, puts back its visibility (`sadmin`), name and address, repairs the
+service account's access to both secrets, and leaves the install as it is. But
+the command it prints turns the inbox on: do not run that command while the
+inbox is meant to be off (after `--remove-secrets INBOX_SIGNING_KEY`, say). If
+the tool cannot tell which org is the platform's (more than one org has super
+admins), give it `--org <the platform org's id>`. Re-run it if someone changes the app's visibility in the
+platform's Agent Manager (whose dropdown shows `sadmin` as "public"), or with
+`--remote-url` before the run.app address ever changes.
+
+**Known limits.**
+- The platform does not tell apps when someone logs out or stops being a platform
+  admin: an open inbox session lasts up to 2 hours.
+- The tile shows while the admin's active company is in the platform org
+  (platform behaviour). Any signed-in platform user can hide it for everyone
+  (the tile's ✕); `--enable` brings it back.
+- The log records the platform account the sign-in was minted for; a platform
+  admin can mint one for another platform admin (the platform's "preview").
+- The platform's Agent Manager page currently sends every app's signing key to
+  the browser and shows app names unescaped (a platform bug; fix pending on the
+  platform). Until it is fixed, a customer who can create a developer app could
+  reach the leads through a platform admin who opens that page.
+- If the platform ever stops putting `su` in app tokens, the inbox refuses
+  everyone (it fails closed) until this rule is updated.
+- The inbox's secrets, like the form's, are readable by the project's default
+  compute service account, which other workloads (the platform's jobs) also run
+  as. Those workloads already hold the platform's owner database URL, which reads
+  everything, so a dedicated service account for the website only helps once
+  that is tidied up too (a platform decision).
+
+What a leaked `website_admin` password can do: read every lead and the inbox log,
+add sign-in/view/export entries to the log, and change statuses through
+`set_status` (each change logged). It cannot delete or rewrite anything. Respond
+as for `website_app` (NOLOGIN, end its sessions, `set_website_login.py --role
+website_admin`, re-run 002 and `verify_inbox.sql`, point `INBOX_DB_URL` at the new
+version). A leaked `INBOX_SIGNING_KEY` lets someone sign in as a platform admin:
+turn the inbox off (`--remove-secrets INBOX_SIGNING_KEY`), then get a new key into
+`store_agents` and the secret (ask for help; the platform caches keys for 5
+minutes).
+
 **Tests**: `pip install -r requirements.txt pytest && python -m pytest tests`.
 The database tests run only against a disposable **local** Postgres 17: set
 `INTAKE_TEST_PG_ADMIN` to the URL of a superuser that is not named `postgres`
@@ -456,7 +580,10 @@ The database tests run only against a disposable **local** Postgres 17: set
 path of psql. The tests create Supabase-like roles, including a non-superuser
 `postgres`, and leave `intake_it_*` databases behind, so use a cluster made only
 for this. Runs on the same cluster take turns (an advisory lock in its
-`postgres` database).
+`postgres` database). Both migrations are applied, in both orders, before the
+tests run (`tests/pgsim.py`). Setting only one of the two variables, or
+`INTAKE_TEST_REQUIRE_DB=1` without both, stops the run with an error instead of
+skipping the database tests.
 
 ## Changing the page
 

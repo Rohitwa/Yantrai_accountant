@@ -112,10 +112,15 @@ SELECT check_name, ok FROM (
             NOT EXISTS (SELECT 1 FROM intake_tables t, aclexplode(t.relacl) a WHERE a.grantee = 0)
   UNION ALL SELECT 21, 'row-level security is on for both tables',
             (SELECT count(*) FROM intake_tables WHERE relrowsecurity) = 2
-  UNION ALL SELECT 22, 'only the two insert policies exist',
-            (SELECT count(*) FROM pg_catalog.pg_policies WHERE schemaname = 'website_intake') = 2
+  -- (002_inbox.sql adds read policies for website_admin; verify_inbox.sql checks those)
+  UNION ALL SELECT 22, 'website_app''s only policies are the two insert ones, and none applies to everyone',
+            (SELECT count(*) FROM pg_catalog.pg_policies
+              WHERE schemaname = 'website_intake' AND 'website_app' = ANY (roles)) = 2
             AND (SELECT count(*) FROM pg_catalog.pg_policies
-                  WHERE schemaname = 'website_intake' AND cmd = 'INSERT') = 2
+                  WHERE schemaname = 'website_intake' AND 'website_app' = ANY (roles)
+                    AND cmd = 'INSERT' AND tablename IN ('submissions', 'notify_events')) = 2
+            AND NOT EXISTS (SELECT 1 FROM pg_catalog.pg_policies
+                             WHERE schemaname = 'website_intake' AND 'public' = ANY (roles))
   -- the flood guard
   UNION ALL SELECT 23, 'throttle runs as its owner with a pinned search_path',
             coalesce((SELECT prosecdef AND proconfig IS NOT NULL
