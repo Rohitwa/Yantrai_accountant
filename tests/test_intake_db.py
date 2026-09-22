@@ -487,6 +487,76 @@ def test_set_website_login_sets_a_password_nobody_sees(pg, env, monkeypatch, cap
         pg["sim"].run(f"ALTER ROLE website_app PASSWORD '{pg['app_pw']}'")
 
 
+class _FakeGcloud:
+    """Stands in for gcloud: records each call, answers from a script."""
+
+    def __init__(self, answers):
+        self.answers, self.calls = answers, []
+
+    def __call__(self, args, *cmd, data=None):
+        import subprocess
+        self.calls.append((cmd, data))
+        rc, out, err = self.answers.get(" ".join(cmd[:3]), (0, "", ""))
+        return subprocess.CompletedProcess(cmd, rc, out, err)
+
+
+@pytest.mark.parametrize("answers, code, printed, version", [
+    ({"secrets describe website-db-url": (1, "", "ERROR: NOT_FOUND: Secret not found"),
+      "secrets versions list": (0, "projects/9/secrets/website-db-url/versions/1\n", "")},
+     0, "stored as website-db-url version 1", "1"),
+    ({"secrets versions add": (0, "projects/9/secrets/website-db-url/versions/7\n", "")},
+     0, "stored as website-db-url version 7", "7"),
+    ({"secrets versions add": (0, "", "")}, 1, "version number could not be read", None),
+    ({"secrets add-iam-policy-binding website-db-url": (1, "", "PERMISSION_DENIED")},
+     1, "FAILED letting the service account read it", None),
+])
+def test_set_website_login_stores_the_secret(pg, env, monkeypatch, capsys, answers, code, printed, version):
+    import scripts.set_website_login as tool
+    known = "known-" + secrets.token_hex(8)
+    monkeypatch.setattr(tool.secrets, "token_urlsafe", lambda n: known)
+    fake = _FakeGcloud(answers)
+    monkeypatch.setattr(tool, "_gcloud", fake)
+    env.setenv("PLATFORM_OWNER_DB_URL", pg["owner_url"])
+    try:
+        assert tool.main([]) == code
+        out = capsys.readouterr().out
+        assert printed in out and known not in out
+        stored = [data for cmd, data in fake.calls if data]
+        assert len(stored) == 1 and stored[0].startswith("postgresql://website_app:" + known + "@")
+        if version:
+            assert f"website-db-url:{version}" in out
+    finally:
+        pg["sim"].run(f"ALTER ROLE website_app PASSWORD '{pg['app_pw']}'")
+
+
+@pytest.mark.parametrize("describe", [(1, "", "ERROR: PERMISSION_DENIED: caller lacks access"), None])
+def test_set_website_login_checks_gcloud_before_changing_anything(pg, env, monkeypatch, capsys, describe):
+    import scripts.set_website_login as tool
+    if describe is None:                                  # no gcloud at all
+        def missing(args, *cmd, data=None):
+            raise RuntimeError("gcloud not found on PATH")
+        monkeypatch.setattr(tool, "_gcloud", missing)
+    else:
+        monkeypatch.setattr(tool, "_gcloud", _FakeGcloud({"secrets describe website-db-url": describe}))
+    env.setenv("PLATFORM_OWNER_DB_URL", pg["owner_url"])
+    assert tool.main([]) == 1
+    assert "FAILED before changing anything" in capsys.readouterr().out
+    _connect("website_app", pg["app_pw"], pg["db"], pg["host"], pg["port"]).close()   # untouched
+
+
+def test_set_website_login_warns_about_settings_the_login_stored(pg, env, monkeypatch, capsys):
+    import scripts.set_website_login as tool
+    env.setenv("PLATFORM_OWNER_DB_URL", pg["owner_url"])
+    pg["sim"].run("ALTER ROLE website_app SET statement_timeout = '1ms'")
+    try:
+        tool.main(["--no-secret"])
+        assert "run 001 now" in capsys.readouterr().out
+    finally:
+        done = pg["psql"]("-q", "-f", pg["sql_001"])
+        assert done.returncode == 0, done.stderr
+        pg["sim"].run(f"ALTER ROLE website_app PASSWORD '{pg['app_pw']}'")
+
+
 def test_rerunning_001_clears_per_database_overrides(pg):
     sim = pg["sim"]
     sim.run(f"ALTER ROLE website_app IN DATABASE {pg['db']} SET statement_timeout = 0")

@@ -17,9 +17,15 @@ What it does, in order:
   5. prints the new version number, to pin with
      --update-secrets WEBSITE_DB_URL=website-db-url:<version>.
 
-It prints neither the password nor the URL. If a leak is suspected, do the
-README's first steps (NOLOGIN, end the sessions) before running this.
-Needs psycopg2 or pg8000, and gcloud signed in (unless --no-secret).
+It prints neither the password nor the URL. Every run sets a NEW password:
+a site already using website-db-url keeps the old one until it is pointed at
+the new version. If it fails while logging in, wait two minutes before running
+it again (the pooler blocks an address after repeated failed logins). If a
+leak is suspected, do the README's first steps (NOLOGIN, end the sessions)
+before running this. Only the SCRAM verifier, never the password, can appear
+in the database's statement statistics or logs.
+Needs psycopg2 or pg8000, and gcloud signed in (unless --no-secret); gcloud and
+Secret Manager are checked before anything changes.
 """
 import argparse
 import base64
@@ -56,16 +62,21 @@ def scram_verifier(password, iterations=4096, salt=None):
 
 def app_url(owner_url, password):
     """The website_app URL on the same host, port and database as the owner's.
-    On Supabase the pooler needs the project ref after the role name."""
-    parts = urlsplit(owner_url)
-    owner = unquote(parts.username or "")
+    On Supabase the pooler needs the project ref after the role name. Only
+    sslmode=require is carried, never the owner's other parameters (a laptop's
+    sslrootcert path, sslmode=disable)."""
+    try:
+        parts = urlsplit(owner_url)
+        owner, host, port = unquote(parts.username or ""), parts.hostname or "", parts.port
+    except ValueError:
+        raise ValueError("the owner URL could not be read: percent-encode any ?, # or @ "
+                         "in its password") from None
+    if not owner or not host:
+        raise ValueError("the owner URL has no user or host")
     user = ROLE + (owner[owner.index("."):] if "." in owner else "")
-    host = parts.hostname or ""
-    netloc = f"{quote(user, safe='')}:{quote(password, safe='')}@{host}" + (f":{parts.port}" if parts.port else "")
-    query = parts.query
-    if "sslmode=" not in query and host not in ("localhost", "127.0.0.1", "::1"):
-        query = (query + "&" if query else "") + "sslmode=require"
-    return urlunsplit((parts.scheme or "postgresql", netloc, parts.path or "/postgres", query, ""))
+    netloc = f"{quote(user, safe='')}:{quote(password, safe='')}@{host}" + (f":{port}" if port else "")
+    query = "" if host in ("localhost", "127.0.0.1", "::1") else "sslmode=require"
+    return urlunsplit(("postgresql", netloc, parts.path or "/postgres", query, ""))
 
 
 class _Db:
@@ -109,13 +120,34 @@ class _Db:
             pass
 
 
+def env_value(path, key):
+    """`key` from a .env file: a BOM, `export `, spaces around '=', quotes and
+    a trailing # comment are all allowed. None when the key is not there."""
+    with open(path, encoding="utf-8-sig") as f:
+        for line in f:
+            line = line.strip()
+            if line.startswith("export "):
+                line = line[7:].lstrip()
+            name, sep, value = line.partition("=")
+            if not sep or name.strip() != key:
+                continue
+            value = value.strip()
+            if value[:1] in ("'", '"'):
+                end = value.find(value[0], 1)
+                return value[1:end] if end > 0 else value[1:]
+            return value.split(" #", 1)[0].strip()
+    return None
+
+
 def _owner_url(args):
     if args.owner_env_file:
-        for line in open(args.owner_env_file, encoding="utf-8"):
-            line = line.strip()
-            if line.startswith(args.owner_env_key + "="):
-                return line.split("=", 1)[1].strip().strip('"').strip("'")
-        sys.exit(f"{args.owner_env_key} not found in {args.owner_env_file}")
+        try:
+            url = env_value(args.owner_env_file, args.owner_env_key)
+        except (OSError, UnicodeDecodeError) as exc:
+            sys.exit(f"could not read {args.owner_env_file}: {type(exc).__name__} (it must be UTF-8)")
+        if not url:
+            sys.exit(f"{args.owner_env_key} not found in {args.owner_env_file}")
+        return url
     url = os.getenv("PLATFORM_OWNER_DB_URL", "").strip()
     if not url:
         sys.exit("give --owner-env-file, or set PLATFORM_OWNER_DB_URL")
@@ -128,6 +160,25 @@ def _say_error(step, exc, *hide):
         if h:
             text = text.replace(h, "***")
     print(f"FAILED at {step}: {text}")
+
+
+def _secret_state(args):
+    """'exists', 'missing', or a reason gcloud cannot be used (checked before
+    anything changes, so a gcloud problem never costs a password)."""
+    try:
+        r = _gcloud(args, "secrets", "describe", args.secret, "--format=value(name)")
+    except Exception as exc:
+        return f"gcloud could not run ({type(exc).__name__}: {exc})"
+    if r.returncode == 0:
+        return "exists"
+    if "NOT_FOUND" in r.stderr or "not found" in r.stderr.lower():
+        return "missing"
+    return "gcloud cannot read Secret Manager: " + r.stderr.strip()[-300:]
+
+
+def _version_of(output):
+    tail = output.strip().splitlines()[-1].rsplit("/", 1)[-1] if output.strip() else ""
+    return tail if tail.isdigit() else None
 
 
 def _gcloud(args, *cmd, data=None):
@@ -149,10 +200,26 @@ def main(argv=None):
     args = ap.parse_args(argv)
 
     owner_url = _owner_url(args)
+    try:
+        owner_secret = unquote(urlsplit(owner_url).password or "")
+    except ValueError:
+        owner_secret = ""
     password = secrets.token_urlsafe(32)
-    url = app_url(owner_url, password)
+    try:
+        url = app_url(owner_url, password)
+    except ValueError as exc:
+        print(f"FAILED before changing anything: {exc}")
+        return 1
     verifier = scram_verifier(password)
     assert _VERIFIER.fullmatch(verifier)          # only base64, digits, $ and : go into the SQL
+    hide = (password, url, owner_url, owner_secret)
+
+    state = None
+    if not args.no_secret:
+        state = _secret_state(args)
+        if state not in ("exists", "missing"):
+            print(f"FAILED before changing anything: {state}")
+            return 1
 
     owner = None
     try:
@@ -168,8 +235,19 @@ def main(argv=None):
         if not owner.run(f"SELECT rolcanlogin FROM pg_catalog.pg_roles WHERE rolname = '{ROLE}'")[0][0]:
             owner.run(f"ALTER ROLE {ROLE} LOGIN")
             print("   logins were off; turned back on now that the password is new")
+        # settings the login stored on itself (after a leak, say) survive a new
+        # password: only db/001_intake.sql clears them
+        stored = owner.run("SELECT s.setdatabase, s.setconfig FROM pg_catalog.pg_db_role_setting s "
+                           f"WHERE s.setrole = '{ROLE}'::regrole")
+        expected = {"statement_timeout=5s", "idle_in_transaction_session_timeout=10s"}
+        for db, config in stored or []:
+            extra = set(config) - expected - {'search_path=""', "search_path="}
+            if db != 0 or extra or not expected <= set(config):
+                print(f"   warning: {ROLE} has stored settings db/001_intake.sql did not set; "
+                      "run 001 now, then this tool again if the next step fails")
+                break
     except Exception as exc:
-        _say_error("setting the password", exc, password)
+        _say_error("setting the password", exc, *hide)
         return 1
     finally:
         if owner is not None:
@@ -186,6 +264,9 @@ def main(argv=None):
                     raise
                 time.sleep(5)
         who = app.run("SELECT current_user")[0][0]
+        if who != ROLE:
+            print(f"FAILED: logged in as {who}, not {ROLE}")
+            return 1
         try:
             app.run("SELECT 1 FROM website_intake.submissions LIMIT 1")
             print(f"FAILED: {who} can read leads; run db/verify_intake.sql")
@@ -194,11 +275,11 @@ def main(argv=None):
             arg = exc.args[0] if exc.args else None
             code = getattr(exc, "pgcode", None) or (arg.get("C") if isinstance(arg, dict) else None)
             if code != "42501":
-                _say_error("checking that leads cannot be read", exc, password)
+                _say_error("checking that leads cannot be read", exc, *hide)
                 return 1
         print(f"2. logged in as {who}; reading leads is refused, as it should be")
     except Exception as exc:
-        _say_error("logging in as " + ROLE, exc, password)
+        _say_error("logging in as " + ROLE, exc, *hide)
         return 1
     finally:
         if app is not None:
@@ -208,27 +289,42 @@ def main(argv=None):
         print("3. --no-secret: nothing stored in Secret Manager")
         return 0
     try:
-        if _gcloud(args, "secrets", "describe", args.secret, "--format=value(name)").returncode == 0:
-            r = _gcloud(args, "secrets", "versions", "add", args.secret, "--data-file=-", data=url)
+        if state == "exists":
+            r = _gcloud(args, "secrets", "versions", "add", args.secret, "--data-file=-",
+                        "--format=value(name)", data=url)
+            version = _version_of(r.stdout) if r.returncode == 0 else None
         else:
             r = _gcloud(args, "secrets", "create", args.secret, "--replication-policy=automatic",
                         "--data-file=-", data=url)
+            version = None
+            if r.returncode == 0:
+                listed = _gcloud(args, "secrets", "versions", "list", args.secret, "--limit=1",
+                                 "--format=value(name)")
+                version = _version_of(listed.stdout) if listed.returncode == 0 else None
         if r.returncode != 0:
-            print("FAILED storing the secret: " + r.stderr.strip().replace(password, "***")[-400:])
+            text = r.stderr.strip()
+            for h in hide:
+                if h:
+                    text = text.replace(h, "***")
+            print("FAILED storing the secret: " + text[-400:])
             return 1
-        latest = _gcloud(args, "secrets", "versions", "list", args.secret, "--limit=1",
-                         "--sort-by=~createTime", "--format=value(name)")
-        version = latest.stdout.strip().rsplit("/", 1)[-1]
+        if version:
+            print(f"3. stored as {args.secret} version {version}")
+        else:
+            print(f"3. stored in {args.secret}, but its version number could not be read: "
+                  f"see gcloud secrets versions list {args.secret}")
         grant = _gcloud(args, "secrets", "add-iam-policy-binding", args.secret,
                         f"--member=serviceAccount:{args.service_account}",
                         "--role=roles/secretmanager.secretAccessor", "--format=none")
         if grant.returncode != 0:
-            print("FAILED granting the service account: " + grant.stderr.strip()[-400:])
+            print("FAILED letting the service account read it: " + grant.stderr.strip()[-400:])
             return 1
     except Exception as exc:
-        _say_error("storing the secret", exc, password, url)
+        _say_error("storing the secret", exc, *hide)
         return 1
-    print(f"3. stored as {args.secret} version {version}; the Cloud Run service account may read it")
+    print("   the Cloud Run service account may read it")
+    if not version:
+        return 1
     print(f"   switch the website on with: --update-secrets WEBSITE_DB_URL={args.secret}:{version}")
     return 0
 

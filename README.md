@@ -289,8 +289,13 @@ makes a random password in memory, sets it on `website_app` as a SCRAM
 verifier (as psql's `\password` does), proves the login works and still cannot
 read a lead, stores the connection URL as a new `website-db-url` version, lets
 the Cloud Run service account read it, and prints the version number. Nobody
-ever sees the password, including whoever runs it. Give it the owner URL
-through a `.env` file (key `DB_URL`) or `PLATFORM_OWNER_DB_URL`:
+ever sees the password, including whoever runs it; only its SCRAM verifier can
+appear in the database's statement statistics. It checks gcloud and Secret
+Manager before changing anything. Every run sets a new password, and a site
+already using `website-db-url` keeps the old one until it is pointed at the new
+version. If it fails while logging in, wait two minutes before running it
+again: the pooler blocks an address after repeated failed logins. Give it the
+owner URL through a `.env` file (key `DB_URL`) or `PLATFORM_OWNER_DB_URL`:
 
 ```bash
 python scripts/set_website_login.py --owner-env-file <path to the platform .env>
@@ -432,7 +437,8 @@ itself, so it must be shut out before the password changes):
    dashboard ends every session).
 3. Set a new password and store it: `scripts/set_website_login.py`, which turns
    logins back on only once the new password is in place, proves the login and
-   prints the new secret version. By hand: `\password website_app`, then
+   prints the new secret version. If it warns about stored settings, or fails
+   while checking the login, do step 4 and then run it again. By hand: `\password website_app`, then
    `ALTER ROLE website_app LOGIN;`, then store the URL as a `website-db-url`
    version and prove it with `replay_intake.py --check`.
 4. Re-run 001 and the verify script.

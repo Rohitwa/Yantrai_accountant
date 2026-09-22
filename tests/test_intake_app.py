@@ -819,6 +819,32 @@ def test_a_tls_failure_names_its_cause(env, monkeypatch):
     assert info.value.detail == "InterfaceError/SSLCertVerificationError"
 
 
+# --- the website_app login tool (no database) ------------------------------------------------------------
+@pytest.mark.parametrize("line", [
+    "DB_URL=postgresql://o:p@h/d", "export DB_URL=postgresql://o:p@h/d", "DB_URL = postgresql://o:p@h/d",
+    'DB_URL="postgresql://o:p@h/d"  # the platform', "DB_URL='postgresql://o:p@h/d'",
+    "DB_URL=postgresql://o:p@h/d # the platform",
+])
+def test_the_login_tool_reads_common_env_file_shapes(tmp_path, line):
+    import scripts.set_website_login as tool
+    f = tmp_path / ".env"
+    f.write_bytes(("\ufeffOTHER=1\r\n" + line + "\r\n").encode("utf-8"))    # a BOM and CRLF too
+    assert tool.env_value(str(f), "DB_URL") == "postgresql://o:p@h/d"
+    assert tool.env_value(str(f), "MISSING") is None
+
+
+def test_the_login_tool_builds_only_what_the_website_needs():
+    import scripts.set_website_login as tool
+    got = tool.app_url("postgresql+psycopg2://postgres.ref:x@pooler.example:5432/postgres"
+                       "?sslmode=disable&sslrootcert=C:/Users/me/ca.crt", "pw")
+    assert got == "postgresql://website_app.ref:pw@pooler.example:5432/postgres?sslmode=require"
+    for bad in ("postgresql://postgres.ref:Own?secret@pooler.example:5432/postgres",
+                "postgresql://postgres.ref:Own#secret@pooler.example:5432/postgres"):
+        with pytest.raises(ValueError) as info:
+            tool.app_url(bad, "pw")
+        assert "secret" not in str(info.value) and "Own" not in str(info.value)
+
+
 # --- replay parsing ------------------------------------------------------------------------------------------
 def full_row():
     return {"id": "3f2b1c9e-8d7a-4b6c-9e0f-112233445566", "form": "careers", "locale": "fr",
