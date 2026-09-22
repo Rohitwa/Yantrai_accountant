@@ -92,6 +92,7 @@ def pg():
             "app": lambda: _connect("website_app", app_pw, dbname, host, port),
             "dsn": f"postgresql://website_app:{app_pw}@{host}:{port}/{dbname}?sslmode=disable",
             "app_pw": app_pw,
+            "owner_url": f"postgresql://postgres:{sim_pw}@{host}:{port}/{dbname}",
         }
     finally:
         # leave no stored website_app settings behind for the next run (re-applying 001 clears them)
@@ -437,6 +438,43 @@ def test_the_leak_recovery_steps_shut_out_a_connected_session(pg):
         sim.run("ALTER ROLE website_app LOGIN")
         sim.run(f"ALTER ROLE website_app PASSWORD '{pg['app_pw']}'")
         admin.close()
+
+
+def test_set_website_login_sets_a_password_nobody_sees(pg, env, monkeypatch, capsys):
+    """The operator tool, run as the Supabase-like postgres: website_app gets a
+    working password that is never printed, and still cannot read a lead."""
+    import scripts.set_website_login as tool
+    known = "known-" + secrets.token_hex(8)
+    monkeypatch.setattr(tool.secrets, "token_urlsafe", lambda n: known)
+    env.setenv("PLATFORM_OWNER_DB_URL", pg["owner_url"])
+    try:
+        assert tool.main(["--no-secret"]) == 0
+        out = capsys.readouterr().out
+        assert "logged in as website_app" in out and "refused" in out
+        assert known not in out and "SCRAM-SHA-256$" not in out
+        _connect("website_app", known, pg["db"], pg["host"], pg["port"]).close()
+        with pytest.raises(Exception):                    # the old password is gone
+            _connect("website_app", pg["app_pw"], pg["db"], pg["host"], pg["port"])
+        stored = pg["admin"]()
+        try:
+            (verifier,), = stored.run("SELECT rolpassword FROM pg_authid WHERE rolname = 'website_app'")
+        finally:
+            stored.close()
+        assert verifier.startswith("SCRAM-SHA-256$4096:")
+        assert tool.app_url("postgresql://postgres.abc:x@pooler.example:5432/postgres", "p w") == \
+            "postgresql://website_app.abc:p%20w@pooler.example:5432/postgres?sslmode=require"
+        # the README's leak response: logins off, then the tool, which turns them
+        # back on only once the new password is in place
+        pg["sim"].run("ALTER ROLE website_app NOLOGIN")
+        monkeypatch.setattr(tool.secrets, "token_urlsafe", lambda n: known + "-2")
+        assert tool.main(["--no-secret"]) == 0
+        assert "turned back on" in capsys.readouterr().out
+        _connect("website_app", known + "-2", pg["db"], pg["host"], pg["port"]).close()
+        with pytest.raises(Exception):
+            _connect("website_app", known, pg["db"], pg["host"], pg["port"])
+    finally:
+        pg["sim"].run("ALTER ROLE website_app LOGIN")
+        pg["sim"].run(f"ALTER ROLE website_app PASSWORD '{pg['app_pw']}'")
 
 
 def test_rerunning_001_clears_per_database_overrides(pg):

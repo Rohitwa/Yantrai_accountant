@@ -281,11 +281,25 @@ after every run of 001.
 
 ```bash
 psql "<postgres session-pooler URL>" -v ON_ERROR_STOP=1 -f db/001_intake.sql
-psql "<postgres session-pooler URL>" -c "\password website_app"
 psql "<postgres session-pooler URL>" -f db/verify_intake.sql   # every row of the first result must say t
 ```
 
-**The secret**: the URL is
+**The password and the secret, in one step**: `scripts/set_website_login.py`
+makes a random password in memory, sets it on `website_app` as a SCRAM
+verifier (as psql's `\password` does), proves the login works and still cannot
+read a lead, stores the connection URL as a new `website-db-url` version, lets
+the Cloud Run service account read it, and prints the version number. Nobody
+ever sees the password, including whoever runs it. Give it the owner URL
+through a `.env` file (key `DB_URL`) or `PLATFORM_OWNER_DB_URL`:
+
+```bash
+python scripts/set_website_login.py --owner-env-file <path to the platform .env>
+```
+
+Doing it by hand instead:
+
+`psql "<postgres session-pooler URL>" -c "\password website_app"`, then
+**the secret**: the URL is
 `postgresql://website_app.vxnflumpectzqdamjqsc:<password>@aws-1-ap-south-1.pooler.supabase.com:5432/postgres?sslmode=require`,
 with the password percent-encoded (`python -c "import urllib.parse,getpass;print(urllib.parse.quote(getpass.getpass(),safe=''))"`).
 Type it without echo, so it stays out of shell history, then prove it before
@@ -416,10 +430,13 @@ itself, so it must be shut out before the password changes):
    `SELECT pg_terminate_backend(pid) FROM pg_stat_activity WHERE usename = 'website_app';`
    (if `postgres` is refused, restarting the project from the Supabase
    dashboard ends every session).
-3. Set a new password: `\password website_app`.
-4. Re-run 001, which turns logins back on, and the verify script.
-5. Store the new URL as a `website-db-url` version, prove it with
-   `replay_intake.py --check`, and point the service at it
+3. Set a new password and store it: `scripts/set_website_login.py`, which turns
+   logins back on only once the new password is in place, proves the login and
+   prints the new secret version. By hand: `\password website_app`, then
+   `ALTER ROLE website_app LOGIN;`, then store the URL as a `website-db-url`
+   version and prove it with `replay_intake.py --check`.
+4. Re-run 001 and the verify script.
+5. Point the service at the new version
    (`--update-secrets WEBSITE_DB_URL=website-db-url:<new version>`).
 
 Keep a disk-usage alert on the Supabase project. Closing TEMP or large objects
