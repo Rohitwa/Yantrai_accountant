@@ -4,3 +4,6 @@ __pycache__/
 .venv*/
 design/
 .github/
+# not needed at runtime
+tests/
+db/

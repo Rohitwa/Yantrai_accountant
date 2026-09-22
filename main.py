@@ -5,10 +5,13 @@ handles the form; nothing else in the repo is reachable over HTTP.
 """
 import os
 import smtplib
+import threading
 from email.message import EmailMessage
 
 from flask import Flask, jsonify, redirect, request, send_from_directory
 from werkzeug.utils import secure_filename
+
+import intake
 
 # static_folder is off on purpose — Flask's built-in static route would be
 # registered ahead of ours and serve the repo root, source files included.
@@ -26,6 +29,14 @@ CV_EXTENSIONS = {
 
 # reject an oversized body at the edge rather than reading it into memory
 app.config["MAX_CONTENT_LENGTH"] = MAX_CV_BYTES + (1 << 20)
+# the savings check is a small JSON form: the page caps the note at 4000
+# characters (at most 12 KB even in a 3-byte script), so a real visitor stays
+# far under 256 KB (the other inputs have no maxlength, but the server cuts them
+# to 120-300 characters). Applied only when storing (mail-only keeps the
+# app-wide limit, as before).
+SAVINGS_MAX_BYTES = 256 * 1024
+# a 512 MiB instance holds at most two CVs (and their mail encoding) at once
+_cv_slots = threading.BoundedSemaphore(2)
 
 # The page declares yantrailabs.com canonical — <link rel="canonical">, og:url,
 # the sitemap and robots.txt all name it. Both hostnames are mapped to this
@@ -82,7 +93,12 @@ def redirect_to_canonical_host():
 
 
 def _clean(value, max_len=1000):
-    return (value or "").strip()[:max_len]
+    # form fields are text; anything else (a number, a list) counts as empty.
+    # NUL bytes are dropped and lone surrogates become "?": the database cannot
+    # store either. Line breaks count as one character, as the page's maxlength
+    # counts them (a browser sends each as CRLF).
+    text = intake.safe_text(value).replace("\r\n", "\n").replace("\r", "\n")
+    return text.strip()[:max_len]
 
 
 def _send_mail(subject, body, reply_to="", attachment=None):
@@ -108,18 +124,33 @@ def _send_mail(subject, body, reply_to="", attachment=None):
         app.logger.error("Mail not configured; unset: %s", ", ".join(missing))
         return False, "Email service not configured", 500
 
-    msg = EmailMessage()
-    msg["Subject"] = subject
-    msg["From"] = sender
-    msg["To"] = recipient
-    msg["Reply-To"] = reply_to or sender
-    msg.set_content(body)
-    if attachment:
-        filename, mime, data = attachment
-        maintype, _, subtype = mime.partition("/")
-        msg.add_attachment(data, maintype=maintype, subtype=subtype, filename=filename)
+    # Visitor text reaches the subject (name, company) and Reply-To. Collapse
+    # every kind of line break, or the email package refuses the header and the
+    # mail is lost (a failed mail for a stored lead, a 502 for a CV or mail-only).
+    subject = " ".join(str(subject).split())
+    # Reply-To only when the visitor's address is one plain ASCII address a
+    # header can carry (a group, a bracket, a list or a non-ASCII local part
+    # would be refused or garbled): otherwise the sender. The address is in
+    # the body either way.
+    reply_to = intake.header_address(reply_to)
 
     try:
+        msg = EmailMessage()
+        msg["Subject"] = subject
+        msg["From"] = sender
+        msg["To"] = recipient
+        try:
+            msg["Reply-To"] = reply_to or sender
+        except Exception:
+            # an address the header parser chokes on must not cost the mail
+            # (and a careers CV with it): the address is in the body anyway
+            del msg["Reply-To"]
+            msg["Reply-To"] = sender
+        msg.set_content(body)
+        if attachment:
+            filename, mime, data = attachment
+            maintype, _, subtype = mime.partition("/")
+            msg.add_attachment(data, maintype=maintype, subtype=subtype, filename=filename)
         with smtplib.SMTP(host, port, timeout=20) as smtp:
             smtp.starttls()
             smtp.login(user, password)
@@ -195,15 +226,108 @@ def static_files(path):
     return send_from_directory(PUBLIC, path)
 
 
+def _store_then_notify(form, fields, subject, body, reply_to, attachment=None):
+    """The intake path (intake.py): store the submission first, then mail it.
+
+    A stored lead is safe whatever the mailbox does, so the visitor is told it
+    went through even when the mail fails, except a careers application with a
+    CV (502: the CV exists only in the mail). A lead that could not be stored is
+    logged in full and mailed as [NOT SAVED] with replay JSON within the hourly
+    caps (intake.py); past them the visitor gets 503 or 429."""
+    ip = intake.client_ip(request)
+    row = intake.build_row(form, fields, request, ip, cv=attachment,
+                           cookie_value=request.cookies.get(LANG_COOKIE))
+    subject = f"{subject} [#{intake.short_id(row['id'])}]"
+    body = f"{body}\n\nLead id: {row['id']}"
+
+    rate = intake.check_rate(ip)
+    if rate == "ip":
+        enforced = intake.ip_limit_enforced()
+        intake.log("WARNING", "intake_ip_over_limit", id=row["id"], form=form, host=request.host,
+                   xff_depth=intake.xff_depth(request), enforced=enforced)
+        if enforced:
+            # one visitor over its limit: refused outright, without drawing on
+            # the mails and log lines kept for database outages
+            return jsonify({"ok": False, "error": "Too many requests"}), 429
+    elif rate == "global":
+        return _unstored(row, "rate_limited", subject, body, reply_to, attachment)
+
+    try:
+        outcome = intake.insert_submission(row)
+    except intake.IntakeError as exc:
+        return _unstored(row, exc.reason, subject, body, reply_to, attachment, exc.detail)
+
+    intake.log("INFO", "intake_stored", id=row["id"], form=form, outcome=outcome,
+               host=request.host, xff_depth=intake.xff_depth(request))
+
+    # a CV exists nowhere but in this mail, so it goes whatever NOTIFY_EMAIL says
+    if intake.notify_email_on() or attachment:
+        sent, _, _ = _send_mail(subject, body, reply_to=reply_to, attachment=attachment)
+        intake.record_event(row["id"], "mail_sent" if sent else "mail_failed")
+        if not sent:
+            # stored, so not lost -- but nobody was told: worth an alert
+            intake.log("ERROR", "intake_mail_failed", id=row["id"], form=form)
+            if attachment:
+                intake.log("ERROR", "careers_cv_undelivered", id=row["id"])
+                return jsonify({"ok": False, "error": "Failed to send email"}), 502
+    else:
+        intake.record_event(row["id"], "mail_disabled")
+    return jsonify({"ok": True})
+
+
+def _unstored(row, reason, subject, body, reply_to, attachment, detail=""):
+    """The submission could not be stored: log it, mail it as [NOT SAVED] with the
+    JSON scripts/replay_intake.py needs, and tell the visitor honestly."""
+    intake.log_unstored(row, reason, detail)
+    sent = False
+    if intake.take_fallback_slot(reason):
+        sent, _, _ = _send_mail(
+            "[NOT SAVED] " + subject,
+            f"{body}\n\n---\nThis submission was NOT saved in the database ({reason}).\n"
+            "Replay it with scripts/replay_intake.py once the database is reachable:\n"
+            + intake.REPLAY_MARKER + " " + intake.replay_json(row) + "\n",
+            reply_to=reply_to,
+            attachment=attachment,
+        )
+        intake.log("WARNING" if sent else "ERROR", "intake_fallback_mail",
+                   id=row["id"], reason=reason, sent=sent)
+    else:
+        intake.log("ERROR", "intake_fallback_mail_capped", id=row["id"], reason=reason)
+    if sent:
+        # the submission reached the mailbox, which is what the visitor asked for
+        return jsonify({"ok": True})
+    if reason in ("throttled", "rate_limited"):
+        return jsonify({"ok": False, "error": "Too many requests"}), 429
+    return jsonify({"ok": False, "error": "Please try again"}), 503
+
+
+def _email_refused(form, email):
+    # logged without the address itself, so a refusal is visible and countable
+    intake.log("WARNING", "intake_email_refused", form=form, length=len(email),
+               has_at=email.count("@"))
+    return jsonify({"ok": False, "error": "Please check the email address"}), 400
+
+
 @app.post("/api/savings-check")
 def savings_check():
-    payload = request.get_json(silent=True) or {}
+    storing = intake.enabled("savings_check")
+    if storing:
+        if (request.content_length or 0) > SAVINGS_MAX_BYTES:
+            intake.log("WARNING", "intake_body_too_large", form="savings_check",
+                       bytes=request.content_length)
+            return jsonify({"ok": False, "error": "Request too large"}), 413
+        # also bounds a chunked body, whose length is not declared up front
+        request.max_content_length = SAVINGS_MAX_BYTES
+
+    payload = request.get_json(silent=True)
+    if not isinstance(payload, dict):
+        payload = {}
 
     if _clean(payload.get("website")):          # honeypot
         return jsonify({"ok": True})
 
     name = _clean(payload.get("name"), 120)
-    email = _clean(payload.get("email"), 180)
+    email = intake.normalise_email(_clean(payload.get("email"), 1000))[:180]
     company = _clean(payload.get("company"), 180)
     role = _clean(payload.get("role"), 120)
     erp = _clean(payload.get("erp"), 120)
@@ -214,36 +338,55 @@ def savings_check():
     if not name or not email or not company:
         return jsonify({"ok": False, "error": "Missing required fields"}), 400
 
-    ok, error, status = _send_mail(
-        subject=f"AiFA savings check: {company} ({name})",
-        body="\n".join(
-            [
-                "New AiFA savings-check request",
-                "",
-                f"Name: {name}",
-                f"Email: {email}",
-                f"Company: {company}",
-                f"Role: {role or 'Not provided'}",
-                f"ERP: {erp or 'Not provided'}",
-                f"Annual outflow: {outflow or 'Not provided'}",
-                "",
-                "Notes:",
-                note or "Not provided",
-                "",
-                f"From: {page or 'Not provided'}",
-            ]
-        ),
-        reply_to=email,
+    subject = f"AiFA savings check: {company} ({name})"
+    body = "\n".join(
+        [
+            "New AiFA savings-check request",
+            "",
+            f"Name: {name}",
+            f"Email: {email}",
+            f"Company: {company}",
+            f"Role: {role or 'Not provided'}",
+            f"ERP: {erp or 'Not provided'}",
+            f"Annual outflow: {outflow or 'Not provided'}",
+            "",
+            "Notes:",
+            note or "Not provided",
+            "",
+            f"From: {page or 'Not provided'}",
+        ]
     )
-    if not ok:
-        return jsonify({"ok": False, "error": error}), status
-    return jsonify({"ok": True})
+    # visitor text cannot pose as the replay line a [NOT SAVED] mail ends with
+    body = intake.defuse_markers(body)
+
+    if not storing:
+        # no database configured for this form: mail only, as before
+        ok, error, status = _send_mail(subject=subject, body=body, reply_to=email)
+        if not ok:
+            return jsonify({"ok": False, "error": error}), status
+        return jsonify({"ok": True})
+
+    if not intake.looks_like_email(email):
+        return _email_refused("savings_check", email)
+    fields = {"name": name, "email": email, "company": company, "role": role, "erp": erp,
+              "outflow": outflow, "note": note, "page": page}
+    return _store_then_notify("savings_check", fields, subject, body, reply_to=email)
 
 
-# not /healthz — Cloud Run reserves that path and answers it before the
-# request reaches the container
 @app.post("/api/careers")
 def careers():
+    cv = request.files.get("resume")
+    if not (cv and cv.filename):
+        return _careers()
+    if not _cv_slots.acquire(timeout=30):
+        return jsonify({"ok": False, "error": "Busy, please try again"}), 503
+    try:
+        return _careers()
+    finally:
+        _cv_slots.release()
+
+
+def _careers():
     """Open applications. The CV rides along as a mail attachment rather than
     landing in a bucket — at this hiring volume an inbox is the right store,
     and it means no storage to secure or clean up."""
@@ -251,7 +394,7 @@ def careers():
         return jsonify({"ok": True})
 
     name = _clean(request.form.get("name"), 120)
-    email = _clean(request.form.get("email"), 180)
+    email = intake.normalise_email(_clean(request.form.get("email"), 1000))[:180]
     linkedin = _clean(request.form.get("linkedin"), 300)
     work = _clean(request.form.get("work"), 300)
     area = _clean(request.form.get("area"), 120)
@@ -274,36 +417,54 @@ def careers():
             attachment = (secure_filename(cv.filename) or "cv" + ext,
                           CV_EXTENSIONS[ext], data)
 
-    ok, error, status = _send_mail(
-        subject=f"Careers: {name}" + (f" — {area}" if area else ""),
-        body="\n".join(
-            [
-                "Open application",
-                "",
-                f"Name: {name}",
-                f"Email: {email}",
-                f"LinkedIn: {linkedin or 'Not provided'}",
-                f"Something they made: {work or 'Not provided'}",
-                f"Area: {area or 'Not provided'}",
-                f"CV: {attachment[0] if attachment else 'Not attached'}",
-                "",
-                "What they'd want to own:",
-                note or "Not provided",
-                "",
-                f"From: {page or 'Not provided'}",
-            ]
-        ),
-        reply_to=email,
-        attachment=attachment,
+    subject = f"Careers: {name}" + (f" — {area}" if area else "")
+    body = "\n".join(
+        [
+            "Open application",
+            "",
+            f"Name: {name}",
+            f"Email: {email}",
+            f"LinkedIn: {linkedin or 'Not provided'}",
+            f"Something they made: {work or 'Not provided'}",
+            f"Area: {area or 'Not provided'}",
+            f"CV: {attachment[0] if attachment else 'Not attached'}",
+            "",
+            "What they'd want to own:",
+            note or "Not provided",
+            "",
+            f"From: {page or 'Not provided'}",
+        ]
     )
-    if not ok:
-        return jsonify({"ok": False, "error": error}), status
-    return jsonify({"ok": True})
+    body = intake.defuse_markers(body)
+
+    if not intake.enabled("careers"):
+        # applications are stored only once INTAKE_FORMS lists careers
+        ok, error, status = _send_mail(subject=subject, body=body, reply_to=email,
+                                       attachment=attachment)
+        if not ok:
+            return jsonify({"ok": False, "error": error}), status
+        return jsonify({"ok": True})
+
+    if not intake.looks_like_email(email):
+        return _email_refused("careers", email)
+    fields = {"name": name, "email": email, "linkedin": linkedin, "work": work,
+              "area": area, "note": note, "page": page}
+    return _store_then_notify("careers", fields, subject, body, reply_to=email,
+                              attachment=attachment)
 
 
+# not /healthz — Cloud Run reserves that path and answers it before the
+# request reaches the container
 @app.get("/_status")
 def status():
-    return jsonify({"ok": True, "mail": bool(os.getenv("SMTP_PASS"))})
+    # "mail" and "db" say whether each is configured, not that it works: a live
+    # check here would let anyone open database connections at will
+    return jsonify({
+        "ok": True,
+        "mail": bool(os.getenv("SMTP_PASS")),
+        "db": intake.configured(),
+        "intake_forms": sorted(intake.forms()) if intake.configured() else [],
+    })
 
 
 if __name__ == "__main__":

@@ -2,4 +2,4 @@
 # builds from source. Handlers and env_variables would be App Engine settings and
 # are ignored; environment variables are set on the Cloud Run service itself.
 runtime: python314
-entrypoint: gunicorn -b :$PORT main:app
+entrypoint: gunicorn -b :$PORT --workers 1 --threads 8 --timeout 0 main:app
