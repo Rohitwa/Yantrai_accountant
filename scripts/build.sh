@@ -18,7 +18,7 @@ AIFA_LOCALE=fr python3 design/build.py
 # The build writes its output into design/ alongside its sources; these are the
 # generated names. Keep in step with the locales and PAGES in design/build.py.
 FILES=(index.html site.css app.js page.css)
-DIRS=(about agents careers for fr integrations research security what-it-found workflows)
+DIRS=(about agents careers for fr integrations pricing research security what-it-found workflows)
 
 echo "==> staging into public/"
 for f in "${FILES[@]}"; do

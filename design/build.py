@@ -567,6 +567,7 @@ LINK_MAP = {
     'about yantrai labs': '/about',
     'careers': '/careers',
     'security': '/security',
+    'pricing': '/pricing',
     'contact': '/#book',
     'support': '/#book',
     'how ohm works': '/#how',
@@ -779,6 +780,9 @@ PAGES = [
     ('careers', 'Careers — tell us what you\'d build | OHM',
      'No posted roles. We hire people we cannot not hire. What the work is like, and a '
      'form that goes straight to a founder.'),
+    ('pricing', 'Pricing — start small, ₹5 a voucher | OHM',
+     'Three plans - ₹999, ₹2,999, ₹4,999 - buy a balance for your workspace. ₹5 to enter a '
+     'voucher, ₹5 to check one, nothing else costs anything, and the balance never expires.'),
 ]
 
 CALC_JS = '''<script>

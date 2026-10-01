@@ -1,0 +1,84 @@
+<style>
+  /* pricing — the three plans, the two prices. Numbers line up; nothing else is decorated. */
+  .plans { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 1px; margin-top: 34px; background: var(--line); border: 1px solid var(--line); }
+  .plans > div { background: #FFFFFF; padding: 28px 26px 26px; display: grid; gap: 8px; align-content: start; }
+  .plans .price { font-family: var(--serif); font-size: 40px; line-height: 1; font-weight: 300; letter-spacing: -0.8px; color: var(--ink); font-variant-numeric: tabular-nums; }
+  .plans .price small { font-family: var(--sans); font-size: 12px; font-weight: 600; letter-spacing: -0.24px; color: var(--body); margin-left: 8px; }
+  .plans .acts { font-size: 15.5px; font-weight: 600; letter-spacing: -0.47px; color: var(--ink); }
+  .plans p { margin: 0; font-size: 14.5px; line-height: 1.5; letter-spacing: -0.29px; }
+  .plans .same { margin-top: 10px; font-size: 12.5px; color: var(--body); }
+  .steps { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1px; margin-top: 34px; background: var(--line); border: 1px solid var(--line); counter-reset: step; }
+  .steps > div { background: #FFFFFF; padding: 24px 22px; }
+  .steps > div::before { counter-increment: step; content: counter(step); display: block; font-family: var(--serif); font-size: 28px; line-height: 1; font-weight: 300; color: var(--ink); margin-bottom: 10px; }
+  .steps h3 { margin: 0; font-size: 15.5px; font-weight: 600; letter-spacing: -0.47px; color: var(--ink); }
+  .steps p { margin: 8px 0 0; font-size: 14px; line-height: 1.5; letter-spacing: -0.28px; }
+  .tablewrap { overflow-x: auto; margin-top: 30px; }
+</style>
+
+<div class="wrap">
+  <div class="crumb"><a href="/">OHM</a> · Pricing</div>
+  <div class="masthead">
+    <span class="eyebrow"><i></i>Pricing</span>
+    <h1 class="display">Start small.<br><em class="mark">₹5 a voucher.</em></h1>
+    <p class="lede">A plan buys a balance for your whole workspace. OHM takes ₹5 when it enters a voucher and ₹5 when it checks one. Nothing else costs anything, and the balance never expires.</p>
+  </div>
+</div>
+
+<section class="band">
+  <div class="wrap wrap-wide">
+    <h2 class="sec">Three plans</h2>
+    <p>Pick one, pay by UPI, card or netbanking, and the balance is there. Prices include GST; the tax invoice is in your workspace the moment the payment lands.</p>
+    <div class="plans">
+      <div>
+        <span class="price">₹999<small>incl. GST</small></span>
+        <span class="acts">199 actions</span>
+        <p>Enter and check 99 vouchers, or enter 199.</p>
+      </div>
+      <div>
+        <span class="price">₹2,999<small>incl. GST</small></span>
+        <span class="acts">599 actions</span>
+        <p>Enter and check 299 vouchers, or enter 599.</p>
+      </div>
+      <div>
+        <span class="price">₹4,999<small>incl. GST</small></span>
+        <span class="acts">999 actions</span>
+        <p>Enter and check 499 vouchers, or enter 999.</p>
+      </div>
+    </div>
+    <p class="same">The same ₹5 on every plan. The bigger plans are only bigger.</p>
+  </div>
+</section>
+
+<section class="band wash">
+  <div class="wrap wrap-wide">
+    <h2 class="sec">What costs ₹5, and what does not</h2>
+    <p>Each charge is taken once per voucher. Reading a bill again, fixing a draft, approving it, sending it to Tally: free.</p>
+    <div class="tablewrap">
+      <table class="grid">
+        <thead><tr><th>What OHM does</th><th>Costs</th><th>When</th></tr></thead>
+        <tbody>
+          <tr><td>Enters a voucher from a bill, a photo, a sentence or an expense claim</td><td class="num">₹5</td><td>Once, when the first draft is made</td></tr>
+          <tr><td>Checks a voucher against your policy at Submit</td><td class="num">₹5</td><td>Once, the first time its checks run</td></tr>
+          <tr><td>A voucher you type by hand</td><td class="num">free</td><td>OHM read nothing</td></tr>
+          <tr><td>Vouchers that come in from Tally</td><td class="num">free</td><td>Tally made them</td></tr>
+          <tr><td>Re-reads, edits, approvals, sending to Tally, reports, Find, masters, bank reconciliation</td><td class="num">free</td><td>Always</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</section>
+
+<section class="band">
+  <div class="wrap wrap-wide">
+    <h2 class="sec">Your first day</h2>
+    <p>Five steps, no call needed.</p>
+    <div class="steps">
+      <div><h3>Sign up</h3><p>Your workspace, your people, your roles.</p></div>
+      <div><h3>Connect Tally</h3><p>The connector runs on the Tally machine and keeps the books in step.</p></div>
+      <div><h3>Recharge</h3><p>Pick a plan. The balance shows in the menu, always.</p></div>
+      <div><h3>Enter a voucher</h3><p>Upload a bill, snap it on the phone, or write it as a sentence.</p></div>
+      <div><h3>Check it</h3><p>Submit runs your policy; approve, and it goes to Tally.</p></div>
+    </div>
+    <a class="btn" href="/#book">Talk to us <span aria-hidden="true">→</span></a>
+  </div>
+</section>
