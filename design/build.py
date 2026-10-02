@@ -452,6 +452,25 @@ body = body.replace('href="#demo"', 'href="#book"')
 # the product login is a live app, unrelated to this page
 body = body.replace('href="#login"', 'href="https://workspace.yantrailabs.com/"')
 
+# ------------------------------------------------------------- start free --
+# Owner, 2026-10-02: "yes to all nine, build it" on /artifact/P2DFVJft8UB8jVGRemMov4 (the sign-up flow, step 1). Start free
+# sits beside Book a demo in the bar and beside the savings check in the hero; it opens the workspace's sign-up page, which
+# asks two things - an email (any) and a password. Book a demo stays for whoever wants a call.
+SIGNUP_URL = 'https://workspace.yantrailabs.com/signup'
+_cta = body.index('data-nav-cta="1"')
+_cta_end = body.index('</div>', _cta)
+body = (body[:_cta_end]
+        + '<a href="%s" data-start-free="1" style="white-space: nowrap; font-size: 14px; font-weight: 600; letter-spacing: -0.42px; '
+          'color: #FFFFFF; background: #151414; border-radius: 9px; padding: 8px 14px; text-decoration: none;">Start free</a>' % SIGNUP_URL
+        + body[_cta_end:])
+_hero = body.index('data-hero-cta="1"')
+_first_a_end = body.index('</a>', _hero) + len('</a>')
+body = (body[:_first_a_end]
+        + '<a href="%s" data-start-free="1" style="display: inline-flex; align-items: center; gap: 10px; background: #FFFFFF; '
+          'color: #151414; border: 1px solid #151414; border-radius: 10px; padding: 16px 24px; font-size: 15px; font-weight: 600; '
+          'letter-spacing: -0.45px; text-decoration: none;">Start free<span style="font-size: 15px; line-height: 1;">\u2192</span></a>' % SIGNUP_URL
+        + body[_first_a_end:])
+
 # ------------------------------------------------- "The agents" -> AI team
 # Section label (nav, section eyebrow, footer column) and the footer's list of
 # agent names, which now carry the same "<name> Agent" form as the ring chips.
@@ -666,6 +685,11 @@ assert 'data-nav="1"' in body and 'data-footer="1"' in body
 # commit. The footer is copied into every content page below.
 body, _n = re.subn(r'(>\u00a9[^<]*)(</span>)', r'\1<span data-site-version="1" hidden></span>\2', body)
 assert _n == 1, 'copyright line in the footer'
+# the two pages Create account links to (call 8: under the button, no tick box) - on every page's footer too
+body, _n = re.subn(r'(<span data-site-version="1" hidden></span>)(</span>)',
+                   r'\1 · <a href="/terms" data-legal="1" style="color: inherit;">Terms</a> · '
+                   r'<a href="/privacy" data-legal="1" style="color: inherit;">Privacy</a>\2', body)
+assert _n == 1, 'legal links on the copyright line'
 
 
 # ----------------------------------------------------------------- video --
@@ -783,6 +807,11 @@ PAGES = [
     ('pricing', 'Pricing — start small, ₹5 a voucher | OHM',
      'Three plans - ₹999, ₹2,999, ₹4,999 - buy a balance for your workspace. ₹5 to enter a '
      'voucher, ₹5 to check one, nothing else costs anything, and the balance never expires.'),
+    ('terms', 'Terms | OHM',
+     'The terms of using OHM, in plain words: your account, what OHM does, paying, your data, and what happens if '
+     'either of us stops.'),
+    ('privacy', 'Privacy | OHM',
+     'What OHM collects, why, who handles it for us, how long it is kept, and how to have it exported or deleted.'),
 ]
 
 CALC_JS = '''<script>

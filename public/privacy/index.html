@@ -3,23 +3,23 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Invoice entry — Every control, at the moment the invoice arrives | OHM</title>
-<meta name="description" content="Eight agents open the same invoice at once. Money-out, tax, receipt and authority checks all run before the entry stands — not in a batch at the close, when the money has already moved.">
-<link rel="canonical" href="https://yantrailabs.com/workflows/invoice-entry">
+<title>Privacy | OHM</title>
+<meta name="description" content="What OHM collects, why, who handles it for us, how long it is kept, and how to have it exported or deleted.">
+<link rel="canonical" href="https://yantrailabs.com/privacy">
 <meta name="theme-color" content="#FFFFFF">
 <meta name="robots" content="index, follow">
 
 <meta property="og:type" content="website">
 <meta property="og:site_name" content="YantrAI">
-<meta property="og:title" content="Invoice entry — Every control, at the moment the invoice arrives | OHM">
-<meta property="og:description" content="Eight agents open the same invoice at once. Money-out, tax, receipt and authority checks all run before the entry stands — not in a batch at the close, when the money has already moved.">
-<meta property="og:url" content="https://yantrailabs.com/workflows/invoice-entry">
+<meta property="og:title" content="Privacy | OHM">
+<meta property="og:description" content="What OHM collects, why, who handles it for us, how long it is kept, and how to have it exported or deleted.">
+<meta property="og:url" content="https://yantrailabs.com/privacy">
 <meta property="og:image" content="https://yantrailabs.com/assets/og-cover.jpg">
 <meta property="og:image:width" content="1200">
 <meta property="og:image:height" content="630">
 <meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:title" content="OHM — Your AI Assistant for Finance">
-<meta name="twitter:description" content="Eight agents open the same invoice at once. Money-out, tax, receipt and authority checks all run before the entry stands — not in a batch at the close, when the money has already moved.">
+<meta name="twitter:description" content="What OHM collects, why, who handles it for us, how long it is kept, and how to have it exported or deleted.">
 <meta name="twitter:image" content="https://yantrailabs.com/assets/og-cover.jpg">
 
 <link rel="icon" href="/favicon.ico" sizes="32x32">
@@ -31,8 +31,8 @@
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Newsreader:opsz,wght@6..72,200..600&family=Archivo:wght@400;500;600&display=swap">
 <link rel="preload" as="image" href="/assets/ohm-explainer-poster.jpg" media="not all and (max-width: 760px) and (orientation: portrait)">
 <link rel="preload" as="image" href="/assets/ohm-explainer-poster-9x16.jpg" media="(max-width: 760px) and (orientation: portrait)">
-<link rel="alternate" hreflang="en" href="https://yantrailabs.com/workflows/invoice-entry">
-<link rel="alternate" hreflang="x-default" href="https://yantrailabs.com/workflows/invoice-entry">
+<link rel="alternate" hreflang="en" href="https://yantrailabs.com/privacy">
+<link rel="alternate" hreflang="x-default" href="https://yantrailabs.com/privacy">
 <style>
 body { margin: 0; background: #FFFFFF; }
     a { color: #151414; text-decoration: none; }
@@ -100,87 +100,57 @@ body { margin: 0; background: #FFFFFF; }
     <a href="https://workspace.yantrailabs.com/signup" data-start-free="1" style="white-space: nowrap; font-size: 14px; font-weight: 600; letter-spacing: -0.42px; color: #FFFFFF; background: #151414; border-radius: 9px; padding: 8px 14px; text-decoration: none;">Start free</a></div>
   </div>
 <main id="main">
+<style>
+  /* privacy - what we keep, why, who handles it, how long. Linked under Create account (owner, 2026-10-02, call 8). */
+  .clauses { display: grid; gap: 1px; margin-top: 30px; background: var(--line); border: 1px solid var(--line); }
+  .clauses > div { background: #FFFFFF; padding: 22px 24px; display: grid; grid-template-columns: minmax(0, 220px) minmax(0, 1fr); gap: 6px 28px; }
+  .clauses h3 { margin: 0; font-size: 15.5px; font-weight: 600; letter-spacing: -0.47px; color: var(--ink); }
+  .clauses p { margin: 0 0 8px; font-size: 14.5px; line-height: 1.55; letter-spacing: -0.29px; }
+  .clauses p:last-child { margin-bottom: 0; }
+  .clauses ul { margin: 0 0 8px; padding-left: 18px; font-size: 14.5px; line-height: 1.55; letter-spacing: -0.29px; }
+  @media (max-width: 720px) { .clauses > div { grid-template-columns: minmax(0, 1fr); } }
+</style>
+
 <div class="wrap">
-  <div class="crumb"><a href="/">OHM</a> · Workflows · Invoice entry</div>
+  <div class="crumb"><a href="/">OHM</a> · Privacy</div>
   <div class="masthead">
-    <span class="eyebrow rose"><i></i>Invoice entry</span>
-    <h1 class="display">Every control, at the moment the invoice arrives.</h1>
-    <p class="lede">Eight agents open the same invoice at once. Money-out, tax, receipt and authority checks all run before the entry stands — not in a batch at the close, when the money has already moved.</p>
+    <span class="eyebrow"><i></i>Privacy</span>
+    <h1 class="display">What we keep,<br><em class="mark">and why.</em></h1>
+    <p class="lede">YantrAI Labs makes OHM. This note says what we collect when you use it, what we do with it, and who handles it for us. How it is protected is on the <a href="/security">Security</a> page.</p>
   </div>
 </div>
 
 <section class="band">
   <div class="wrap wrap-wide">
-    <h2 class="sec">The same step, two ways</h2>
-    <div class="cards">
-      <div>
-        <h3>How it runs today</h3>
-        <ul class="checks sand" style="margin-top:16px">
-        <li>The invoice lands in a shared mailbox, a portal, or someone's hand.</li>
-        <li>Someone keys it. Someone else approves a total they cannot check against a contract they have not read.</li>
-        <li>A sample gets audited weeks later. The rest was approved on trust.</li>
-        <li>What leaked surfaces at the close, on a spreadsheet, after payment.</li>
+    <div class="clauses">
+      <div><h3>What we collect</h3>
+        <div><ul>
+          <li>Your account: your email address, and your name and phone number if you give them.</li>
+          <li>Your workspace: the documents you upload and what OHM reads from them, the books and masters that come in from your ERP, and the vouchers, checks and approvals made in OHM.</li>
+          <li>Payments: the amount, the date and the GSTIN on your invoice. Card, UPI and bank details are handled by Razorpay and never reach us.</li>
+          <li>Records of use: when you sign in, and what the service did, so it can be secured and supported.</li>
+          <li>On this website: what you send us when you ask for a savings check or a demo.</li>
+        </ul></div></div>
+      <div><h3>Why</h3>
+        <div><p>To run OHM for you - reading, proposing, checking and sending your vouchers - to bill you, to keep the service secure, and to help when you ask. We do not sell your data, and we do not use it for advertising.</p></div></div>
+      <div><h3>Who handles it for us</h3>
+        <div><ul>
+          <li>Google Cloud - where OHM runs, and the AI that reads documents.</li>
+          <li>Supabase - the database, sign-in, and the emails for codes, invites and password links.</li>
+          <li>Razorpay - payments.</li>
+          <li>Google - only if you choose to sign in with Google.</li>
         </ul>
-      </div>
-      <div>
-        <h3>With the team on it</h3>
-        <ul class="checks" style="margin-top:16px">
-        <li>The document is read on arrival, whichever channel it came through.</li>
-        <li>Eight checks run in parallel on the same invoice, each against its own source of truth.</li>
-        <li>Anything clean posts. Anything that fails stops with a named reason and the evidence attached.</li>
-        <li>Nothing waits for the close, because nothing was deferred to it.</li>
-        </ul>
-      </div>
-    </div>
-  </div>
-</section>
-
-<section class="band wash">
-  <div class="wrap wrap-wide">
-    <h2 class="sec">Who runs, and what they enforce</h2>
-    <p>All of them, on the same vendor invoice, at the same time. Not a queue.</p>
-    <div class="tablewrap">
-      <table class="grid">
-        <thead><tr><th>Agent</th><th>What it enforces</th></tr></thead>
-        <tbody>
-          <tr><td><a href="/agents/duplicate-agent">Duplicate Agent</a></td><td>No earlier copy of this invoice</td></tr>
-          <tr><td><a href="/agents/pricing-agent">Pricing Agent</a></td><td>Price matches the contract and the PO</td></tr>
-          <tr><td><a href="/agents/3-way-match-agent">3-way match Agent</a></td><td>PO, GRN and invoice agree</td></tr>
-          <tr><td><a href="/agents/gst-agent">GST Agent</a></td><td>Vendor has filed before credit is claimed</td></tr>
-          <tr><td><a href="/agents/tds-agent">TDS Agent</a></td><td>Right section, right rate</td></tr>
-          <tr><td><a href="/agents/pan-agent">PAN Agent</a></td><td>Vendor PAN active and linked</td></tr>
-          <tr><td><a href="/agents/msme-agent">MSME Agent</a></td><td>Small-vendor clock started</td></tr>
-          <tr><td><a href="/agents/doa-agent">DOA Agent</a></td><td>Inside the approval limit</td></tr>
-        </tbody>
-      </table>
-    </div>
-    <p class="note" style="margin-top:20px;font-size:13.5px;color:var(--mute)">Agents without a link yet are part of the team but do not have a page written up.</p>
-  </div>
-</section>
-
-<section class="band">
-  <div class="wrap">
-    <h2 class="sec">What lands in your ERP</h2>
-    <p>A vendor invoice entered against its PO and GRN, taxed correctly, authorised inside the delegation, with every check that ran recorded against it.</p>
-    <div class="callout">
-      <span class="label">Entered clean</span>
-      <p>The stamp on a <strong>vendor invoice</strong> that cleared this step. It means every check ran and passed — not that a sample did, and not that it will be reviewed later.</p>
-    </div>
-  </div>
-</section>
-
-<section class="next">
-  <div class="wrap">
-    <h2>See this step run on your last 90 days.</h2>
-    <p>One export. No connector. We come back within a working day.</p>
-    <a class="btn" href="/#book"><span class="rupee">$</span>Check your savings<span>→</span></a>
-    <div class="inline-links">
-      <a href="/workflows/sync-to-erp">Sync to ERP →</a>
-      <a href="/workflows/payment-processing">Payment processing →</a>
-      <a href="/workflows/daily-close">Daily close →</a>
-      <a href="/workflows/multi-entity-groups">Multi-entity groups →</a>
-      <a href="/workflows/multi-currency">Multi-currency →</a>
-      <a href="/agents">The AI team →</a>
+        <p>Each handles your data only to provide its part of the service.</p></div></div>
+      <div><h3>How long</h3>
+        <div><p>For as long as your workspace is active. Ask us and we export your workspace's data, or delete it.</p></div></div>
+      <div><h3>Your choices</h3>
+        <div><p>You can see and correct your account details in Settings. For a copy of your data, a correction elsewhere, or a deletion, write to us.</p></div></div>
+      <div><h3>Cookies</h3>
+        <div><p>OHM keeps you signed in with what your browser stores for that alone. This website sets one cookie, to remember your language. There are no advertising or tracking cookies.</p></div></div>
+      <div><h3>Changes</h3>
+        <div><p>If this note changes, the new version is posted here, and group admins are told by email when the change matters.</p></div></div>
+      <div><h3>Questions</h3>
+        <div><p>Write to <a href="mailto:rohit@yantrailabs.com">rohit@yantrailabs.com</a>.</p></div></div>
     </div>
   </div>
 </section>
