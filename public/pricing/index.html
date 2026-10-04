@@ -3,23 +3,23 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Pricing — start small, ₹5 a voucher | OHM</title>
-<meta name="description" content="Three plans - ₹999, ₹2,999, ₹4,999 - buy a balance for your workspace. ₹5 to enter a voucher, ₹5 to check one, nothing else costs anything, and the balance never expires.">
+<title>Pricing — typing is free, ₹5 a page the AI reads | OHM</title>
+<meta name="description" content="Intern ₹0 with 100 trial credits; Executive ₹2,999 and Manager ₹4,999 a seat a month with 3,300 and 6,000 credits. ₹5 a page the AI reads, ₹1 a bank statement line, and everything after is free.">
 <link rel="canonical" href="https://yantrailabs.com/pricing">
 <meta name="theme-color" content="#FFFFFF">
 <meta name="robots" content="index, follow">
 
 <meta property="og:type" content="website">
 <meta property="og:site_name" content="YantrAI">
-<meta property="og:title" content="Pricing — start small, ₹5 a voucher | OHM">
-<meta property="og:description" content="Three plans - ₹999, ₹2,999, ₹4,999 - buy a balance for your workspace. ₹5 to enter a voucher, ₹5 to check one, nothing else costs anything, and the balance never expires.">
+<meta property="og:title" content="Pricing — typing is free, ₹5 a page the AI reads | OHM">
+<meta property="og:description" content="Intern ₹0 with 100 trial credits; Executive ₹2,999 and Manager ₹4,999 a seat a month with 3,300 and 6,000 credits. ₹5 a page the AI reads, ₹1 a bank statement line, and everything after is free.">
 <meta property="og:url" content="https://yantrailabs.com/pricing">
 <meta property="og:image" content="https://yantrailabs.com/assets/og-cover.jpg">
 <meta property="og:image:width" content="1200">
 <meta property="og:image:height" content="630">
 <meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:title" content="OHM — Your AI Assistant for Finance">
-<meta name="twitter:description" content="Three plans - ₹999, ₹2,999, ₹4,999 - buy a balance for your workspace. ₹5 to enter a voucher, ₹5 to check one, nothing else costs anything, and the balance never expires.">
+<meta name="twitter:description" content="Intern ₹0 with 100 trial credits; Executive ₹2,999 and Manager ₹4,999 a seat a month with 3,300 and 6,000 credits. ₹5 a page the AI reads, ₹1 a bank statement line, and everything after is free.">
 <meta name="twitter:image" content="https://yantrailabs.com/assets/og-cover.jpg">
 
 <link rel="icon" href="/favicon.ico" sizes="32x32">
@@ -101,69 +101,93 @@ body { margin: 0; background: #FFFFFF; }
   </div>
 <main id="main">
 <style>
-  /* pricing — the three plans, the two prices. Numbers line up; nothing else is decorated. */
+  /* pricing — three seats and one meter (owner, 2026-10-04: "build step 4"). Numbers line up; nothing else is decorated. */
   .plans { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 1px; margin-top: 34px; background: var(--line); border: 1px solid var(--line); }
   .plans > div { background: #FFFFFF; padding: 28px 26px 26px; display: grid; gap: 8px; align-content: start; }
+  .plans .name { font-size: 13px; font-weight: 600; letter-spacing: 0.6px; text-transform: uppercase; color: var(--body); }
   .plans .price { font-family: var(--serif); font-size: 40px; line-height: 1; font-weight: 300; letter-spacing: -0.8px; color: var(--ink); font-variant-numeric: tabular-nums; }
   .plans .price small { font-family: var(--sans); font-size: 12px; font-weight: 600; letter-spacing: -0.24px; color: var(--body); margin-left: 8px; }
-  .plans .acts { font-size: 15.5px; font-weight: 600; letter-spacing: -0.47px; color: var(--ink); }
+  .plans .acts { font-size: 15.5px; font-weight: 600; letter-spacing: -0.47px; color: var(--ink); font-variant-numeric: tabular-nums; }
   .plans p { margin: 0; font-size: 14.5px; line-height: 1.5; letter-spacing: -0.29px; }
-  .plans .same { margin-top: 10px; font-size: 12.5px; color: var(--body); }
+  .plans ul { margin: 6px 0 0; padding-left: 18px; font-size: 14px; line-height: 1.55; letter-spacing: -0.28px; }
+  .same { margin-top: 14px; font-size: 13px; color: var(--body); }
   .steps { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1px; margin-top: 34px; background: var(--line); border: 1px solid var(--line); counter-reset: step; }
   .steps > div { background: #FFFFFF; padding: 24px 22px; }
   .steps > div::before { counter-increment: step; content: counter(step); display: block; font-family: var(--serif); font-size: 28px; line-height: 1; font-weight: 300; color: var(--ink); margin-bottom: 10px; }
   .steps h3 { margin: 0; font-size: 15.5px; font-weight: 600; letter-spacing: -0.47px; color: var(--ink); }
   .steps p { margin: 8px 0 0; font-size: 14px; line-height: 1.5; letter-spacing: -0.28px; }
   .tablewrap { overflow-x: auto; margin-top: 30px; }
+  .total td { font-weight: 600; color: var(--ink); }
 </style>
 
 <div class="wrap">
   <div class="crumb"><a href="/">OHM</a> · Pricing</div>
   <div class="masthead">
     <span class="eyebrow"><i></i>Pricing</span>
-    <h1 class="display">Start small.<br><em class="mark">₹5 a voucher.</em></h1>
-    <p class="lede">A plan buys a balance for your whole workspace. OHM takes ₹5 when it enters a voucher and ₹5 when it checks one. Nothing else costs anything, and the balance never expires.</p>
+    <h1 class="display">Typing is free.<br><em class="mark">₹5 a page the AI reads.</em></h1>
+    <p class="lede">You pay for what OHM's AI reads: ₹5 a page of a bill, ₹1 a line of a bank statement. That one charge covers reading it, writing the voucher, checking it and entering it in Tally. Seats bring credits every month, and you see the price before anything is read.</p>
   </div>
 </div>
 
 <section class="band">
   <div class="wrap wrap-wide">
     <h2 class="sec">Three plans</h2>
-    <p>Pick one, pay by UPI, card or netbanking, and the balance is there. Prices include GST; the tax invoice is in your workspace the moment the payment lands.</p>
+    <p>One plan for your whole business. The credits are shared by everyone in it; a seat is each person who uses OHM. Seat prices are per month, plus GST.</p>
     <div class="plans">
       <div>
-        <span class="price">₹999<small>incl. GST</small></span>
-        <span class="acts">199 actions</span>
-        <p>Enter and check 99 vouchers, or enter 199.</p>
+        <span class="name">Intern</span>
+        <span class="price">₹0</span>
+        <span class="acts">100 trial credits, once</span>
+        <p>Keep your books by hand, with OHM beside Tally.</p>
+        <ul>
+          <li>Type vouchers, sync with Tally, reports</li>
+          <li>Try the AI on about 20 pages</li>
+          <li>After that the AI pauses; typing never does</li>
+        </ul>
       </div>
       <div>
-        <span class="price">₹2,999<small>incl. GST</small></span>
-        <span class="acts">599 actions</span>
-        <p>Enter and check 299 vouchers, or enter 599.</p>
+        <span class="name">Executive</span>
+        <span class="price">₹2,999<small>a seat a month + GST</small></span>
+        <span class="acts">3,300 credits a seat a month</span>
+        <p>10% more than you pay - about 660 pages a seat.</p>
+        <ul>
+          <li>Everything in Intern</li>
+          <li>The AI reads, writes, checks and enters</li>
+          <li>Bank statements, and invoices built from a sentence</li>
+          <li>Recharge any time, ₹1 = 1 credit</li>
+        </ul>
       </div>
       <div>
-        <span class="price">₹4,999<small>incl. GST</small></span>
-        <span class="acts">999 actions</span>
-        <p>Enter and check 499 vouchers, or enter 999.</p>
+        <span class="name">Manager</span>
+        <span class="price">₹4,999<small>a seat a month + GST</small></span>
+        <span class="acts">6,000 credits a seat a month</span>
+        <p>20% more than you pay - about 1,200 pages a seat.</p>
+        <ul>
+          <li>Everything in Executive</li>
+          <li>For teams that approve, set Policy rules and keep several books</li>
+          <li>Recharge any time, ₹1 = 1 credit</li>
+        </ul>
       </div>
     </div>
-    <p class="same">The same ₹5 on every plan. The bigger plans are only bigger.</p>
+    <p class="same">A month's plan credits carry over one month; recharged credits never expire. Plan credits are used first. Recharges include GST.</p>
   </div>
 </section>
 
 <section class="band wash">
   <div class="wrap wrap-wide">
-    <h2 class="sec">What costs ₹5, and what does not</h2>
-    <p>Each charge is taken once per voucher. Reading a bill again, fixing a draft, approving it, sending it to Tally: free.</p>
+    <h2 class="sec">What the AI costs, and what never does</h2>
+    <p>One credit is one rupee. Each page or line is charged once; doing anything else with the voucher afterwards is free.</p>
     <div class="tablewrap">
       <table class="grid">
-        <thead><tr><th>What OHM does</th><th>Costs</th><th>When</th></tr></thead>
+        <thead><tr><th>What OHM does</th><th>For example</th><th>Costs</th></tr></thead>
         <tbody>
-          <tr><td>Enters a voucher from a bill, a photo, a sentence or an expense claim</td><td class="num">₹5</td><td>Once, when the first draft is made</td></tr>
-          <tr><td>Checks a voucher against your policy at Submit</td><td class="num">₹5</td><td>Once, the first time its checks run</td></tr>
-          <tr><td>A voucher you type by hand</td><td class="num">free</td><td>OHM read nothing</td></tr>
-          <tr><td>Vouchers that come in from Tally</td><td class="num">free</td><td>Tally made them</td></tr>
-          <tr><td>Re-reads, edits, approvals, sending to Tally, reports, Find, masters, bank reconciliation</td><td class="num">free</td><td>Always</td></tr>
+          <tr><td>Reads a document</td><td>A purchase bill, a customer's order, a credit note, a photo of a slip</td><td class="num">₹5 a page</td></tr>
+          <tr><td>Builds a document</td><td>A sales invoice written from a sentence</td><td class="num">₹5</td></tr>
+          <tr><td>Reads a bank statement</td><td>PDF or Excel, the first time each line is read</td><td class="num">₹1 a line</td></tr>
+          <tr><td>Checks a voucher you typed</td><td>Duplicate, GST, TDS and your Policy checks</td><td class="num">₹1</td></tr>
+          <tr><td>A voucher you type by hand</td><td>A journal, a contra, a payment keyed in</td><td class="num">free</td></tr>
+          <tr><td>Everything after</td><td>Edit, read again, re-check, approve, send to Tally, reports</td><td class="num">free</td></tr>
+          <tr><td>Nothing came of it</td><td>A read that fails or finds nothing; pages you attach but do not read</td><td class="num">free</td></tr>
         </tbody>
       </table>
     </div>
@@ -172,14 +196,34 @@ body { margin: 0; background: #FFFFFF; }
 
 <section class="band">
   <div class="wrap wrap-wide">
+    <h2 class="sec">When you pay, and where you see it</h2>
+    <p>Before OHM reads anything, it shows the files, their pages and the price, and your balance after. The price is set aside while it reads and charged when the read is done; a read that fails gives it back. Every charge is written against its voucher, with a "This charge looks wrong" link to us, and listed by date, person and document in Settings → Plan → Usage, which downloads as CSV.</p>
+    <h2 class="sec" style="margin-top: 40px;">A shop's month</h2>
+    <div class="tablewrap">
+      <table class="grid">
+        <thead><tr><th>Work</th><th>Counted as</th><th>Costs</th></tr></thead>
+        <tbody>
+          <tr><td>300 purchase bills, about 1.3 pages each</td><td>390 pages</td><td class="num">₹1,950</td></tr>
+          <tr><td>200 sales invoices built from a sentence</td><td>200 documents</td><td class="num">₹1,000</td></tr>
+          <tr><td>A bank statement</td><td>400 lines</td><td class="num">₹400</td></tr>
+          <tr><td>50 photos of slips</td><td>50 pages</td><td class="num">₹250</td></tr>
+          <tr class="total"><td>About ₹3,600 of AI work</td><td>One Executive seat brings 3,300</td><td class="num">₹2,999 + GST, and a small recharge</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</section>
+
+<section class="band wash">
+  <div class="wrap wrap-wide">
     <h2 class="sec">Your first day</h2>
     <p>Five steps, no call needed.</p>
     <div class="steps">
-      <div><h3>Sign up</h3><p>An email and a password. Your workspace is made in one go.</p></div>
+      <div><h3>Sign up</h3><p>An email and a password. You start as an Intern, with 100 trial credits.</p></div>
       <div><h3>Connect Tally</h3><p>Download the plug on the Tally PC and type the 6-digit code OHM shows.</p></div>
-      <div><h3>Recharge</h3><p>Pick a plan. Your group admin sees the balance in Settings.</p></div>
-      <div><h3>Enter a voucher</h3><p>Upload a bill, snap it on the phone, or write it as a sentence.</p></div>
-      <div><h3>Check it</h3><p>Submit runs your policy; approve, and it goes to Tally.</p></div>
+      <div><h3>Read your first bills</h3><p>Upload a bill or snap it on the phone. OHM shows the price first, then drafts the voucher.</p></div>
+      <div><h3>Check and send</h3><p>Submit runs your Policy; approve, and it goes to Tally.</p></div>
+      <div><h3>Move up when it pays</h3><p>Your group admin picks Executive or Manager in Settings → Plan; the month's credits land at once.</p></div>
     </div>
     <a class="btn" href="https://workspace.yantrailabs.com/signup">Start free <span aria-hidden="true">→</span></a>
     <p style="margin-top: 14px;">Rather talk first? <a href="/#book">Book a demo</a>.</p>

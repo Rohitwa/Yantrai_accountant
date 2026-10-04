@@ -804,9 +804,9 @@ PAGES = [
     ('careers', 'Careers — tell us what you\'d build | OHM',
      'No posted roles. We hire people we cannot not hire. What the work is like, and a '
      'form that goes straight to a founder.'),
-    ('pricing', 'Pricing — start small, ₹5 a voucher | OHM',
-     'Three plans - ₹999, ₹2,999, ₹4,999 - buy a balance for your workspace. ₹5 to enter a '
-     'voucher, ₹5 to check one, nothing else costs anything, and the balance never expires.'),
+    ('pricing', 'Pricing — typing is free, ₹5 a page the AI reads | OHM',
+     'Intern ₹0 with 100 trial credits; Executive ₹2,999 and Manager ₹4,999 a seat a month with 3,300 and 6,000 '
+     'credits. ₹5 a page the AI reads, ₹1 a bank statement line, and everything after is free.'),
     ('terms', 'Terms | OHM',
      'The terms of using OHM, in plain words: your account, what OHM does, paying, your data, and what happens if '
      'either of us stops.'),
