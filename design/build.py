@@ -325,6 +325,9 @@ body = body.replace('<div data-dc-tpl="12" data-nav-links="1"',
 _last_nav_link = '<a data-dc-tpl="17" href="#integration" style="white-space: nowrap;">Integration</a>'
 assert body.count(_last_nav_link) == 1, 'nav integration link'
 body = body.replace(_last_nav_link, _last_nav_link
+    # Pricing, after the page's own sections (owner, 2026-10-04: "add pricing to menu"). An absolute path, so it is the same link
+    # on the home page, the content pages and the French site (which has no pricing page of its own yet).
+    + '<a data-nav-pricing="1" href="/pricing" style="white-space: nowrap;">Pricing</a>'
     + '<a data-nav-login-m="1" href="#login" style="white-space: nowrap;">Log in</a>', 1)
 
 # `content-visibility: auto` on the two scroll-pinned sections makes Chrome
