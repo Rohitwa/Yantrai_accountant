@@ -693,6 +693,20 @@ body, _n = re.subn(r'(<span data-site-version="1" hidden></span>)(</span>)',
                    r'\1 · <a href="/terms" data-legal="1" style="color: inherit;">Terms</a> · '
                    r'<a href="/privacy" data-legal="1" style="color: inherit;">Privacy</a>\2', body)
 assert _n == 1, 'legal links on the copyright line'
+# who YantrAI is, in law (owner, 2026-10-14: "yes add the website line") - Meta matches the website to the company it verifies
+# (LuxeDeco Ventures Private Limited, GST record) before a WhatsApp display name may read YantrAI. A second line under the copyright,
+# in the same type, on every page's footer; the address is the registered office exactly as the public record words it.
+_ENTITY = {
+    'en': 'YantrAI is a brand of LuxeDeco Ventures Private Limited · Registered office: 450, 1st Floor, '
+          'Deendayal Upadhyay Hospital Pocket EA, Maya Enclave, Hari Nagar, New Delhi 110064, India',
+    'fr': 'YantrAI est une marque de LuxeDeco Ventures Private Limited · Siège social : 450, 1st Floor, '
+          'Deendayal Upadhyay Hospital Pocket EA, Maya Enclave, Hari Nagar, New Delhi 110064, Inde',
+}[LOCALE]
+body, _n = re.subn(r'(<a href="/privacy" data-legal="1" style="color: inherit;">[^<]*</a></span>)',
+                   lambda m: m.group(1) + '\n        <span data-legal-entity="1" style="font-family: ui-monospace, &quot;SF Mono&quot;, '
+                   'Menlo, Consolas, monospace; font-size: 13px; letter-spacing: -0.2px; color: rgb(110, 104, 95);">' + _ENTITY + '</span>',
+                   body)
+assert _n == 1, 'the company line under the copyright'
 
 
 # ----------------------------------------------------------------- video --
