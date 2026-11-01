@@ -821,9 +821,8 @@ PAGES = [
     ('careers', 'Careers — tell us what you\'d build | OHM',
      'No posted roles. We hire people we cannot not hire. What the work is like, and a '
      'form that goes straight to a founder.'),
-    ('pricing', 'Pricing — typing is free, ₹5 a page the AI reads | OHM',
-     'Intern ₹0 with 100 trial credits; Executive ₹2,999 and Manager ₹4,999 a seat a month with 3,300 and 6,000 '
-     'credits. ₹5 a page the AI reads, ₹1 a bank statement line, and everything after is free.'),
+    ('pricing', 'Pricing — unlimited users and AI, plans by new transactions | OHM',
+     'Unlimited users and AI. Intern free for 20 new transactions a month; Executive ₹2,999 (was ₹4,999) for 1,000; Manager ₹4,999 (was ₹9,999) for 3,000. Plus GST.'),
     ('terms', 'Terms | OHM',
      'The terms of using OHM, in plain words: your account, what OHM does, paying, your data, and what happens if '
      'either of us stops.'),
