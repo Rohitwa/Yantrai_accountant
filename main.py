@@ -201,6 +201,14 @@ def offer_preferred_locale():
 
 
 @app.after_request
+def invite_film_for_the_workspace(response):
+    """The platform's Invite fetches the film so a phone can send the file itself (platform v892). Only these files, only that site."""
+    if request.path.startswith("/assets/ohm-invite"):
+        response.headers["Access-Control-Allow-Origin"] = "https://workspace.yantrailabs.com"
+    return response
+
+
+@app.after_request
 def vary_on_language(response):
     """Both the cookie and Accept-Language change what this returns, so a shared
     cache must not hand one visitor's redirect to another."""
