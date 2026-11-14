@@ -1,5 +1,5 @@
-"""The explainer video on the built pages: the English site plays the OHM cut
-(a 9:16 cut on phones held upright, with a sound button), the French site
+"""The films on the built pages: the redesigned English home plays the product
+film (Hindi or English, a 9:16 cut on phones held upright), the French site
 keeps its own silent cut. Reads public/ as built; no server."""
 import os
 import re
@@ -19,23 +19,29 @@ def video_tag(html):
     return tags[0]
 
 
-def test_english_home_plays_the_ohm_cut_with_a_portrait_version_and_sound():
+def test_english_home_plays_the_product_film_in_two_languages_and_two_shapes():
     html = page()
     tag = video_tag(html)
-    assert 'data-video-src="/assets/ohm-explainer.mp4"' in tag
-    assert 'data-video-portrait-src="/assets/ohm-explainer-9x16.mp4"' in tag
-    assert 'data-video-portrait-poster="/assets/ohm-explainer-poster-9x16.jpg"' in tag
-    assert 'poster="/assets/ohm-explainer-poster.jpg"' in tag and 'preload="none"' in tag
-    buttons = re.findall(r'<button[^>]*data-sound-btn="1"[^>]*>(.*?)</button>', html, re.S)
-    assert len(buttons) == 1 and "Sound off" in buttons[0]
-    assert 'aria-pressed="false"' in html
-    assert "aifa-pipeline" not in html                 # nothing of the old English cut
+    assert 'preload="none"' in tag
+    assert 'poster="/assets/ohm-film-poster.jpg"' in tag
+    assert 'data-poster-land="/assets/ohm-film-poster.jpg"' in tag
+    assert 'data-poster-port="/assets/ohm-film-poster-9x16.jpg"' in tag
+    # Hindi and English, each wide and upright: the same files the workspace invites with
+    for name in ("ohm-invite.mp4", "ohm-invite-9x16.mp4", "ohm-invite-en.mp4", "ohm-invite-en-9x16.mp4"):
+        assert f"'/assets/{name}'" in html, name
+    assert "aifa-pipeline" not in html and "ohm-explainer" not in html   # nothing of the old cuts
 
 
-def test_each_screen_shape_preloads_only_its_own_poster():
-    head = page().split("</head>")[0]
-    assert (f'href="/assets/ohm-explainer-poster.jpg" media="not all and {PORTRAIT}"') in head
-    assert (f'href="/assets/ohm-explainer-poster-9x16.jpg" media="{PORTRAIT}"') in head
+def test_redesigned_pages_point_at_files_that_exist_and_carry_no_inline_images():
+    for parts in ((), ("accountant",), ("auditor",), ("command",), ("pricing",), ("customers",),
+                  ("security",), ("partners",), ("about",)):
+        html = page(*parts)
+        assert "data:image" not in html and '.html"' not in html, parts
+        for ref in set(re.findall(r"""["'](/assets/[^"']+)["']""", html)):
+            assert os.path.isfile(os.path.join(PUBLIC, ref.lstrip("/"))), (parts, ref)
+        for href in set(re.findall(r'href="(/[^"#?]*)', html)):
+            target = os.path.join(PUBLIC, href.strip("/"))
+            assert href == "/" or os.path.isfile(target) or os.path.isfile(os.path.join(target, "index.html")), (parts, href)
 
 
 def test_french_home_keeps_its_own_silent_cut():
@@ -56,10 +62,13 @@ def test_the_player_uses_the_same_phone_rule_as_the_build():
 
 
 def test_the_video_files_are_web_ready():
-    for name, limit in (("ohm-explainer.mp4", 8), ("ohm-explainer-9x16.mp4", 8)):
+    for name, limit in (("ohm-explainer.mp4", 8), ("ohm-explainer-9x16.mp4", 8),
+                        ("ohm-invite.mp4", 8), ("ohm-invite-9x16.mp4", 8),
+                        ("ohm-invite-en.mp4", 8), ("ohm-invite-en-9x16.mp4", 8)):
         data = open(os.path.join(PUBLIC, "assets", name), "rb").read()
         assert 1 << 20 < len(data) < limit << 20, name          # small enough for a homepage
         assert data.index(b"moov") < data.index(b"mdat"), name   # faststart: plays while loading
-    for name in ("ohm-explainer-poster.jpg", "ohm-explainer-poster-9x16.jpg"):
+    for name in ("ohm-explainer-poster.jpg", "ohm-explainer-poster-9x16.jpg",
+                 "ohm-film-poster.jpg", "ohm-film-poster-9x16.jpg"):
         data = open(os.path.join(PUBLIC, "assets", name), "rb").read()
         assert data[:3] == b"\xff\xd8\xff" and len(data) < 200 * 1024, name

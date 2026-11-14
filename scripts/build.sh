@@ -17,8 +17,15 @@ AIFA_LOCALE=fr python3 design/build.py
 
 # The build writes its output into design/ alongside its sources; these are the
 # generated names. Keep in step with the locales and PAGES in design/build.py.
-FILES=(index.html site.css app.js page.css)
-DIRS=(about agents careers for fr integrations pricing privacy research security terms what-it-found workflows)
+#
+# The English home, About, Pricing and Security are no longer staged from here:
+# the redesign (redesign/src/build_site.py, below) writes those addresses. The
+# build still produces them under design/, and the French tree still uses them.
+FILES=(site.css app.js page.css)
+DIRS=(agents careers for fr integrations privacy research terms what-it-found workflows)
+
+# The addresses the redesign owns. public/index.html is its home page.
+REDESIGN=(about accountant auditor command customers partners pricing security)
 
 echo "==> staging into public/"
 for f in "${FILES[@]}"; do
@@ -30,5 +37,13 @@ for d in "${DIRS[@]}"; do
   rm -rf "public/$d"
   cp -R "design/$d" "public/$d"
 done
+
+echo "==> building the redesigned pages into public/"
+for d in "${REDESIGN[@]}"; do
+  rm -rf "public/$d"
+done
+# After the staging above on purpose: it reads public/fr to name the French
+# twin of a page, and checks every address it links to exists in public/.
+OHM_LIVE=1 python3 redesign/src/build_site.py
 
 echo "==> done. Review with: git status --short public"

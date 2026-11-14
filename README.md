@@ -14,12 +14,13 @@ admin/           the inbox's page, script and styles (outside public/ on purpose
 db/              the database setup (001 forms, 002 inbox) and their verify scripts
 scripts/         build, deploy, and the owner's credential tools
 design/          the pipeline that generates public/ (see design/README.md)
+redesign/        the redesigned English pages, also built into public/ (see redesign/README.md)
 Procfile         entrypoint the Cloud Run Python buildpack runs
 app.yaml         the same entrypoint, kept for App Engine builds
 .github/         the workflow that deploys main to Cloud Run
 ```
 
-`design/` is excluded by `.gcloudignore`, so it never reaches the container.
+`design/` and `redesign/` are excluded by `.gcloudignore`, so they never reach the container.
 
 ## Running locally
 

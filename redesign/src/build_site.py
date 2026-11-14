@@ -3,7 +3,37 @@ home_v11.html (artifact index, no doctype). One shell, plain labels, content
 only from approved sources. See ../05_site_map.md."""
 import base64,os,re,mimetypes
 HERE=os.path.dirname(os.path.abspath(__file__)); os.chdir(HERE)
-OUT=os.path.normpath(os.path.join(HERE,'..','site')); os.makedirs(OUT,exist_ok=True)
+# OHM_LIVE=1 builds the pages yantrailabs.com serves: folder addresses, asset
+# files instead of inline images, full <head>, written into <repo>/public.
+# Without it the same pages are built as a flat draft into ../site.
+LIVE=os.environ.get('OHM_LIVE')=='1'
+REPO=os.path.normpath(os.path.join(HERE,'..','..'))
+OUT=os.path.join(REPO,'public') if LIVE else os.path.normpath(os.path.join(HERE,'..','site')); os.makedirs(OUT,exist_ok=True)
+SITE='https://yantrailabs.com'
+# draft file -> live address. Company keeps the live /about address.
+ROUTE={'index.html':'/','accountant.html':'/accountant','auditor.html':'/auditor','command.html':'/command','pricing.html':'/pricing','customers.html':'/customers','security.html':'/security','partners.html':'/partners','company.html':'/about','privacy.html':'/privacy','terms.html':'/terms'}
+# Privacy and Terms on the live site are the approved pages from design/; the short drafts here are not published.
+LIVE_SKIP={'privacy.html','terms.html'}
+VIDEO={'video/ohm_hi_16x9.mp4':'/assets/ohm-invite.mp4','video/ohm_hi_9x16.mp4':'/assets/ohm-invite-9x16.mp4','video/ohm_en_16x9.mp4':'/assets/ohm-invite-en.mp4','video/ohm_en_9x16.mp4':'/assets/ohm-invite-en-9x16.mp4'}
+# title and description for the live <head>; descriptions reuse lines already on the page
+META={
+ 'index.html':('OHM — The AI agents for finance | YantrAI','Hire your AI Accountant and AI Auditor. From bill entry and writing in Tally to generating a MIS.'),
+ 'accountant.html':('AI Accountant | OHM','From bill entry and writing in Tally to generating a MIS. Invoice processing, bank reconciliation, and it talks to Tally.'),
+ 'auditor.html':('AI Auditor | OHM','Checks every voucher before money moves. Reconciles the books. Closes and certifies the month.'),
+ 'command.html':('Get anything done with a command | OHM','Just ask, in plain words. On your phone or on the web.'),
+ 'pricing.html':('Pricing | OHM','Intern free for 20 new transactions a month; Executive ₹2,999 for 1,000; Manager ₹4,999 for 3,000. Plus GST.'),
+ 'customers.html':('Customers | OHM','Companies we work with, in India, Dubai, the USA and Africa.'),
+ 'security.html':('Security | OHM','Your data remains private. No LLM is ever trained on it. We run our own model.'),
+ 'partners.html':('Partners | OHM','Partner-first network. Customer for lifetime. Earn 3× of Tally.'),
+ 'company.html':('About YantrAI Labs | OHM','Ohm is built by YantrAI Labs. Vision, mission, team, careers and contact.'),
+}
+# old addresses on the previous home page that other live pages still link to
+LEGACYJS='''
+(function(){ var m={book:'/about#contact',proof:'/customers',research:'/research',how:'#film',agents:'#products',integration:'#works',problem:'#problems'};
+  function go(){ var t=m[location.hash.slice(1)]; if(!t) return;
+    if(t.charAt(0)==='#'){ var el=document.getElementById(t.slice(1)); if(el) el.scrollIntoView(); } else location.replace(t); }
+  go(); window.addEventListener('hashchange',go); })();
+'''
 SIGNUP='https://workspace.yantrailabs.com/signup'; LOGIN='https://workspace.yantrailabs.com/'
 ARR='<svg><use href="#arr"/></svg>'
 def rd(f): return open(f,encoding='utf-8').read()
@@ -165,11 +195,19 @@ def header(active):
   </div></nav>
   <div class="searchp" id="searchp" hidden><div class="in"><input type="search" placeholder="Search" aria-label="Search the site"><div class="res"></div></div></div>
 '''
+# Live pages carry the slot the running service fills with its commit and revision (OPS-08), as every other page on the site does.
+COPY='<span>© 2026 YantrAI Labs<span data-site-version="1" hidden></span></span>' if LIVE else '© 2026 YantrAI Labs'
+VERSIONJS='''
+(function(){ var el=document.querySelector('[data-site-version]'); if(!el||!window.fetch) return;
+  fetch('/_status',{cache:'no-store'}).then(function(r){ return r.ok?r.json():null; }).then(function(s){ var v=s&&s.version;
+    if(!v||!/^[0-9a-f]{7,40}$/.test(v.commit||'')) return; var rev=/-(\\d+)-[a-z0-9]+$/.exec(v.revision||'');
+    el.textContent=' \\u00b7 v'+v.commit.slice(0,7)+(rev?' \\u00b7 rev '+parseInt(rev[1],10):''); el.hidden=false; }).catch(function(){}); })();
+'''
 FOOT=f'''  <footer class="foot" aria-label="Footer">
     <div class="in">
       <div class="r1"><a class="wm" href="index.html"><svg><use href="#mark"/></svg>OHM</a>{a('','accountant.html','Accountant')}{a('','auditor.html','Auditor')}{a('','pricing.html','Pricing')}{a('','security.html','Security')}{a('','partners.html','Partners')}{a('',LOGIN,'Log in')}{a('','privacy.html','Privacy')}{a('','terms.html','Terms')}</div>
       <div class="r2"><span>Rohit Singh · +91 96434 98089 · rohit@yantrailabs.com</span><span>YantrAI Labs · 507 DLF Corporate Green, Sector 74A, Gurgaon 122004</span></div>
-      <div class="r3">© 2026 YantrAI Labs</div>
+      <div class="r3">{COPY}</div>
     </div>
   </footer>
 </div>
@@ -194,8 +232,12 @@ SITEJS='''(function(){
 '''.replace('__PAGES__','['+','.join("['%s','%s','%s']"%p for p in SEARCH)+']')
 
 # ---------- images ----------
-src=os.path.expanduser('~/Desktop/memory/aifa_site/assets')
+src=os.path.join(REPO,'public','assets') if LIVE else os.path.expanduser('~/Desktop/memory/aifa_site/assets')
+P16,P9=(f'{src}/ohm-film-poster.jpg',f'{src}/ohm-film-poster-9x16.jpg') if LIVE else ('poster16_21.jpg','poster9_21.jpg')
 def data(path):
+    if LIVE:
+        assert os.path.isfile(path),path
+        return '/assets/'+os.path.basename(path)
     mt=mimetypes.guess_type(path)[0] or 'image/png'
     return 'data:%s;base64,'%mt+base64.b64encode(open(path,'rb').read()).decode()
 LOGOS={'bluestone':'mono_logo_bluestone.png','odisha':'mono_logo_odisha.png','omaxe':'mono_logo_omaxe.png','baxy':'mono_logo_baxy.png','mountmeru':'mono_logo_mountmeru.png','lepton':'mono_logo_lepton.png','baxyinfotech':'mono_logo_baxyinfotech.svg'}
@@ -205,7 +247,7 @@ def fill(s):
         if '{{LOGO_%s}}'%k in s: s=s.replace('{{LOGO_%s}}'%k,data(f'{src}/{f}'))
     for k,f in ERP.items():
         if '{{ERP_%s}}'%k in s: s=s.replace('{{ERP_%s}}'%k,data(f'{src}/{f}'))
-    if '{{POSTER16}}' in s: s=s.replace('{{POSTER16}}',data('poster16_21.jpg')).replace('{{POSTER9}}',data('poster9_21.jpg'))
+    if '{{POSTER16}}' in s: s=s.replace('{{POSTER16}}',data(P16)).replace('{{POSTER9}}',data(P9))
     assert '{{' not in s, re.findall(r'\{\{[A-Z_a-z0-9]+\}\}',s)
     return s
 
@@ -252,7 +294,7 @@ sa=home.index('<script>'); sb_=home.index('</script>')+9
 homejs=home[sa+8:sb_-9]; home=home[:sa]+home[sb_:]
 home=home[:home.index('  <!-- ===== Footer ===== -->')]
 assert 'class="price"' not in home and '<script' not in home
-page('index.html','Ohm Home Draft',home,'home',script+'\n'+homejs)
+page('index.html','Ohm Home Draft',home,'home',script+'\n'+homejs+(LEGACYJS if LIVE else ''))
 
 # ---------- AI Accountant ----------
 body=slide_top(0,'AI Accountant')
@@ -381,17 +423,58 @@ body=legal('Terms',[
 page('terms.html','Terms · Ohm',body,'')
 
 # ---------- write ----------
-def doc(title,body,js,full=True):
-    head=f'<title>{title}</title>\n{HEADLINKS}\n<style>{CSS}</style>\n'
-    scripts='\n<script>\n'+SITEJS+(js or '')+'\n</script>\n'
+def live_links(s):
+    pat=r"""(["'])(%s)(#[\w-]+)?\1"""%'|'.join(re.escape(k) for k in ROUTE)
+    s=re.sub(pat,lambda m:m.group(1)+ROUTE[m.group(2)]+(m.group(3) or '')+m.group(1),s)
+    for k,v in VIDEO.items(): s=s.replace(k,v)
+    return s
+def live_head(fn):
+    title,desc=META[fn]; url=SITE+ROUTE[fn]; slug=ROUTE[fn].strip('/')
+    e=lambda t:t.replace('&','&amp;').replace('"','&quot;')
+    h=[f'<title>{title}</title>',f'<meta name="description" content="{e(desc)}">',f'<link rel="canonical" href="{url}">',
+       '<meta name="theme-color" content="#FFFFFF">','<meta name="robots" content="index, follow">',
+       '<meta property="og:type" content="website">','<meta property="og:site_name" content="YantrAI">',
+       f'<meta property="og:title" content="{e(title)}">',f'<meta property="og:description" content="{e(desc)}">',f'<meta property="og:url" content="{url}">',
+       '<meta name="twitter:card" content="summary">',
+       '<link rel="icon" href="/favicon.ico" sizes="32x32">','<link rel="icon" href="/brand/ohm/ohm-mark.svg" type="image/svg+xml">','<link rel="apple-touch-icon" href="/apple-touch-icon.png">',
+       '<link rel="preconnect" href="https://fonts.googleapis.com">','<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>']
+    # the French site keeps its own pages; name the pair where one exists
+    if os.path.isfile(os.path.join(OUT,'fr',slug,'index.html')):
+        fr=SITE+'/fr/'+slug if slug else SITE+'/fr/'
+        h+=[f'<link rel="alternate" hreflang="en" href="{url}">',f'<link rel="alternate" hreflang="fr" href="{fr}">',f'<link rel="alternate" hreflang="x-default" href="{url}">']
+    return '\n'.join(h)+'\n'
+def doc(title,body,js,full=True,fn=None):
+    live=LIVE and fn
+    links='\n'.join(l for l in HEADLINKS.splitlines() if 'claude:' not in l) if live else HEADLINKS   # the claude: meta only means something inside an artifact
+    head=(live_head(fn) if live else f'<title>{title}</title>\n')+f'{links}\n<style>{CSS}</style>\n'
+    scripts='\n<script>\n'+SITEJS+(js or '')+(VERSIONJS if live else '')+'\n</script>\n'
     inner=head+SYMBOLS+'\n\n'+body+scripts
     if not full: return inner
-    return '<!doctype html>\n<html lang="en">\n<head>\n<meta charset="utf-8">\n<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">\n'+head+'</head>\n<body>\n'+SYMBOLS+'\n\n'+body+scripts+'</body>\n</html>\n'
+    out='<!doctype html>\n<html lang="en">\n<head>\n<meta charset="utf-8">\n<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">\n'+head+'</head>\n<body>\n'+SYMBOLS+'\n\n'+body+scripts+'</body>\n</html>\n'
+    return live_links(out) if live else out
+written={}
 for fn,(title,body,js) in PAGES.items():
+    if LIVE and fn in LIVE_SKIP: continue
     body=fill(body)
-    open(os.path.join(OUT,fn),'w',encoding='utf-8').write(doc(title,body,js))
-    if fn=='index.html': open('home_v11.html','w',encoding='utf-8').write(doc(title,body,js,full=False))
-    print(fn,len(doc(title,body,js))//1024,'KB')
+    d=doc(title,body,js,fn=fn)
+    if LIVE:
+        slug=ROUTE[fn].strip('/'); path=os.path.join(OUT,slug,'index.html') if slug else os.path.join(OUT,'index.html')
+        os.makedirs(os.path.dirname(path),exist_ok=True)
+    else:
+        path=os.path.join(OUT,fn)
+    open(path,'w',encoding='utf-8').write(d); written[fn]=d
+    if fn=='index.html' and not LIVE: open('home_v11.html','w',encoding='utf-8').write(doc(title,body,js,full=False))
+    print(os.path.relpath(path,OUT),len(d)//1024,'KB')
+if LIVE:
+    # every address a page points at must exist in public/
+    bad=set()
+    for fn,d in written.items():
+        for h in re.findall(r"""(?:href|src|poster|data-poster-[a-z]+)=["'](/[^"'#?]*)""",d)+re.findall(r"""['"](/assets/[^'"]+)['"]""",d):
+            t=os.path.join(OUT,h.strip('/'))
+            if not (h=='/' or os.path.isfile(t) or os.path.isfile(os.path.join(t,'index.html'))): bad.add((fn,h))
+        assert '.html"' not in d and "video/" not in d and 'data:image' not in d,fn
+    assert not bad,sorted(bad)
+    print('links ok'); raise SystemExit
 v=os.path.join(OUT,'video')
 if not os.path.exists(v): os.symlink(os.path.join(HERE,'video'),v)
 # every internal link must resolve
