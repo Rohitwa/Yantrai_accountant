@@ -1,0 +1,187 @@
+<!--CSS-->
+/* ===== Partner page ===== */
+.pp .in{max-width:1180px}
+.pp-top{padding-block:64px 56px;border-bottom:1px solid var(--line)}
+.pp-top .cta{margin-top:24px;display:flex;gap:14px;align-items:center;flex-wrap:wrap}
+.hl3{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:16px;margin-top:44px}
+.hl{background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:24px;display:grid;gap:14px;align-content:start;min-width:0}
+.hl i{width:44px;height:44px;border-radius:12px;background:var(--tint);color:var(--brand);display:grid;place-items:center}
+.hl i svg{width:24px;height:24px;fill:none;stroke:currentColor;stroke-width:1.7;stroke-linecap:round;stroke-linejoin:round}
+.hl i.tx{font-style:normal;font-family:var(--sans);font-weight:600;font-size:17px;letter-spacing:-.02em}
+.hl b{font-family:var(--sans);font-weight:500;font-size:21px;letter-spacing:-.015em;line-height:1.15}
+.hl span{color:var(--muted);font-size:15px;line-height:1.5}
+.pp-earn{padding-block:64px 60px}
+.ex{margin-top:28px;display:flex;flex-wrap:wrap;gap:8px 10px}
+.ex span{border:1px solid var(--line);background:var(--surface);border-radius:999px;padding:7px 14px;font-size:14px;font-weight:500}
+.earn2{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:18px;margin-top:20px}
+.ecard{background:var(--surface);border:1px solid var(--line);border-radius:16px;padding:26px 26px 24px;display:flex;flex-direction:column;min-width:0}
+.ecard.hi{border-color:var(--brand);box-shadow:var(--shadow)}
+.ecard>b{font-family:var(--sans);font-weight:500;font-size:21px;letter-spacing:-.015em;margin-bottom:14px}
+.el{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:4px 16px;padding:16px 0;border-top:1px solid var(--line);align-items:baseline}
+.el b{font-weight:500;font-size:16px}
+.el b.a{font-family:var(--sans);font-size:20px;letter-spacing:-.015em;font-variant-numeric:tabular-nums;text-align:right}
+.el span{color:var(--muted);font-size:14px;line-height:1.45}
+.el em{font-style:normal;color:var(--muted);font-size:14px;text-align:right;font-variant-numeric:tabular-nums}
+.et{margin-top:auto;display:flex;justify-content:space-between;align-items:baseline;gap:12px;padding-top:18px;border-top:1px solid var(--ink)}
+.et span{font-size:12px;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);font-weight:600}
+.et b{font-family:var(--sans);font-weight:500;font-size:clamp(28px,3vw,38px);letter-spacing:-.025em;line-height:1;font-variant-numeric:tabular-nums}
+.ecard.hi .et b{color:var(--brand)}
+.ecmp{display:grid;gap:10px;margin-top:18px;background:var(--surface);border:1px solid var(--line);border-radius:16px;padding:22px 26px}
+.erow{display:grid;grid-template-columns:120px 1fr 92px;gap:12px;align-items:center;font-size:14px}
+.erow span{color:var(--muted)}
+.erow i{display:block;height:14px;border-radius:7px;background:var(--line);width:var(--w)}
+.erow.on i{background:var(--brand)}
+.erow b{font-weight:500;font-variant-numeric:tabular-nums;text-align:right;font-family:var(--sans);font-size:16px}
+.emult{justify-self:end;font-family:var(--sans);font-weight:500;font-size:22px;color:var(--brand);letter-spacing:-.02em}
+.emult small{font-size:13px;color:var(--muted);font-weight:400;letter-spacing:0;margin-left:8px}
+.pp-calc{padding-block:64px 64px;border-top:1px solid var(--line);border-bottom:1px solid var(--line)}
+.calc{display:grid;grid-template-columns:minmax(0,1.1fr) minmax(0,.9fr);gap:18px;margin-top:36px}
+.cin{background:var(--surface);border:1px solid var(--line);border-radius:16px;padding:28px;display:grid;gap:26px;align-content:start;min-width:0}
+.cin .f{display:grid;gap:12px}
+.cin label{display:flex;justify-content:space-between;align-items:baseline;gap:12px;font-size:15px;font-weight:500}
+.cin label output{font-family:var(--sans);font-size:24px;font-weight:500;letter-spacing:-.02em;font-variant-numeric:tabular-nums;display:inline-flex;align-items:baseline;gap:6px}
+.cin label input[type=number]{width:92px;font:inherit;font-family:var(--sans);font-size:24px;font-weight:500;letter-spacing:-.02em;border:1px solid var(--line);border-radius:8px;padding:4px 8px;color:var(--ink);background:var(--surface);text-align:right;-moz-appearance:textfield}
+.cin input[type=number]::-webkit-inner-spin-button{-webkit-appearance:none}
+.cin input[type=range]{width:100%;accent-color:var(--brand);height:28px;margin:0}
+.cin .split{display:flex;gap:10px 24px;flex-wrap:wrap;font-size:14px;color:var(--muted)}
+.cin .split span{display:inline-flex;align-items:center;gap:8px}
+.cin .split i{width:10px;height:10px;border-radius:3px;background:var(--brand)} .cin .split i.m{background:#AFA6F2}
+.cin .split b{color:var(--ink);font-weight:500;font-variant-numeric:tabular-nums}
+.cin .bar{height:10px;border-radius:5px;background:#AFA6F2;overflow:hidden} .cin .bar i{display:block;height:100%;background:var(--brand);width:60%}
+.cout{background:var(--brand);color:#fff;border-radius:16px;padding:30px 28px;display:grid;gap:8px;align-content:center;min-width:0}
+.cout small{font-size:12px;letter-spacing:.14em;text-transform:uppercase;font-weight:600;opacity:.8}
+.cout b{font-family:var(--sans);font-weight:500;font-size:clamp(40px,5vw,62px);letter-spacing:-.03em;line-height:1;font-variant-numeric:tabular-nums;word-break:break-word}
+.cout span{font-size:15px;opacity:.86}
+.cout .btn{margin-top:18px;justify-self:start;background:#fff;color:var(--brand)}
+.pp-faq{padding-block:64px 60px}
+.faq2{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:0 40px;margin-top:24px}
+.faq2 details{border-bottom:1px solid var(--line);min-width:0}
+.faq2 summary{list-style:none;cursor:pointer;display:flex;justify-content:space-between;gap:16px;align-items:center;padding:18px 0;font-family:var(--sans);font-weight:500;font-size:17px;letter-spacing:-.01em}
+.faq2 summary::-webkit-details-marker{display:none}
+.faq2 summary::after{content:"";width:9px;height:9px;border-right:1.6px solid var(--muted);border-bottom:1.6px solid var(--muted);transform:rotate(45deg);flex:none;margin-right:4px;transition:transform .15s}
+.faq2 details[open] summary::after{transform:rotate(225deg)}
+.faq2 p{color:var(--muted);font-size:15px;line-height:1.55;padding:0 0 18px;max-width:52ch}
+.pp-cta{padding-block:56px 60px;border-top:1px solid var(--line)}
+.pp-cta .row2{margin-top:22px;display:flex;gap:14px 24px;align-items:center;flex-wrap:wrap}
+.pp-cta .row2 .muted{font-size:14.5px}
+@media (max-width:980px){ .earn2,.calc{grid-template-columns:1fr} }
+@media (max-width:899px){ .hl3,.faq2{grid-template-columns:1fr} .faq2{gap:0} }
+@media (max-width:640px){
+  .pp-top,.pp-earn,.pp-calc,.pp-faq,.pp-cta{padding-block:40px 36px}
+  .hl3{margin-top:28px} .earn2,.calc{margin-top:24px}
+  .erow{grid-template-columns:86px 1fr 78px;gap:8px;font-size:13px}
+  .cin,.cout{padding:22px 18px}
+  .ecard{padding:20px 18px} .ecmp{padding:18px} .el b.a{font-size:18px}
+}
+<!--HTML-->
+  <section class="pp-top" aria-label="Why partner with Ohm">
+    <div class="in">
+      <div class="k">Partners</div>
+      <h2 class="h2">Sell Ohm next to Tally. Earn every year.</h2>
+      <p class="lead">Ohm sits on your customer's Tally. You bring the customer; Ohm pays you for as long as they stay.</p>
+      <div class="cta"><span class="btn p">Become a partner <svg><use href="#arr"/></svg></span></div>
+      <div class="hl3">
+        <div class="hl"><i><svg viewBox="0 0 24 24"><circle cx="12" cy="5" r="2.6"/><circle cx="5" cy="18" r="2.6"/><circle cx="19" cy="18" r="2.6"/><path d="M10.6 7.2 6.4 15.6M13.4 7.2l4.2 8.4M7.6 18h8.8"/></svg></i><b>Partner-first network</b><span>Every customer is attached to a partner. No direct sales around you.</span></div>
+        <div class="hl"><i><svg viewBox="0 0 24 24"><path d="M20 12a8 8 0 1 1-2.3-5.6"/><path d="M20 4v4.5h-4.5"/><path d="M12 8v4l2.6 2.6"/></svg></i><b>Customer for lifetime</b><span>Year after year, the customer stays on your code.</span></div>
+        <div class="hl"><i class="tx">3×</i><b>Earn 3× of Tally</b><span>Over three years, against what Tally pays you today.</span></div>
+      </div>
+    </div>
+  </section>
+
+  <section class="pp-earn band" aria-label="What you earn">
+    <div class="in">
+      <h2 class="h2">What you earn</h2>
+      <p class="lead">Ohm does not replace what you earn from Tally. It adds to it, every year the customer stays.</p>
+      <div class="ex"><span>One multi-user customer</span><span>3-person accounting team</span><span>Over 3 years</span></div>
+      <div class="earn2">
+        <div class="ecard">
+          <b>Tally, today</b>
+          <div class="el"><b>Licence</b><b class="a">₹8,400</b><span>35% of ₹24,000, sold for 3 years</span></div>
+          <div class="el"><b>Implementation</b><b class="a">₹50,000</b><span>One time</span></div>
+          <div class="et"><span>Over 3 years</span><b>₹58,400</b></div>
+        </div>
+        <div class="ecard hi">
+          <b>Ohm, added</b>
+          <div class="el"><b>Licence</b><b class="a">₹64,800</b><span>20% of ₹36,000 a person a year × 3 people × 3 years</span></div>
+          <div class="el"><b>Implementation and maintenance</b><b class="a">₹1,80,000</b><span>Implementation: 40% of ₹1,00,000 a person × 3 people</span><em>₹1,20,000</em><span>Maintenance, from year 2: 40% of ₹25,000 a person a year × 3 people × 2 years</span><em>₹60,000</em></div>
+          <div class="et"><span>Over 3 years</span><b>₹2,44,800</b></div>
+        </div>
+      </div>
+      <div class="ecmp">
+        <div class="erow"><span>Tally, today</span><i style="--w:24%"></i><b>₹58,400</b></div>
+        <div class="erow on"><span>Ohm, added</span><i style="--w:100%"></i><b>₹2,44,800</b></div>
+        <div class="emult">4.2×<small>what Tally pays you</small></div>
+      </div>
+    </div>
+  </section>
+
+  <section class="pp-calc" id="calc" aria-label="Earning potential">
+    <div class="in">
+      <div class="k">Earning potential</div>
+      <h2 class="h2">Your customers, with Ohm.</h2>
+      <div class="calc">
+        <div class="cin">
+          <div class="f">
+            <label for="rn">Customers you serve on Tally <output><input type="number" id="nn" min="1" max="2000" value="25" inputmode="numeric" aria-label="Number of customers"></output></label>
+            <input type="range" id="rn" min="1" max="300" value="25" aria-label="Customers slider">
+          </div>
+          <div class="f">
+            <label for="rs">Single-user customers <output id="cs">60%</output></label>
+            <input type="range" id="rs" min="0" max="100" step="5" value="60">
+            <div class="bar" aria-hidden="true"><i id="bar"></i></div>
+            <div class="split"><span><i></i><b id="ns">15</b> single-user</span><span><i class="m"></i><b id="nm">10</b> multi-user, 3-person team each</span></div>
+          </div>
+        </div>
+        <div class="cout" aria-live="polite">
+          <small>You earn</small>
+          <b id="total">₹27,72,000</b>
+          <span>over 3 years</span>
+          <span class="btn">Become a partner <svg><use href="#arr"/></svg></span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="pp-faq band" aria-label="Questions partners ask">
+    <div class="in">
+      <div class="k">Questions partners ask</div>
+      <h2 class="h2">The short answers.</h2>
+      <div class="faq2">
+        <details open><summary>Who can become a partner?</summary><p>Tally partners, chartered accountants, accounting firms and IT resellers. If you serve businesses that run on Tally, you qualify.</p></details>
+        <details><summary>What does it cost to join?</summary><p>Nothing. Sign up, get your partner code and share it with your first customer.</p></details>
+        <details><summary>How and when do I get paid?</summary><p>Every month, by bank transfer, for every active customer on your code. You raise an invoice; we pay against it.</p></details>
+        <details><summary>For how long do I earn on a customer?</summary><p>For as long as they stay on Ohm. The customer remains attached to you.</p></details>
+        <details><summary>Does Ohm replace Tally?</summary><p>No. Tally stays the book of record; Ohm sits on top of it. Your Tally licence and TSS earnings continue as before.</p></details>
+        <details><summary>Who supports the customer?</summary><p>You set them up: a single user is live in under five minutes, an enterprise in under two hours. Product support and training come from Ohm.</p></details>
+        <details><summary>Can my customer try it before paying?</summary><p>Yes. The Intern plan is free, and every new customer starts with 100 free credits.</p></details>
+        <details><summary>What do I get to sell with?</summary><p>The two-minute film, a one-page brochure and a demo account, handed to you on sign-up.</p></details>
+      </div>
+    </div>
+  </section>
+
+  <section class="pp-cta" aria-label="Become a partner">
+    <div class="in">
+      <h2 class="h2">Bring your first customer this week.</h2>
+      <div class="row2"><span class="btn p">Become a partner <svg><use href="#arr"/></svg></span><span class="muted">or talk to Rohit · +91 96434 98089 · rohit@yantrailabs.com</span></div>
+    </div>
+  </section>
+<!--JS-->
+(function(){
+  var nn=document.getElementById('nn'),rn=document.getElementById('rn'),rs=document.getElementById('rs'),cs=document.getElementById('cs'),ns=document.getElementById('ns'),nm=document.getElementById('nm'),bar=document.getElementById('bar'),tot=document.getElementById('total');
+  if(!nn) return;
+  var YRS=3, TEAM=3;
+  var SINGLE=0.20*36000*YRS;
+  var MULTI=0.20*36000*TEAM*YRS + 0.40*100000*TEAM + 0.40*25000*TEAM*(YRS-1);
+  function inr(n){ n=Math.round(n); var s=String(n); if(s.length<=3) return '₹'+s; var last=s.slice(-3), rest=s.slice(0,-3); rest=rest.replace(/\B(?=(\d{2})+(?!\d))/g,','); return '₹'+rest+','+last; }
+  function calc(){
+    var n=Math.max(1,Math.min(2000,parseInt(nn.value,10)||1)), p=parseInt(rs.value,10);
+    var s=Math.round(n*p/100), m=n-s;
+    cs.textContent=p+'%'; ns.textContent=s; nm.textContent=m; bar.style.width=p+'%';
+    tot.textContent=inr(s*SINGLE+m*MULTI);
+  }
+  rn.addEventListener('input',function(){ nn.value=rn.value; calc(); });
+  nn.addEventListener('input',function(){ var v=parseInt(nn.value,10); if(v>=1&&v<=300) rn.value=v; else if(v>300) rn.value=300; calc(); });
+  nn.addEventListener('change',function(){ if(!(parseInt(nn.value,10)>=1)) nn.value=1; calc(); });
+  rs.addEventListener('input',calc);
+  calc();
+})();

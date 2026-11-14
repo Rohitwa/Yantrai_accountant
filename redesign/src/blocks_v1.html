@@ -1,0 +1,101 @@
+<!--CSS-->
+/* ---- film ---- */
+.film{padding-block:64px 56px;border-top:1px solid var(--line)}
+.film .head{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:20px;align-items:center;margin-bottom:22px}
+.h2{font-family:var(--sans);font-weight:500;font-size:clamp(30px,3.6vw,44px);line-height:1.06;letter-spacing:-.022em}
+.lead{font-size:17px;color:var(--muted);margin-top:10px;max-width:56ch}
+.seg{display:inline-flex;border:1px solid var(--line);border-radius:999px;padding:3px;gap:2px;font-size:13px}
+.seg span{padding:6px 14px;border-radius:999px;color:var(--muted)}
+.seg span.on{background:var(--ink);color:#fff}
+.player{position:relative;border-radius:18px;overflow:hidden;border:1px solid var(--line);box-shadow:var(--shadow);background:#FBF9F5;max-width:100%}
+.player video{display:block;width:100%;height:auto;background:#FBF9F5;cursor:pointer}
+.player.land video{aspect-ratio:16/9}
+.player.port{max-width:420px;margin:0 auto}
+.player.port video{aspect-ratio:9/16}
+.player.playing .play,.player.playing .cap{display:none}
+.play{border:0;cursor:pointer}
+.play{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);width:76px;height:76px;border-radius:50%;background:var(--brand);display:grid;place-items:center;box-shadow:0 10px 30px -8px rgba(24,0,173,.5)}
+.play svg{width:26px;height:26px;fill:#fff;margin-left:4px}
+.player .cap{position:absolute;left:16px;bottom:14px;display:flex;gap:8px;flex-wrap:wrap}
+.tagw{background:rgba(255,255,255,.92);border:1px solid var(--line);border-radius:999px;padding:6px 12px;font-size:12.5px;color:var(--ink)}
+.film .under{display:flex;flex-wrap:wrap;gap:12px 28px;align-items:center;margin-top:18px;font-size:14px;color:var(--muted)}
+@media (max-width:760px){ .film .head{grid-template-columns:1fr} .seg{justify-self:start} }
+
+/* ---- detail blocks ---- */
+.detail{padding-block:64px 56px;border-top:1px solid var(--line)}
+.detail.alt{background:var(--band)}
+.detail .top{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:40px;align-items:end;margin-bottom:34px}
+.detail .top .k{margin-bottom:8px}
+.rows{display:grid;gap:0;border-top:1px solid var(--line)}
+.row{display:grid;grid-template-columns:40px minmax(0,1.1fr) minmax(0,1fr) minmax(0,.9fr);gap:20px 28px;padding-block:22px;border-bottom:1px solid var(--line);align-items:start}
+.row .no{display:inline-grid;place-items:center;width:26px;height:26px;border-radius:50%;background:var(--tint);color:var(--muted);font-size:12px;font-weight:600;margin-top:2px}
+.row h3{font-family:var(--sans);font-weight:500;font-size:22px;letter-spacing:-.015em;line-height:1.15}
+.row h3 small{display:block;font-family:var(--body);font-size:14px;color:var(--muted);font-weight:400;margin-top:6px;letter-spacing:0}
+.row .does{font-size:15.5px;line-height:1.5}
+.row .does b{display:block;font-size:11.5px;letter-spacing:.14em;text-transform:uppercase;color:var(--brand);font-weight:600;margin-bottom:4px}
+.row .you{font-size:15.5px;line-height:1.5;color:var(--ink)}
+.row .you b{display:block;font-size:11.5px;letter-spacing:.14em;text-transform:uppercase;color:var(--muted);font-weight:600;margin-bottom:4px}
+.row .mini{grid-column:2/-1;max-width:560px}
+.detail .close{display:flex;flex-wrap:wrap;gap:14px 28px;align-items:center;margin-top:26px;font-size:15px}
+.detail .close .muted{flex:1 1 320px}
+.ex{display:inline-flex;align-items:center;gap:8px;border:1px solid var(--line);border-radius:999px;padding:6px 12px;font-size:12.5px;background:var(--surface)}
+.ex .ok{width:14px;height:14px}
+.exs{display:flex;flex-wrap:wrap;gap:8px;margin-top:10px}
+@media (max-width:980px){
+  .film .head,.detail .top{grid-template-columns:1fr}
+  .row{grid-template-columns:32px minmax(0,1fr);gap:12px 16px}
+  .row .does,.row .you{grid-column:2}
+}
+
+/* ---- spotlight sections (Style A) ---- */
+/* products: three bordered boxes, name and points */
+.prods{padding-block:64px 60px;border-top:1px solid var(--line)}
+.ptop{display:flex;flex-wrap:wrap;gap:14px 30px;align-items:end;justify-content:space-between;margin-bottom:28px}
+.pboxes{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:16px}
+.pbox{background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:26px 26px 22px;min-width:0;position:relative}
+.pbox .pno{position:absolute;top:24px;right:24px;font-family:var(--sans);font-size:13px;color:var(--muted);font-variant-numeric:tabular-nums;letter-spacing:.04em}
+.pbox h3{font-family:var(--sans);font-weight:500;font-size:22px;letter-spacing:-.02em;line-height:1.15;padding-bottom:16px;border-bottom:1px solid var(--line);margin-right:40px}
+.pbox ul{list-style:none;margin:0;padding:0}
+.pbox li{padding:11px 0 11px 22px;border-bottom:1px solid var(--line);font-size:15px;line-height:1.45;position:relative}
+.pbox li:last-child{border-bottom:0;padding-bottom:0}
+.pbox li::before{content:"";position:absolute;left:0;top:19px;width:8px;height:8px;border-radius:50%;background:var(--brand)}
+@media (max-width:899px){ .pboxes{grid-template-columns:1fr} .pbox{padding:22px 20px 18px} }
+@media (min-width:900px) and (max-width:980px){ .pbox{padding:20px 18px 16px} .pbox h3{font-size:19px} .pbox li{font-size:14px} }
+<!--HTML-->
+  <!-- ===== Film ===== -->
+  <section class="in film" id="film" aria-label="What is Ohm">
+    <div class="head">
+      <div><h2 class="h2">What is Ohm?</h2></div>
+      <div class="seg" aria-label="Voice" id="lang"><span class="on" data-lang="hi">हिंदी</span><span data-lang="en">English</span></div>
+    </div>
+    <div class="player land" id="player">
+      <video id="vid" playsinline preload="none" poster="{{POSTER16}}" data-poster-land="{{POSTER16}}" data-poster-port="{{POSTER9}}"></video>
+      <button class="play" id="playbtn" type="button" aria-label="Play the film"><svg viewBox="0 0 24 24"><path d="M6 4l14 8-14 8z"/></svg></button>
+      <div class="cap"><span class="tagw">1:56</span><span class="tagw" id="captag">Subtitles on</span></div>
+    </div>
+  </section>
+
+  <!-- ===== Products ===== -->
+  <section class="in prods" id="products" aria-label="Products">
+    <div class="ptop"><h2 class="h2">Products</h2><span class="btn p">Start free</span></div>
+    <div class="pboxes">
+      <div class="pbox" id="accountant"><span class="pno">01</span><h3>AI Accountant</h3><ul><li>Reads any bill: photo, PDF, WhatsApp or email</li><li>Fills party, ledger, cost centre and GST</li><li>Posts the voucher in Tally</li><li>Matches the bank statement, line by line</li><li>Keeps masters clean</li></ul></div>
+      <div class="pbox" id="auditor"><span class="pno">02</span><h3>AI Auditor</h3><ul><li>Checks every voucher before money moves</li><li>Catches duplicates and changed bank accounts</li><li>Holds anything outside approval limits</li><li>Reconciles bank, vendor ledgers, GSTR-2B and TDS</li><li>Locks the month and keeps the trail</li></ul></div>
+      <div class="pbox" id="command"><span class="pno">03</span><h3>Get anything done</h3><ul><li>Ask in plain words</li><li>Who has not paid, and send the reminders</li><li>Business report for last month</li><li>Build a MIS</li><li>Send bill 1042 and follow up</li></ul></div>
+    </div>
+  </section>
+
+<script>
+(function(){
+  var v=document.getElementById('vid'),pl=document.getElementById('player'),btn=document.getElementById('playbtn'),seg=document.getElementById('lang'); if(!v) return;
+  var files={hi:{land:'video/ohm_hi_16x9.mp4',port:'video/ohm_hi_9x16.mp4'},en:{land:'video/ohm_en_16x9.mp4',port:'video/ohm_en_9x16.mp4'}},lang='hi';
+  var mqPort=window.matchMedia('(max-width:760px) and (orientation:portrait)');
+  function mode(){ return mqPort.matches?'port':'land'; }
+  function apply(keepTime){ var m=mode(),t=v.currentTime||0,was=!v.paused&&!v.ended; pl.classList.remove('land','port'); pl.classList.add(m); v.poster=v.dataset['poster'+(m==='port'?'Port':'Land')]; var src=files[lang][m]; if(v.getAttribute('src')!==src){ v.setAttribute('src',src); v.load(); if(keepTime&&t>0){ v.addEventListener('loadedmetadata',function h(){ v.currentTime=t; v.removeEventListener('loadedmetadata',h); if(was) v.play(); }); } } }
+  apply(false);
+  (mqPort.addEventListener?mqPort.addEventListener('change',function(){apply(true)}):mqPort.addListener(function(){apply(true)}));
+  btn.addEventListener('click',function(){ v.play(); }); v.addEventListener('click',function(){ if(!v.controls) v.play(); });
+  v.addEventListener('play',function(){ pl.classList.add('playing'); v.controls=true; }); v.addEventListener('pause',function(){ if(v.currentTime===0) pl.classList.remove('playing'); }); v.addEventListener('ended',function(){ pl.classList.remove('playing'); });
+  if(seg){ seg.querySelectorAll('span').forEach(function(s){ s.addEventListener('click',function(){ lang=s.dataset.lang; seg.querySelectorAll('span').forEach(function(x){x.classList.toggle('on',x===s)}); apply(true); }); }); }
+})();
+</script>

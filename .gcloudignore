@@ -7,3 +7,4 @@ design/
 # not needed at runtime
 tests/
 db/
+redesign/
