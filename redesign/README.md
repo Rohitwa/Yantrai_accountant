@@ -48,6 +48,7 @@ that is not in this repository; that mode is for drafting elsewhere.
   "YantrAI is a brand of LuxeDeco Ventures Private Limited" with the registered
   office; `design/build.py` notes that Meta matches the website to the company
   it verifies. It was removed from the redesign on the owner's instruction.
+  Decided on 15 Nov 2026: it stays out. Do not add it back to the new footer.
 - **The careers form at `/careers` is not in the new menu.** The Company page
   has a Careers section with an address to write to; the form page still exists.
 - **No share image.** `og-cover.jpg` is the earlier AiFA cover, so the new pages
