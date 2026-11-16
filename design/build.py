@@ -696,11 +696,14 @@ assert _n == 1, 'legal links on the copyright line'
 # who YantrAI is, in law (owner, 2026-10-14: "yes add the website line") - Meta matches the website to the company it verifies
 # (LuxeDeco Ventures Private Limited, GST record) before a WhatsApp display name may read YantrAI. A second line under the copyright,
 # in the same type, on every page's footer; the address is the registered office exactly as the public record words it.
+# 2026-11-16 (owner: "TIME HAS COME TO MOVE FROM LUXEDECO VENTURES TO YANTRAILABS VENTURES PVT LTD - THE TRUE OWNER OF OHM";
+# "Brand name is OHM and company names is yantrai"; "yes build 1 and 2"): the company is Yantrailabs Ventures Private Limited and
+# the brand is OHM - never "YantrAI is a brand of ...". Name, CIN and registered office from its Certificate of Incorporation.
 _ENTITY = {
-    'en': 'YantrAI is a brand of LuxeDeco Ventures Private Limited · Registered office: 450, 1st Floor, '
-          'Deendayal Upadhyay Hospital Pocket EA, Maya Enclave, Hari Nagar, New Delhi 110064, India',
-    'fr': 'YantrAI est une marque de LuxeDeco Ventures Private Limited · Siège social : 450, 1st Floor, '
-          'Deendayal Upadhyay Hospital Pocket EA, Maya Enclave, Hari Nagar, New Delhi 110064, Inde',
+    'en': 'OHM is a brand of Yantrailabs Ventures Private Limited · CIN U62013DC2026PTC471518 · Registered office: 450, 1st Floor, '
+          'Pocket-EA, DDU Hospital Maya Enclave, Hari Nagar, New Delhi 110064, India',
+    'fr': 'OHM est une marque de Yantrailabs Ventures Private Limited · CIN U62013DC2026PTC471518 · Siège social : 450, 1st Floor, '
+          'Pocket-EA, DDU Hospital Maya Enclave, Hari Nagar, New Delhi 110064, Inde',
 }[LOCALE]
 body, _n = re.subn(r'(<a href="/privacy" data-legal="1" style="color: inherit;">[^<]*</a></span>)',
                    lambda m: m.group(1) + '\n        <span data-legal-entity="1" style="font-family: ui-monospace, &quot;SF Mono&quot;, '
